@@ -1,0 +1,11 @@
+name:                hmpfr
+version:             0.0
+synopsis:            <Project description>
+description:         <Project description>
+category:            Data
+license:             BSD3
+license-file:        LICENSE
+author:              Aleš Bizjak
+maintainer:          ales.bizjak@student.fmf.uni-lj.si
+build-Depends:       base
+ghc-options:         
