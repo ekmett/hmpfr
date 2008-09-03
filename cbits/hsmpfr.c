@@ -101,7 +101,7 @@ void mpfr_custom_init_wrap (void *p1 , mp_prec_t p2) {
   mpfr_custom_init (p1, p2);
 }
 
-void mpfr_custom_init_set_wrap (mpfr_ptr p1, int p2, mp0_exp_t p3, mp_rec_t p4, void *p5) {
+void mpfr_custom_init_set_wrap (mpfr_ptr p1, int p2, mp_exp_t p3, mp_prec_t p4, void *p5) {
   mpfr_custom_init_set (p1, p2, p3, p4, p5);
 }
 

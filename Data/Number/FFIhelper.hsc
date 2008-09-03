@@ -4,6 +4,10 @@
 
 module Data.Number.FFIhelper where
 
+import Data.Word
+
+import Data.Int
+
 import Foreign.C.String(CString)
 import Foreign.C.Types(CULong, CLong, CInt, CUInt, CDouble, CChar)
 import Foreign.Ptr(FunPtr, Ptr)
@@ -34,6 +38,8 @@ type CRoundMode = CInt
 type CPrecision = CUInt
 
 type Exp = #type mp_exp_t
+
+type MpSize = #type mp_size_t
 
 data MPFR_T = MPFR_T
 
@@ -118,10 +124,10 @@ foreign import ccall unsafe "mpfr_get_ui"
         mpfr_get_ui :: Ptr MPFR_T -> CRoundMode -> IO CULong
 
 foreign import ccall unsafe "mpfr_get_sj"
-        mpfr_get_sj :: Ptr MPFT_T -> CRoundMode -> IO #type intmax_t
+        mpfr_get_sj :: Ptr MPFR_T -> CRoundMode -> IO #type intmax_t
 
 foreign import ccall unsafe "mpfr_get_uj"
-        mpft_get_uj :: Ptr MPFT_T -> CRoundMode -> IO #type uintmax_t
+        mpft_get_uj :: Ptr MPFR_T -> CRoundMode -> IO #type uintmax_t
 
 --TODO get_z_exp, get_z, get_f, 
 
@@ -294,7 +300,7 @@ foreign import ccall unsafe "mpfr_cmp_si_2exp"
 
 foreign import ccall unsafe "mpfr_cmpabs"
         mpfr_cmpabs :: Ptr MPFR_T -> Ptr MPFR_T -> IO CInt
--}
+
 foreign import ccall unsafe "mpfr_nan_p_wrap"
         mpfr_nan_p :: Ptr MPFR_T -> IO CInt
 
@@ -433,7 +439,7 @@ foreign import ccall unsafe "mpfr_lngamma"
         mpfr_lngamma :: Ptr MPFR_T -> Ptr MPFR_T ->  CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_lgamma"
-        mpfr_lgamma :: Ptr MPFR_T -> Ptr CInt -> Ptr MPFT_T ->  CRoundMode -> IO CInt
+        mpfr_lgamma :: Ptr MPFR_T -> Ptr CInt -> Ptr MPFR_T ->  CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_zeta"
         mpfr_zeta :: Ptr MPFR_T -> Ptr MPFR_T ->  CRoundMode -> IO CInt
@@ -495,7 +501,7 @@ foreign import ccall unsafe "mpfr_free_cache"
         mpfr_free_cache :: IO ()
 
 foreign import ccall unsafe "mpfr_sum"
-        mpfr_sum :: Ptr MPFT_T -> Ptr (Ptr MPFR_T) -> CULong -> CRoundMode -> IO CInt
+        mpfr_sum :: Ptr MPFR_T -> Ptr (Ptr MPFR_T) -> CULong -> CRoundMode -> IO CInt
 
 -- TODO input and output functions
 
@@ -520,13 +526,13 @@ foreign import ccall unsafe "mpfr_rint_ceil"
         mpfr_rint_ceil :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_rint_floor"
-        mpfr_rint_ceil :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
+        mpfr_rint_floor :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_rint_round"
-        mpfr_rint_ceil :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
+        mpfr_rint_round :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_rint_trunc"
-        mpfr_rint_ceil :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
+        mpfr_rint_trunc :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_frac"
         mpfr_frac :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
@@ -544,10 +550,10 @@ foreign import ccall unsafe "mpfr_integer_p"
 -- miscellaneus functions
 
 foreign import ccall unsafe "mpfr_nexttoward"
-        mpfr_nextbelow ::  Ptr MPFR_T -> Ptr MPFR_T -> IO ()
+        mpfr_nexttoward ::  Ptr MPFR_T -> Ptr MPFR_T -> IO ()
 
 foreign import ccall unsafe "mpfr_nextabove"
-        mpfr_nextbelow ::  Ptr MPFR_T -> IO ()
+        mpfr_nextabove ::  Ptr MPFR_T -> IO ()
 
 foreign import ccall unsafe "mpfr_nextbelow"
         mpfr_nextbelow ::  Ptr MPFR_T -> IO ()

@@ -53,7 +53,7 @@ size_t mpfr_custom_get_size_wrap (mp_prec_t) ;
 
 void mpfr_custom_init_wrap (void * , mp_prec_t) ;
 
-void mpfr_custom_init_set_wrap (const mpfr_ptr , int , mp0_exp_t , mp_rec_t , void *) ;
+void mpfr_custom_init_set_wrap (const mpfr_ptr , int , mp_exp_t , mp_prec_t , void *) ;
 
 
 int mpfr_custom_get_kind_wrap (const mpfr_ptr ) ;
