@@ -80,7 +80,7 @@ import Foreign(unsafePerformIO, peek, Ptr, ForeignPtr, withForeignPtr, newForeig
 
 import Data.Bits(shiftL)
 
-import Data.Word(Word)
+import Data.Word(Word, Word32)
 import Prelude hiding (div, sqrt, read, isNaN, isInfinite, exp, log, sinh, cosh, tanh, pi)
 
 
@@ -197,7 +197,7 @@ stringToDyadic r p b d = D (unsafePerformIO $ do {
                                newForeignPtr clear p1 }})
 
 
-getMantissa'          :: Dyadic -> [CULong]
+getMantissa'          :: Dyadic -> [Word32]
 getMantissa' dd@(D d) = unsafePerformIO go
                     where go = do withForeignPtr d $ \p1 -> do {
                                    pt <- mpfr_custom_get_mantissa p1 ; 
