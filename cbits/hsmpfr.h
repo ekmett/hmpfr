@@ -22,6 +22,14 @@ int mpfr_set_si_wrap (const mpfr_ptr, long int, mp_rnd_t) ;
 
 int mpfr_set_ui_wrap (const mpfr_ptr, unsigned long int, mp_rnd_t) ;
 
+int mpfr_cmp_wrap (const mpfr_ptr, const mpfr_ptr) ;
+
+int mpfr_cmp_si_wrap (const mpfr_ptr, signed long int ) ;
+
+int mpfr_cmp_ui_wrap (const mpfr_ptr, unsigned long int) ;
+
+int mpfr_sgn_wrap (const mpfr_ptr) ;
+
 int mpfr_ceil_wrap (const mpfr_ptr , const mpfr_ptr ) ;
 
 int mpfr_floor_wrap (const mpfr_ptr , const mpfr_ptr ) ;

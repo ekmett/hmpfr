@@ -33,6 +33,22 @@ int mpfr_abs_wrap(const mpfr_ptr p1, const mpfr_ptr p2, mp_rnd_t r) {
   return mpfr_abs(p1, p2, r);
 }
 
+int mpfr_cmp_wrap (const mpfr_ptr p1 , const mpfr_ptr p2) {
+  return mpfr_cmp(p1, p2)
+}
+
+int mpfr_cmp_si_wrap (const mpfr_ptr p1, signed long int p2) {
+  return mpfr_cmp_si(p1, p2);
+}
+
+int mpfr_cmp_ui_wrap (const mpfr_ptr p1, unsigned long int p2) {
+  return mpfr_cmp_ui (p1, p2)
+}
+
+int mpfr_sgn_wrap (const mpfr_ptr p1) {
+  return mpfr_sgn (p1);
+} 
+
 int mpfr_set_si_wrap (const mpfr_ptr p, long int si, mp_rnd_t r) {
   return mpfr_set_si(p, si, r);
 }
