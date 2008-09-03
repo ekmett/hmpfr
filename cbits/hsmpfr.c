@@ -77,10 +77,46 @@ mp_prec_t mpfr_get_prec_wrap (const mpfr_ptr e) {
   return mpfr_get_prec(e);
 }
 
+mp_exp_t mpfr_get_exp_wrap (const mpfr_ptr p1) {
+  return mpfr_get_exp (p1);
+}
+
+int mpfr_signbit_wrap (const mpfr_ptr p1) {
+  return mpfr_signbit (p1);
+}
+
+int mfpr_setsign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, int p3, mp_rnd_t p4) {
+  return mpfr_setsign (p1, p2, p3, p4);
+}
+
+int mpfr_copysign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, const mpfr_ptr p3, mp_rnd_t rnd) {
+  return mpfr_copysign (p1, p2, p3, p4);
+}
+
+size_t mpfr_custom_get_size_wrap (mp_prec_t p1) {
+  return mpfr_custom_get_size (p1); 
+}
+
+void mpfr_custom_init_wrap (void *p1 , mp_prec_t p2) {
+  mpfr_custom_init (p1, p2);
+}
+
+void mpfr_custom_init_set_wrap (mpfr_ptr p1, int p2, mp0_exp_t p3, mp_rec_t p4, void *p5) {
+  mpfr_custom_init_set (p1, p2, p3, p4, p5);
+}
+
+int mpfr_custom_get_kind_wrap (mpfr_ptr p1) {
+  return mpfr_custom_get_kind (p1);
+}
+
 void * mpfr_custom_get_mantissa_wrap (const mpfr_ptr p) {
   return mpfr_custom_get_mantissa(p);
 }
 
 mp_exp_t mpfr_custom_get_exp_wrap(const mpfr_ptr p) {
   return mpfr_custom_get_exp(p);
+}
+
+void mpfr_custom_move_wrap (mpfr_ptr p1, void *p2 ) {
+  mpfr_custom_move(p1, p2);
 }

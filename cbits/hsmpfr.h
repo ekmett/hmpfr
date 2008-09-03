@@ -40,6 +40,26 @@ int mpfr_trunc_wrap (const mpfr_ptr , const mpfr_ptr ) ;
 
 mp_prec_t mpfr_get_prec_wrap (const mpfr_ptr ) ;
 
+
+mp_exp_t mpfr_get_exp_wrap (const mpfr_ptr ) ;
+
+int mpfr_sign_bit_wrap (const mpfr_ptr ) ;
+
+int mfpr_setsign_wrap (const mpfr_ptr , const mpfr_ptr, int , mp_rnd_t ) ;
+
+int mpfr_copysign_wrap (const mpfr_ptr , const mpfr_ptr , const mpfr_ptr , mp_rnd_t ) ;
+
+size_t mpfr_custom_get_size_wrap (mp_prec_t) ;
+
+void mpfr_custom_init_wrap (void * , mp_prec_t) ;
+
+void mpfr_custom_init_set_wrap (const mpfr_ptr , int , mp0_exp_t , mp_rec_t , void *) ;
+
+
+int mpfr_custom_get_kind_wrap (const mpfr_ptr ) ;
+
 void * mpfr_custom_get_mantissa_wrap (const mpfr_ptr ) ;
 
-mp_exp_t mpfr_custom_get_exp_wrap (const mpfr_ptr ) ;
+mp_exp_t mpfr_custom_get_exp_wrap(const mpfr_ptr ) ;
+
+void mpfr_custom_move_wrap (const mpfr_ptr , void * ) ;
