@@ -1,5 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
-#include <helper.h>
+#include <hsmpfr.h>
 #include <mpfr.h>
 
 module Data.Number.FFIhelper where
@@ -33,6 +33,8 @@ type CRoundMode = CInt
 
 type CPrecision = CUInt
 
+type Exp = #type mp_exp_t
+
 data MPFR_T = MPFR_T
 
 -- utility functions from helper.h
@@ -45,6 +47,8 @@ foreign import ccall unsafe "&clear"
 --------------------
 foreign import ccall unsafe "mpfr_get_prec_wrap"
         mpfr_get_prec :: Ptr MPFR_T -> IO CPrecision 
+
+----------------------------------------------------------------
 
 -- assignment functions
 foreign import ccall unsafe "mpfr_set_wrap"
@@ -65,7 +69,7 @@ foreign import ccall unsafe "mpfr_set_d"
   --      mpfr_set_ld :: Ptr MPFR_T -> #{type long double} -> CRoundMode -> IO CInt
 --long double does not seem to be supported
 
---TODO figure out how to set from Integer
+--TODO set_decimal64, set_z, set_q, set_f
 
 foreign import ccall unsafe "mpfr_set_ui_2exp"
         mpfr_set_ui_2exp :: Ptr MPFR_T -> CULong -> CInt -> CRoundMode -> IO CInt
@@ -78,32 +82,78 @@ foreign import ccall unsafe "mpfr_set_si_2exp"
 foreign import ccall unsafe "mpfr_set_str"
         mpfr_set_str :: Ptr MPFR_T -> CString -> CInt -> CRoundMode -> IO CInt
 
---TODO strtofr, set_inf, set_nan, swap
+foreign import ccall unsafe "mpfr_strtofr"
+        mpfr_strtofr :: Ptr MPFR_T  ->  CString -> Ptr (Ptr CChar) -> CInt -> CRoundMode -> IO CInt
 
--- THINK combined initialization and assignment functions are non-applicable with custom interface?
+foreign import ccall unsafe "mpfr_set_inf"
+        mpfr_set_inf :: Ptr MPFR_T -> CInt -> IO ()
 
----------------------------------------------------------------------------------
+foreign import ccall unsafe "mpfr_set_nana"
+        mpfr_set_nan :: Ptr MPFR_T -> IO ()
+
+foreign import ccall unsafe "mpfr_swap"
+        mpfr_swap :: Ptr MPFR_T -> Ptr MPFR_T -> IO ()
+
+-- THINK combined initialization and assignment functions are non-applicable
+-- with custom interface?
+
+--------------------------------------------------------------------------------
+
 
 -- conversion functions
 foreign import ccall unsafe "mpfr_get_d"
         mpfr_get_d :: Ptr MPFR_T -> CRoundMode -> IO CDouble
 
---get_d_2exp, get_ld_2exp
+-- TODO get_decimal64
 
+foreign import ccall unsafe "mpfr_get_d_2exp"
+        mpfr_get_d_2exp :: Ptr CLong -> Ptr MPFR_T -> CRoundMode -> IO CDouble
+
+-- TODO get_ld_2exp
+-- !!!!!!! next 4 set erange flags
 foreign import ccall unsafe "mpfr_get_si" 
         mpfr_get_si :: Ptr MPFR_T -> CRoundMode -> IO CLong
 
 foreign import ccall unsafe "mpfr_get_ui" 
         mpfr_get_ui :: Ptr MPFR_T -> CRoundMode -> IO CULong
 
+foreign import ccall unsafe "mpfr_get_sj"
+        mpfr_get_sj :: Ptr MPFT_T -> CRoundMode -> IO #type intmax_t
+
+foreign import ccall unsafe "mpfr_get_uj"
+        mpft_get_uj :: Ptr MPFT_T -> CRoundMode -> IO #type uintmax_t
+
 --TODO get_z_exp, get_z, get_f, 
 
 foreign import ccall unsafe "mpfr_get_str"
         mpfr_get_str :: CString -> Ptr CInt -> CInt -> CUInt -> Ptr MPFR_T ->  CRoundMode -> IO CString
 
---TODO all the fits* functions
+foreign import ccall unsafe "mpfr_fits_ulong_p"
+        mpfr_fits_ulong_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
 
----------------------------------------------------------------------------------
+foreign import ccall unsafe "mpfr_fits_slong_p"
+        mpfr_fits_slong_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_uint_p"
+        mpfr_fits_uint_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_sint_p"
+        mpfr_fits_sint_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_ushort_p"
+        mpfr_fits_ushort_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_sshort_p"
+        mpfr_fits_sshort_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_intmax_p"
+        mpfr_fits_intmax_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fits_uintmax_p"
+        mpfr_fits_uintmax_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
+
+
+-------------------------------------------------------------------------------
 
 -- basic arithmetic functions
 
@@ -164,6 +214,8 @@ foreign import ccall unsafe "mpfr_si_div"
 foreign import ccall unsafe "mpfr_div_si"
         mpfr_div_si :: Ptr MPFR_T -> Ptr MPFR_T -> CLong -> CRoundMode -> IO CInt
 
+-- TODO div_z, div_q
+
 foreign import ccall unsafe "mpfr_sqrt"
         mpfr_sqrt :: Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt
 
@@ -215,17 +267,19 @@ foreign import ccall unsafe "mpfr_div_2ui"
 foreign import ccall unsafe "mpfr_div_2si"
         mpfr_div_2si :: Ptr MPFR_T -> Ptr MPFR_T -> CLong -> CRoundMode -> IO CInt
 
----------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
 -- comparison functions
-{- 
-foreign import ccall unsafe "mpfr_cmp"
+-- !!!!!!!! these set erange flags
+foreign import ccall unsafe "mpfr_cmp_wrap"
         mpfr_cmp :: Ptr MPFR_T -> Ptr MPFR_T -> IO CInt
 
---foreign import ccall unsafe "mpfr_cmp_ui"
---        mpfr_cmp_ui :: Ptr MPFR_T -> CULong -> IO CInt
+foreign import ccall unsafe "mpfr_cmp_ui_wrap"
+        mpfr_cmp_ui :: Ptr MPFR_T -> CULong -> IO CInt
 
---foreign import ccall unsafe "mpfr_cmp_si"
---        mpfr_cmp_si :: Ptr MPFR_T -> CLong -> IO CInt
+foreign import ccall unsafe "mpfr_cmp_si_wrap"
+        mpfr_cmp_si :: Ptr MPFR_T -> CLong -> IO CInt
 
 foreign import ccall unsafe "mpfr_cmp_d"
         mpfr_cmp_d :: Ptr MPFR_T -> CDouble -> IO CInt
@@ -253,9 +307,8 @@ foreign import ccall unsafe "mpfr_number_p"
 foreign import ccall unsafe "mpfr_zero_p_wrap"
         mpfr_zero_p :: Ptr MPFR_T -> IO CInt
 
--- sets erange flag
---foreign import ccall unsafe "mpfr_sgn"
---        mpfr_sgn :: Ptr MPFR_T -> IO CInt 
+foreign import ccall unsafe "mpfr_sgn_wrap"
+        mpfr_sgn :: Ptr MPFR_T -> IO CInt 
 
 foreign import ccall unsafe "mpfr_greater_p"
         mpfr_greater_p :: Ptr MPFR_T ->  Ptr MPFR_T -> IO CInt
