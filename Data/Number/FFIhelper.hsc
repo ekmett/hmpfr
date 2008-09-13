@@ -1,5 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
-#include <hsmpfr.h>
+#include <chsmpfr.h>
 #include <mpfr.h>
 
 module Data.Number.FFIhelper where
@@ -11,6 +11,10 @@ import Data.Int
 import Foreign.C.String(CString)
 import Foreign.C.Types(CULong, CLong, CInt, CUInt, CDouble, CChar)
 import Foreign.Ptr(FunPtr, Ptr)
+
+
+import Foreign.Storable
+import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
 
 data RoundMode = Near | Zero | Up | Down | GMP_RND_MAX | GMP_RNDNA 
 
@@ -30,20 +34,43 @@ instance Enum RoundMode where
     toEnum (#{const GMP_RNDNA}) = GMP_RNDNA
     toEnum i                    = error $ "RoundMode.toEnum called with illegal argument :" ++ show i 
 
+
+data MPFR_T = MP !CPrecision !Sign !Exp !(ForeignPtr Limb)
+
+instance Storable MPFR_T where
+    sizeOf _ = #size __mpfr_struct
+    alignment _ = (undefined :: Int)
+    peek = error "MPFR_T.peek: Not needed and not applicable"
+    poke p (MP prec s e fp) = do withForeignPtr fp $ \p1 -> do 
+                                      #{poke __mpfr_struct, _mpfr_prec} p prec
+                                      #{poke __mpfr_struct, _mpfr_sign} p s 
+                                      #{poke __mpfr_struct, _mpfr_exp} p e
+                                      #{poke __mpfr_struct, _mpfr_d} p p1
+
+peekP      :: Ptr MPFR_T -> ForeignPtr Limb -> IO MPFR_T
+peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
+	        r21 <- #{peek __mpfr_struct, _mpfr_sign} p
+		r22 <- #{peek __mpfr_struct, _mpfr_exp} p
+                return (MP r11 r21 r22 fp)
+
 bitsPerMPLimb :: Int 
 bitsPerMPLimb = 8 * #size mp_limb_t
 
 type CRoundMode = CInt
 
-type CPrecision = CUInt
+type Limb = #type mp_limb_t
+
+type Sign = #type mpfr_sign_t
+
+type CPrecision = #type mpfr_prec_t
 
 type Exp = #type mp_exp_t
 
 type MpSize = #type mp_size_t
 
-data MPFR_T = MPFR_T
+--data MPFR_T = MPFR_T
 
--- utility functions from helper.h
+-- utility functions from chsmpfr.h
 foreign import ccall unsafe "initS"
         initS :: CPrecision -> IO (Ptr MPFR_T)
 
@@ -94,7 +121,7 @@ foreign import ccall unsafe "mpfr_strtofr"
 foreign import ccall unsafe "mpfr_set_inf"
         mpfr_set_inf :: Ptr MPFR_T -> CInt -> IO ()
 
-foreign import ccall unsafe "mpfr_set_nana"
+foreign import ccall unsafe "mpfr_set_nan"
         mpfr_set_nan :: Ptr MPFR_T -> IO ()
 
 foreign import ccall unsafe "mpfr_swap"
@@ -123,16 +150,20 @@ foreign import ccall unsafe "mpfr_get_si"
 foreign import ccall unsafe "mpfr_get_ui" 
         mpfr_get_ui :: Ptr MPFR_T -> CRoundMode -> IO CULong
 
-foreign import ccall unsafe "mpfr_get_sj"
+{-
+foreign import ccall unsafe "mpfr_get_sj_wrap"
         mpfr_get_sj :: Ptr MPFR_T -> CRoundMode -> IO #type intmax_t
 
-foreign import ccall unsafe "mpfr_get_uj"
+foreign import ccall unsafe "mpfr_get_uj_wrap"
         mpft_get_uj :: Ptr MPFR_T -> CRoundMode -> IO #type uintmax_t
-
+-}
 --TODO get_z_exp, get_z, get_f, 
 
 foreign import ccall unsafe "mpfr_get_str"
-        mpfr_get_str :: CString -> Ptr CInt -> CInt -> CUInt -> Ptr MPFR_T ->  CRoundMode -> IO CString
+        mpfr_get_str :: CString -> Ptr Exp -> CInt -> CUInt -> Ptr MPFR_T ->  CRoundMode -> IO CString
+
+foreign import ccall unsafe "mpfr_free_str"
+        mpfr_free_str :: CString -> IO ()
 
 foreign import ccall unsafe "mpfr_fits_ulong_p"
         mpfr_fits_ulong_p :: Ptr MPFR_T -> CRoundMode -> IO CInt
@@ -445,7 +476,7 @@ foreign import ccall unsafe "mpfr_zeta"
         mpfr_zeta :: Ptr MPFR_T -> Ptr MPFR_T ->  CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_zeta_ui"
-        mpfr_zeta_ui :: Ptr MPFR_T -> Ptr CULong ->  CRoundMode -> IO CInt
+        mpfr_zeta_ui :: Ptr MPFR_T -> CULong ->  CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_erf"
         mpfr_erf :: Ptr MPFR_T -> Ptr MPFR_T ->  CRoundMode -> IO CInt
@@ -595,10 +626,10 @@ foreign import ccall unsafe "mpfr_get_emax"
         mpfr_get_emax :: IO Exp
 
 foreign import ccall unsafe "mpfr_set_emin"
-        mpfr_set_emin :: IO Exp
+        mpfr_set_emin :: Exp -> IO CInt
 
 foreign import ccall unsafe "mpfr_set_emax"
-        mpfr_set_emax :: IO Exp
+        mpfr_set_emax :: Exp -> IO CInt
 
 foreign import ccall unsafe "mpfr_get_emin_min"
         mpfr_get_emin_min :: IO Exp
@@ -652,19 +683,19 @@ foreign import ccall unsafe "mpfr_clear_flags"
         mpfr_clear_flags :: IO ()
 
 
-foreign import ccall unsafe "mpfr_underflow"
+foreign import ccall unsafe "mpfr_underflow_p"
         mpfr_underflow_p :: IO CInt
 
-foreign import ccall unsafe "mpfr_overflow"
+foreign import ccall unsafe "mpfr_overflow_p"
         mpfr_overflow_p :: IO CInt
 
-foreign import ccall unsafe "mpfr_nanflag"
+foreign import ccall unsafe "mpfr_nanflag_p"
         mpfr_nanflag_p :: IO CInt
 
-foreign import ccall unsafe "mpfr_inexflag"
+foreign import ccall unsafe "mpfr_inexflag_p"
         mpfr_inexflag_p :: IO CInt
 
-foreign import ccall unsafe "mpfr_erangeflag"
+foreign import ccall unsafe "mpfr_erangeflag_p"
         mpfr_erangeflag_p :: IO CInt
 
 ---------------------------------------------------------------
@@ -676,13 +707,13 @@ foreign import ccall unsafe "mpfr_custom_init_wrap"
         mpfr_custom_init :: Ptr #{type mp_limb_t} -> CPrecision -> IO ()
 
 foreign import ccall unsafe "mpfr_custom_init_set_wrap"
-        mpfr_custom_init_set :: Ptr MPFR_T -> CInt -> Exp -> CPrecision -> Ptr #{type mp_limb_t} -> IO ()
+        mpfr_custom_init_set :: Ptr MPFR_T -> CInt -> Exp -> CPrecision -> Ptr Limb -> IO ()
 
 foreign import ccall unsafe "mpfr_custom_get_kind_wrap"
         mpfr_custom_get_kind :: Ptr MPFR_T -> IO CInt
 
 foreign import ccall unsafe "mpfr_custom_get_mantissa_wrap"
-        mpfr_custom_get_mantissa :: Ptr MPFR_T -> IO (Ptr #{type mp_limb_t})
+        mpfr_custom_get_mantissa :: Ptr MPFR_T -> IO (Ptr Limb)
 
 foreign import ccall unsafe "mpfr_custom_get_exp_wrap"
         mpfr_custom_get_exp :: Ptr MPFR_T -> IO CInt
@@ -691,3 +722,4 @@ foreign import ccall unsafe "mpfr_custom_move_wrap"
         mpfr_custom_move :: Ptr MPFR_T -> Ptr #{type mp_limb_t} -> IO ()
 
 -------------------------------------------------
+

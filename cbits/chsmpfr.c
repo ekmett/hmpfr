@@ -1,9 +1,9 @@
-#include "helper.h"
+#include "hsmpfr.h"
 
 
-mpfr_ptr initS (const mp_prec_t prec ) {
+mpfr_ptr initS (const mp_prec_t prec) {
   mpfr_ptr rVal = malloc (sizeof(__mpfr_struct));
-  mp_limb_t *limb = (mp_limb_t*)malloc (mpfr_custom_get_size(prec) * sizeof(mp_limb_t));
+  mp_limb_t *limb = (mp_limb_t*)malloc (mpfr_custom_get_size(prec));
   mpfr_custom_init(limb, prec);
   mpfr_custom_init_set(rVal, MPFR_NAN_KIND, 0, prec, limb);
   return rVal;
@@ -34,7 +34,7 @@ int mpfr_abs_wrap(const mpfr_ptr p1, const mpfr_ptr p2, mp_rnd_t r) {
 }
 
 int mpfr_cmp_wrap (const mpfr_ptr p1 , const mpfr_ptr p2) {
-  return mpfr_cmp(p1, p2)
+  return mpfr_cmp(p1, p2);
 }
 
 int mpfr_cmp_si_wrap (const mpfr_ptr p1, signed long int p2) {
@@ -42,7 +42,7 @@ int mpfr_cmp_si_wrap (const mpfr_ptr p1, signed long int p2) {
 }
 
 int mpfr_cmp_ui_wrap (const mpfr_ptr p1, unsigned long int p2) {
-  return mpfr_cmp_ui (p1, p2)
+  return mpfr_cmp_ui (p1, p2);
 }
 
 int mpfr_sgn_wrap (const mpfr_ptr p1) {
@@ -85,11 +85,11 @@ int mpfr_signbit_wrap (const mpfr_ptr p1) {
   return mpfr_signbit (p1);
 }
 
-int mfpr_setsign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, int p3, mp_rnd_t p4) {
+int mpfr_setsign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, int p3, mp_rnd_t p4) {
   return mpfr_setsign (p1, p2, p3, p4);
 }
 
-int mpfr_copysign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, const mpfr_ptr p3, mp_rnd_t rnd) {
+int mpfr_copysign_wrap (const mpfr_ptr p1, const mpfr_ptr p2, const mpfr_ptr p3, mp_rnd_t p4) {
   return mpfr_copysign (p1, p2, p3, p4);
 }
 
@@ -120,3 +120,12 @@ mp_exp_t mpfr_custom_get_exp_wrap(const mpfr_ptr p) {
 void mpfr_custom_move_wrap (mpfr_ptr p1, void *p2 ) {
   mpfr_custom_move(p1, p2);
 }
+/*
+intmax_t mpfr_get_sj_wrap (mpfr_ptr p1, mp_rnd_t p2) {
+  return mpfr_get_sj(p1, p2);
+}
+
+uintmax_t mpfr_get_uj_wrap (mpfr_ptr p1, mp_rnd_t p2) {
+  return mpfr_get_uj (p1, p2);
+}
+*/

@@ -1,6 +1,6 @@
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <helper.h> #-}
-{-# LANGUAGE BangPatterns #-}
+{-# INCLUDE <chsmpfr.h> #-}
 module Data.Number.MPFR (
 -- | This module should always be imported qualified.
 
@@ -76,179 +76,376 @@ import Data.Number.FFIhelper
 
 import Foreign.C(CInt, CLong, CULong, withCString, peekCString)
 import Foreign.Marshal(alloca, peekArray)
-import Foreign(unsafePerformIO, peek, Ptr, ForeignPtr, withForeignPtr, newForeignPtr)
+import Foreign(unsafePerformIO, peek, Ptr, mallocForeignPtrBytes, with)
 
 import Data.Bits(shiftL)
 
-import Data.Word(Word, Word32)
+import Data.Word(Word)
 import Prelude hiding (div, sqrt, read, isNaN, isInfinite, exp, log, sinh, cosh, tanh, pi)
 
-
+type Dyadic = MPFR_T
 
 type Precision = Word
-
-newtype Dyadic = D (ForeignPtr MPFR_T)
 
 
 -- these are helper functions, only for internal use
 {-# INLINE withDyadicsBA #-}
-withDyadicsBA                     :: RoundMode -> Precision -> Dyadic -> Dyadic
-                                     -> (Ptr MPFR_T -> Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                                     -> (Dyadic, Int)
-withDyadicsBA r p (D !d1) (D !d2) f = (unsafePerformIO $
-                                       do withForeignPtr d1 $ \p1 -> do {
-                                           withForeignPtr d2 $ \p2 -> do
-                                              do { pt <- {-# SCC "withDyadicBAalloc" #-} initS (fromIntegral p) ;  
-                                                   r2 <- {-# SCC "withDyadicBAFun" #-} f pt p1 p2 ((fromIntegral . fromEnum) r) ;
-                                                   r1 <- newForeignPtr clear pt ;
-                                                   return (D r1, fromIntegral r2)}})
+withDyadicsBA               :: RoundMode -> Precision -> Dyadic -> Dyadic
+                               -> (Ptr MPFR_T -> Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt)
+                               -> (Dyadic, Int)
+withDyadicsBA r p mp1 mp2 f = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      with mp2 $ \p3 -> do
+                          r2 <- f p1 p2 p3 ((fromIntegral . fromEnum) r)
+                          r1 <- peekP p1 fp
+                          return (r1, fromIntegral r2)
 
 {-# INLINE withDyadicBAui #-}
-withDyadicBAui            :: RoundMode -> Precision -> Dyadic -> CULong
-                             ->  (Ptr MPFR_T -> Ptr MPFR_T -> CULong -> CRoundMode -> IO CInt)
-                             -> (Dyadic, Int) 
-withDyadicBAui r p (D !d1) d f = unsafePerformIO go
-                                where go = do withForeignPtr d1 $ \p1 -> do {                  
-                                               pt <- initS (fromIntegral p) ;                 
-                                               r2 <- f pt p1 d ((fromIntegral . fromEnum) r) ;
-                                               r1 <- newForeignPtr clear pt ;                 
-                                               return (D r1, fromIntegral r2)}               
-                                   
-
+withDyadicBAui :: RoundMode -> Precision -> Dyadic -> CULong
+                  ->  (Ptr MPFR_T -> Ptr MPFR_T -> CULong -> CRoundMode -> IO CInt)
+                  -> (Dyadic, Int) 
+withDyadicBAui r p mp1 d f = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      r2 <- f p1 p2 d ((fromIntegral . fromEnum) r)
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
+                                
 {-# INLINE withDyadicBAsi #-}
-withDyadicBAsi            :: RoundMode -> Precision -> Dyadic -> CLong
-                             -> (Ptr MPFR_T -> Ptr MPFR_T -> CLong -> CRoundMode -> IO CInt)
-                             -> (Dyadic, Int)
-withDyadicBAsi r p (D !d1) d f = unsafePerformIO go 
-                                where go = do withForeignPtr d1 $ \p1 -> do {                  
-                                                pt <- initS (fromIntegral p) ;                
-                                                r2 <- f pt p1 d ((fromIntegral . fromEnum) r) ;
-                                                r1 <- newForeignPtr clear pt ;
-                                                return (D r1, fromIntegral r2)}                     
+withDyadicBAsi             :: RoundMode -> Precision -> Dyadic -> CLong
+                              -> (Ptr MPFR_T -> Ptr MPFR_T -> CLong -> CRoundMode -> IO CInt)
+                              -> (Dyadic, Int)
+withDyadicBAsi r p mp1 d f = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      r2 <- f p1 p2 d ((fromIntegral . fromEnum) r)
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
                                   
 {-# INLINE withDyadicBAiu #-}
-withDyadicBAiu            :: RoundMode -> Precision -> CULong -> Dyadic
-                             -> (Ptr MPFR_T -> CULong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                             -> (Dyadic, Int) 
-withDyadicBAiu r p d (D !d1) f = unsafePerformIO go 
-                                where go =  do withForeignPtr d1 $ \p1 -> do {
-                                                 pt <- initS (fromIntegral p) ;
-                                                 r2 <- f pt d p1 ((fromIntegral . fromEnum) r) ;
-                                                 r1 <- newForeignPtr clear pt ;
-                                                 return (D r1, fromIntegral r2)}
+withDyadicBAiu             :: RoundMode -> Precision -> CULong -> Dyadic
+                              -> (Ptr MPFR_T -> CULong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
+                              -> (Dyadic, Int) 
+withDyadicBAiu r p d mp1 f = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      r2 <- f p1 d p2 ((fromIntegral . fromEnum) r)
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
 
 {-# INLINE withDyadicBAis #-}
-withDyadicBAis            :: RoundMode -> Precision -> CLong -> Dyadic
-                             -> (Ptr MPFR_T -> CLong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                             -> (Dyadic, Int) 
-withDyadicBAis r p d (D !d1) f = unsafePerformIO go
-                                where go = do withForeignPtr d1 $ \p1 -> do {
-                                                pt <- initS (fromIntegral p) ;
-                                                r2 <- f pt d p1 ((fromIntegral . fromEnum) r) ;
-                                                r1 <- newForeignPtr clear pt ;
-                                                return (D r1, fromIntegral r2) }
+withDyadicBAis             :: RoundMode -> Precision -> CLong -> Dyadic
+                              -> (Ptr MPFR_T -> CLong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
+                              -> (Dyadic, Int) 
+withDyadicBAis r p d mp1 f = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      r2 <- f p1 d p2 ((fromIntegral . fromEnum) r)
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
 
 {-# INLINE withDyadicB #-}
-withDyadicB :: Dyadic -> (Ptr MPFR_T -> IO CInt) -> CInt 
-withDyadicB (D !d) f = unsafePerformIO go
-                      where go = withForeignPtr d $ \p1 -> f p1
+withDyadicB       :: Dyadic -> (Ptr MPFR_T -> IO CInt) -> CInt 
+withDyadicB mp1 f = unsafePerformIO go
+    where go = with mp1 $ \p1 -> f p1
 
-withDyadicP :: Dyadic -> (Ptr MPFR_T -> IO CPrecision) -> CPrecision 
-withDyadicP (D !d) f = unsafePerformIO go
-                      where go = withForeignPtr d $ \p1 -> f p1
+withDyadicP       :: Dyadic -> (Ptr MPFR_T -> IO CPrecision) -> CPrecision 
+withDyadicP mp1 f = unsafePerformIO go
+    where go = with mp1 $ \p1 -> f p1
 
 {-# INLINE withDyadic #-}
-withDyadic         :: RoundMode -> Precision -> Dyadic 
-                      -> (Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt) 
-                      -> (Dyadic, Int)
-withDyadic r p (D !d) f = unsafePerformIO go 
-                         where go = do withForeignPtr d $ \p1 -> do {
-                                         pt <- {-# SCC "withDyadicalloc" #-} initS (fromIntegral p) ;
-                                         r2 <- {-# SCC "withDyadicFun" #-} f pt p1 ((fromIntegral . fromEnum) r) ;
-                                         r1 <- newForeignPtr clear pt ;
-                                         return (D r1, fromIntegral r2) }
-
+withDyadic           :: RoundMode -> Precision -> Dyadic 
+                        -> (Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt) 
+                        -> (Dyadic, Int)
+withDyadic r p mp1 f = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      r2 <- f p1 p2 ((fromIntegral . fromEnum) r)
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
+                  
 {-# INLINE withDyadicBB #-}
-withDyadicBB            :: Dyadic -> Dyadic 
-                           -> (Ptr MPFR_T -> Ptr MPFR_T -> IO CInt) 
-                           -> CInt  
-withDyadicBB (D !d1) (D !d2) f = unsafePerformIO $
-                               do withForeignPtr d1 $ \p1 -> do {
-                               withForeignPtr d2 $ \p2 -> do {
-                               f p1 p2}}
+withDyadicBB           :: Dyadic -> Dyadic 
+                          -> (Ptr MPFR_T -> Ptr MPFR_T -> IO CInt) 
+                          -> CInt  
+withDyadicBB mp1 mp2 f = unsafePerformIO go
+    where go = do with mp1 $ \p1 -> do 
+                    with mp2 $ \p2 -> do 
+                                      f p1 p2
                               
 {-# INLINE withDyadicC #-}
 withDyadicC       :: RoundMode -> Precision ->
                      (Ptr MPFR_T -> CRoundMode -> IO CInt) -> (Dyadic, Int)
 withDyadicC r p f = unsafePerformIO go
-                    where go = do pt <- initS (fromIntegral p)
-                                  r2 <- f pt ((fromIntegral . fromEnum) r)
-                                  r1 <- newForeignPtr clear pt
-                                  return (D r1, fromIntegral r2)
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    r2 <- f p1 ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
    
+withDyadicF       :: Dyadic -> RoundMode
+                     -> (Ptr MPFR_T -> CRoundMode -> IO CInt)
+                     -> Int
+withDyadicF mp1 r = (fromIntegral . unsafePerformIO) go
+    where go = do with mp1 $ \p1 -> f p1 ((fromIntegral . fromEnum) r)
+
+withDyadicUI         :: RoundMode -> Precision -> Word
+                        -> (Ptr MPFR_T -> CULong -> CRoundMode -> IO CInt)
+                        -> (Dyadic, Int)
+withDyadicUI r p d f = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    r2 <- f p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+
 checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
-stringToDyadic       :: RoundMode -> Precision -> Word -> String -> Dyadic
-stringToDyadic r p b d = D (unsafePerformIO $ do {
-                            p1 <- initS (fromIntegral p) ;
-                            withCString d $ \p2 -> do {
-                               _ <- mpfr_set_str p1 p2 (fromIntegral b) ((fromIntegral . fromEnum) r) ;
-                               newForeignPtr clear p1 }})
-
-
-getMantissa'          :: Dyadic -> [Word32]
-getMantissa' dd@(D d) = unsafePerformIO go
-                    where go = do withForeignPtr d $ \p1 -> do {
-                                   pt <- mpfr_custom_get_mantissa p1 ; 
-                                   arr <- peekArray (ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
-                                   return arr }
-                          p = getPrec dd
+getMantissa'     :: Dyadic -> [Limb]
+getMantissa' (MP p _ _ p1) = unsafePerformIO go
+    where go = do withForeignPtr p1 $ \pt -> do 
+                    arr <- peekArray (ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
+                    return arr 
 
 {- TODO: this is inefficient 
 binprec   :: Integer -> Precision
 binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
 -}
-
+-- TODO
 binprec   :: Integer -> Precision
 binprec d = floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
 
 
 --------------------------------------------------------------------
+-- assignment functions
 
--- pure wrappers for basic arithmetic operations
+set           :: RoundMode -> Precision -> Dyadic -> Dyadic
+set r p d = fst $ set_ r p d
+
+set_         :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+set_ r p mp1 = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do 
+                      r2 <- mpfr_set p1 p2 ((fromIntegral . fromEnum) r) 
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
+
+fromWord       :: RoundMode -> Precision -> Word -> Dyadic
+fromWord r p d = fst $ fromWord_ r p d
+
+fromInt       :: RoundMode -> Precision -> Int -> Dyadic
+fromInt r p d = fst $ fromInt_ r p d
+
+fromDouble       :: RoundMode -> Precision -> Double -> Dyadic
+fromDouble r p d = fst $ fromDouble_ r p d
+
+fromWord_       :: RoundMode -> Precision -> Word -> (Dyadic, Int)
+fromWord_ r p d = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    r2 <- mpfr_set_ui p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)                
+
+fromInt_       :: RoundMode -> Precision -> Int -> (Dyadic, Int)
+fromInt_ r p d = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    r2 <- mpfr_set_si p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+
+fromDouble_       :: RoundMode -> Precision -> Double -> (Dyadic, Int)
+fromDouble_ r p d = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    r2 <- mpfr_set_d p1 (realToFrac d) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+  
+-- x * 2 ^ y
+int2w         :: RoundMode -> Precision -> Word -> Int -> Dyadic
+int2w r p i e = fst $ int2w_ r p i e
+
+int2i         :: RoundMode -> Precision -> Int -> Int -> Dyadic
+int2i r p i e = fst $ int2i_ r p i e
+
+int2w_         :: RoundMode -> Precision -> Word -> Int -> (Dyadic, Int)
+int2w_ r p i e = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    r2 <- mpfr_set_ui_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+
+int2i_         :: RoundMode -> Precision -> Int -> Int -> (Dyadic, Int)
+int2i_ r p i e = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    r2 <- mpfr_set_si_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+
+
+stringToDyadic         :: RoundMode -> Precision 
+                       -> Word -- ^ Base 
+                       -> String -> Dyadic
+stringToDyadic r p b d = fst $ stringToDyadic_ r p b d
+
+stringToDyadic_         :: RoundMode -> Precision 
+                       -> Word -- ^ Base 
+                       -> String -> (Dyadic, Int)
+stringToDyadic_ r p b d = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    withCString d $ \p2 -> do 
+                      r2 <- mpfr_set_str p1 p2 (fromIntegral b) ((fromIntegral . fromEnum) r) 
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
+
+strtofr         :: RoundMode -> Precision -> 
+                -> Word -- ^ base
+                -> String -> (Dyadic, String)
+strtofr r p b d = case strtofr_ r p b d of
+                    (a, b, _) -> (a,b)
+
+strtofr_         :: RoundMode -> Precision -> 
+                   -> Word -- ^ base
+                   -> String -> (Dyadic, String, Int)
+strtofr_ r p b d = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    withCString d $ \p2 -> do
+                      alloca $ \p3 -> do
+                        r3 <- mpfr_strtofr p1 p2 p3 (fromIntegral b) ((fromIntegral . fromEnum) p)
+                        p3' <- peek p3
+                        r2 <- peekCString p3'
+                        r1 <- peekP p1 fp
+                        return (r1, r2, fromIntegral r3)
+                        
+                                                                
+setInf     :: Precision -> Int -> Dyadic
+setInf p i = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    mpfr_set_inf p1 (fromIntegral  i)
+                    peekP p1
+
+setNaN   :: Precision -> Dyadic
+setNaN p = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    mpfr_set_nan p1
+                    peekP p1
+
+-------------------------------------------------------------------
+-- conversion functions
+
+toDouble       :: RoundMode -> Dyadic -> Double
+toDouble r mp1 = (realToFrac . unsafePerformIO) go
+    where go = with mp1 $ \p -> mpfr_get_d p ((fromIntegral . fromEnum) r)
+
+toDouble2exp     :: RoundMode -> Dyadic -> (Double, Int)
+toDouble2exp r mp1 = unsafePerfromIO go 
+    where go = do with mp1 $ \p1 -> do
+                    alloca $ \p2 -> do
+                      r1 <- mpfr_get_d_2exp p2 p1 ((fromIntegral . fromEnum) r)
+                      r2 <- peek p2
+                      return (r1, fromIntegral r2)
+                      
+toInt     :: RoundMode -> Dyadic -> Int
+toInt r mp1 = (fromIntegral . unsafePerformIO) go
+    where go = with mp1 $ \p -> mpfr_get_si p ((fromIntegral . fromEnum) r)
+
+toWord       :: RoundMode -> Dyadic -> Word
+toWord r mp1 = (fromIntegral . unsafePerformIO) go
+    where go = with mp1 $ \p -> mpfr_get_ui p ((fromIntegral . fromEnum) r)
+
+
+toString           :: RoundMode 
+                   -> Word -- ^ number of decimals
+                   -> Word -- ^ base
+                   -> Dyadic -> (String, Exp)
+toString r n b mp1 = unsafePerformIO go 
+    where go = with mp1 $ \p1 -> do
+                 alloca $ \p2 -> do
+                     p3 <- mpfr_get_str nullPtr p2 (fromIntegral b) (fromIntegral n) p1 ((fromIntegral . fromEnum) r)
+                     r1 <- peekCString p3 
+                     r2 <- peek p2
+                     mpfr_free_str p3
+                     return (r1, r2)
+
+fitsULong     :: RoundMode -> Dyadic -> Bool
+fitsULong r d = withDyadicF d r mpfr_fits_ulong_p /= 0 
+
+fitsSLong     :: RoundMode -> Dyadic -> Bool
+fitsSLong r d = withDyadicF d r mpfr_fits_slong_p /= 0 
+
+fitsUInt     :: RoundMode -> Dyadic -> Bool
+fitsUInt r d = withDyadicF d r mpfr_fits_uint_p /= 0 
+
+fitsSInt     :: RoundMode -> Dyadic -> Bool
+fitsSInt r d = withDyadicF d r mpfr_fits_sint_p /= 0 
+
+fitsULong     :: RoundMode -> Dyadic -> Bool
+fitsULong r d = withDyadicF d r mpfr_fits_ushort_p /= 0 
+
+fitsSShort     :: RoundMode -> Dyadic -> Bool
+fitsSShort r d = withDyadicF d r mpfr_fits_sshort_p /= 0 
+
+-- TODO
+decompose   :: Dyadic -> (Integer, Int)
+decompose d = (getMantissa d, getExp d - ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb)
+
+-- basic arithmetic operations
 
 add           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
 add r p d1 d2 = fst $ add_ r p d1 d2 
-
-sub           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-sub r p d1 d2 = fst $ sub_ r p d1 d2
-
-mul           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-mul r p d1 d2 = fst $ mul_ r p d1 d2
-
-div           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-div r p d1 d2 = fst $ div_ r p d1 d2
-
-add_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-add_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_add
-
-sub_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-sub_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_sub
-
-mul_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-mul_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_mul
-
-div_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-div_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_div
-
-
-inverse :: Dyadic -> Dyadic
-inverse d = div Near (getPrec d) one d 
-
-----------------------------------------------------------------
-
--- basic arithmetic operations with mixed operands
 
 addw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
 addw r p d1 d = fst $ addw_ r p d1 d 
@@ -256,23 +453,8 @@ addw r p d1 d = fst $ addw_ r p d1 d
 addi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
 addi r p d1 d = fst $ addi_ r p d1 d 
 
-mulw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
-mulw r p d1 d = fst $ mulw_ r p d1 d 
-
-muli          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
-muli r p d1 d = fst $ muli_ r p d1 d 
-
-divw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
-divw r p d1 d = fst $ divw_ r p d1 d 
-
-divi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
-divi r p d1 d = fst $ divi_ r p d1 d 
-
-wdiv          :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic
-wdiv r p d d1 = fst $ wdiv_ r p d d1 
-
-idiv          :: RoundMode -> Precision -> Int -> Dyadic -> Dyadic
-idiv r p d d1 = fst $ idiv_ r p d d1 
+sub           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+sub r p d1 d2 = fst $ sub_ r p d1 d2
 
 subw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
 subw r p d1 d = fst $ subw_ r p d1 d 
@@ -286,143 +468,41 @@ wsub r p d d1 = fst $ wsub_ r p d d1
 isub          :: RoundMode -> Precision -> Int -> Dyadic -> Dyadic
 isub r p d d1 = fst $ isub_ r p d d1 
 
-addw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-addw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_add_ui
+mul           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+mul r p d1 d2 = fst $ mul_ r p d1 d2
 
-addi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-addi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_add_si
+mulw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+mulw r p d1 d = fst $ mulw_ r p d1 d 
 
-mulw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-mulw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_mul_ui
-
-muli_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-muli_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_mul_si
-
-divw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-divw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_div_ui
-
-divi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-divi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_div_si
-
-wdiv_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
-wdiv_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_div
-
-idiv_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
-idiv_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_div
-
-subw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-subw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_sub_ui
-
-subi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-subi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_sub_si
-
-wsub_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
-wsub_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_sub
-
-isub_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
-isub_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_sub
-
-----------------------------------------------------------
-
--- multiplication and division with 2 ^ x
-
-mul2w           :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
-mul2w r p d1 d2 = fst $ mul2w_ r p d1 d2
-
-mul2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
-mul2i r p d1 d2 = fst $ mul2i_ r p d1 d2
-
-div2w          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
-div2w r p d1 d2 = fst $ div2w_ r p d1 d2
-
-div2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
-div2i r p d1 d2 = fst $ div2i_ r p d1 d2
-
-mul2w_           :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-mul2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_mul_2ui
-
-mul2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-mul2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_mul_2si
-
-div2w_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-div2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_div_2ui
-
-div2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-div2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_div_2si
-
-----------------------------------------------------------
-
--- x * 2 ^ y
-int2i         :: RoundMode -> Precision -> Int -> Int -> Dyadic
-int2i r p i e = fst $ int2i_ r p i e
-
-int2w         :: RoundMode -> Precision -> Word -> Int -> Dyadic
-int2w r p i e = fst $ int2w_ r p i e
-
-int2i_         :: RoundMode -> Precision -> Int -> Int -> (Dyadic, Int)
-int2i_ r p i e = unsafePerformIO go
-                where go = do pt <- initS (fromIntegral p)
-                              r2 <- mpfr_set_si_2exp pt (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
-                              r1 <- newForeignPtr clear pt
-                              return (D r1, fromIntegral r2)
-
-int2w_         :: RoundMode -> Precision -> Word -> Int -> (Dyadic, Int)
-int2w_ r p i e = unsafePerformIO go
-                where go = do pt <- initS (fromIntegral p)
-                              r2 <- mpfr_set_ui_2exp pt (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
-                              r1 <- newForeignPtr clear pt
-                              return (D r1, fromIntegral r2)
-
-----------------------------------------------------------
-
-
--- Return d1 * d2 + d3
-fma              :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> Dyadic
-fma r p d1 d2 d3 = fst $ fma_ r p d1 d2 d3
-
--- Return d1 * d2 - d3 
-fms              :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> Dyadic
-fms r p d1 d2 d3 = fst $ fms_ r p d1 d2 d3
-
-
-fma_                          :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> (Dyadic, Int)
-fma_ r p (D d1) (D d2) (D d3) = unsafePerformIO go
-                               where go = withForeignPtr d1 $ \p1 -> do {
-                                            withForeignPtr d2 $ \p2 -> do {
-                                              withForeignPtr d3 $ \p3 -> do {
-                                                pt <- initS (fromIntegral p) ;
-                                                r2 <- mpfr_fma pt p1 p2 p3 ((fromIntegral . fromEnum) r) ;
-                                                r1 <- newForeignPtr clear pt ;
-                                                return (D r1, fromIntegral r2)}}}
-
-
-fms_                          :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> (Dyadic, Int)
-fms_ r p (D d1) (D d2) (D d3) = unsafePerformIO go
-                               where go = withForeignPtr d1 $ \p1 -> do {
-                                            withForeignPtr d2 $ \p2 -> do {
-                                              withForeignPtr d3 $ \p3 -> do {
-                                                pt <- initS (fromIntegral p) ;
-                                                r2 <- mpfr_fms pt p1 p2 p3 ((fromIntegral . fromEnum) r) ;
-                                                r1 <- newForeignPtr clear pt ;
-                                                return (D r1, fromIntegral r2)}}}
-
-nextBelow     :: Dyadic -> Dyadic
-nextBelow d'@(D d) = D (unsafePerformIO go)
-                     where go = withForeignPtr d $ \p1 -> do {
-                                  pt <- initS (fromIntegral (getPrec d')) ;
-                                  _ <- mpfr_set pt p1 ((fromIntegral . fromEnum) Near) ;
-                                  mpfr_nextbelow pt ;
-                                  newForeignPtr clear pt }
-          
-
-----------------------------------------------------------
--- powers
+muli          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+muli r p d1 d = fst $ muli_ r p d1 d 
 
 sqr       :: RoundMode -> Precision -> Dyadic -> Dyadic 
 sqr r p d = fst $ sqr_ r p d
 
+div           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+div r p d1 d2 = fst $ div_ r p d1 d2
+
+divw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+divw r p d1 d = fst $ divw_ r p d1 d 
+
+divi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+divi r p d1 d = fst $ divi_ r p d1 d 
+
+wdiv          :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic
+wdiv r p d d1 = fst $ wdiv_ r p d d1 
+
+idiv          :: RoundMode -> Precision -> Int -> Dyadic -> Dyadic
+idiv r p d d1 = fst $ idiv_ r p d d1 
+
 sqrt       :: RoundMode -> Precision -> Dyadic -> Dyadic
 sqrt r p d = fst $ sqrt_ r p d
+
+sqrtw       :: RoundMode -> Precision -> Word -> Dyadic
+sqrtw r p d = fst $ sqrtw_ r p d
+
+cbrt       :: RoundMode -> Precision -> Dyadic -> Dyadic
+cbrt r p d = fst $ cbrt_ r p d
 
 root         :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
 root r p d n = fst $ root_ r p d n
@@ -442,12 +522,87 @@ wpoww r p d1 d2 = fst $ wpoww_ r p d1 d2
 wpow           :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic 
 wpow r p d1 d2 = fst $ wpow_ r p d1 d2
 
+neg       :: RoundMode -> Precision -> Dyadic -> Dyadic
+neg r p d = fst $ neg_ r p d
+
+absD      :: RoundMode -> Precision -> Dyadic -> Dyadic 
+absD r p d = fst $ absD_ r p d
+
+dim           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+dim r p d1 d2 = fst $ dim_ r p d1 d2 
+
+mul2w           :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+mul2w r p d1 d2 = fst $ mul2w_ r p d1 d2
+
+mul2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+mul2i r p d1 d2 = fst $ mul2i_ r p d1 d2
+
+div2w          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+div2w r p d1 d2 = fst $ div2w_ r p d1 d2
+
+div2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+div2i r p d1 d2 = fst $ div2i_ r p d1 d2
+
+add_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
+add_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_add
+
+addw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+addw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_add_ui
+
+addi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+addi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_add_si
+
+sub_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
+sub_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_sub
+
+subw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+subw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_sub_ui
+
+subi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+subi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_sub_si
+
+wsub_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
+wsub_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_sub
+
+isub_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
+isub_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_sub
+
+mul_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
+mul_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_mul
+
+mulw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+mulw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_mul_ui
+
+muli_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+muli_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_mul_si
+
 sqr_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
 sqr_ r p d = withDyadic r p d mpfr_sqr
+
+div_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
+div_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_div
+
+divw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+divw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_div_ui
+
+divi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+divi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_div_si
+
+wdiv_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
+wdiv_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_div
+
+idiv_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
+idiv_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_div
 
 sqrt_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
 sqrt_ r p d = withDyadic r p d mpfr_sqrt
  
+sqrtw_       :: RoundMode -> Precision -> Word -> (Dyadic, Int)
+sqrtw_ r p d = withDyadicUI r p d mpfr_sqrt_ui
+
+cbrt_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+cbrt_ r p d = withDyadic r p d mpfr_cbrt
+
 root_        :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
 root_ r p d n = withDyadicBAui r p d (fromIntegral n) mpfr_root
 
@@ -462,13 +617,88 @@ powi_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_pow_si
 
 wpoww_          :: RoundMode -> Precision -> Word -> Word -> (Dyadic , Int)
 wpoww_ r p d1 d2 = unsafePerformIO go
-                   where go = do pt <- initS (fromIntegral p)
-                                 r2 <- mpfr_ui_pow_ui pt (fromIntegral d1) (fromIntegral d2) ((fromIntegral . fromEnum) r)
-                                 r1 <-newForeignPtr clear pt
-                                 return (D r1, fromIntegral r2)
-
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do 
+                    r2 <- mpfr_ui_pow_ui p1 (fromIntegral d1) (fromIntegral d2) ((fromIntegral . fromEnum) r)
+                    r1 <- peekP p1 fp
+                    return (r1, fromIntegral r2)
+        
 wpow_           :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic , Int)
 wpow_ r p d1 d2 = withDyadicBAiu r p (fromIntegral d1) d2 mpfr_ui_pow
+
+neg_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+neg_ r p d = withDyadic r p d mpfr_neg
+
+absD_      :: RoundMode -> Precision -> Dyadic -> (Dyadic , Int)
+absD_ r p d = withDyadic r p d mpfr_abs
+
+dim_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
+dim_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_dim
+
+mul2w_           :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+mul2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_mul_2ui
+
+mul2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+mul2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_mul_2si
+
+div2w_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
+div2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_div_2ui
+
+div2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
+div2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_div_2si
+
+-- Return d1 * d2 + d3
+fma              :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> Dyadic
+fma r p d1 d2 d3 = fst $ fma_ r p d1 d2 d3
+
+-- Return d1 * d2 - d3 
+fms              :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> Dyadic
+fms r p d1 d2 d3 = fst $ fms_ r p d1 d2 d3
+
+
+fma_                 :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> (Dyadic, Int)
+fma_ r p mp1 mp2 mp3 = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do 
+                      with mp2 $ \p3 -> do 
+                        with mp3 $ \p4 -> do 
+                          r2 <- mpfr_fma p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
+                          r1 <- peekP p1 fp 
+                          return (r1, fromIntegral r2)
+
+
+fms_                 :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic -> (Dyadic, Int)
+fms_ r p mp1 mp2 mp3 = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with mp1 $ \p2 -> do 
+                      with mp2 $ \p3 -> do 
+                        with mp3 $ \p4 -> do 
+                          r2 <- mpfr_fms p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
+                          r1 <- peekP p1 fp
+                          return (r1, fromIntegral r2)
+
+nextBelow     :: Dyadic -> Dyadic
+nextBelow mp1 = unsafePerformIO go
+    where go = do let p = fromIntegral (getPrec mp1)
+                  ls <- mpfr_custom_get_size p
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP p 0 0 fp
+                  with dummy $ \p1 -> do
+                      with mp1 $ \p2 -> do 
+                        _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
+                        mpfr_nextbelow p1 
+                        peekP p1 fp
+
+----------------------------------------------------------
+-- powers
 
 -----------------------------------------------------------
 
@@ -530,24 +760,6 @@ tanh_ r p d = withDyadic r p d mpfr_tanh
 
 ------------------------------------------------------------
 
-neg       :: RoundMode -> Precision -> Dyadic -> Dyadic
-neg r p d = fst $ neg_ r p d
-
-absD      :: RoundMode -> Precision -> Dyadic -> Dyadic 
-absD r p d = fst $ absD_ r p d
-
-dim           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-dim r p d1 d2 = fst $ dim_ r p d1 d2 
-
-neg_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-neg_ r p d = withDyadic r p d mpfr_neg
-
-absD_      :: RoundMode -> Precision -> Dyadic -> (Dyadic , Int)
-absD_ r p d = withDyadic r p d mpfr_abs
-
-dim_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-dim_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_dim
-
 --------------------------------------------------------
 
 --  comparison functions
@@ -605,34 +817,6 @@ sgn d = case compare zero d of
 
 --conversion from dyadics to basic haskell types
 
-dyadicToDouble         :: RoundMode -> Dyadic -> Double
-dyadicToDouble r (D d) = (realToFrac . unsafePerformIO) go
-                         where go = withForeignPtr d $ \p -> mpfr_get_d p ((fromIntegral . fromEnum) r)
-
-dyadicToWord         :: RoundMode -> Dyadic -> Word
-dyadicToWord r (D d) = (fromIntegral . unsafePerformIO) go
-                       where go = withForeignPtr d $ \p -> mpfr_get_ui p ((fromIntegral . fromEnum) r)
-
-dyadicToInt     :: RoundMode -> Dyadic -> Int
-dyadicToInt r (D d) = (fromIntegral . unsafePerformIO) go
-                       where go = withForeignPtr d $ \p -> mpfr_get_si p ((fromIntegral . fromEnum) r)
-
-dyadicToString         :: RoundMode -> Word -- ^ number of significant digits 
-                                    -> Word -- ^ base 
-                                    -> Dyadic -> (String, Int)
-dyadicToString r n b (D d) = unsafePerformIO go 
-                             where go = withForeignPtr d $ \p1 -> do {
-                                          alloca $ \p2 -> do {
-                                            withCString (replicate (fromIntegral (n + 2)) '0') $ \p3 -> do {
-                                             _ <- mpfr_get_str p3 p2 (fromIntegral b) (fromIntegral n) p1 ((fromIntegral . fromEnum) r) ;
-                                             r1 <- peekCString p3 ;
-                                             r2 <- peek p2 ;
-                                             return (r1, fromIntegral r2) }}}
-
-decompose   :: Dyadic -> (Integer, Int)
-decompose d = (getMantissa d, getExp d - ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb)
-
-
 toStringExp       :: Word -> Dyadic -> String
 toStringExp dec d = s ++ case e > 0 of
                            True  -> case floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
@@ -665,19 +849,6 @@ toString dec d = s ++ case compare 0 e of
                                     _   -> ("" , str)
                         backtrim = reverse . dropWhile (== '0') . reverse 
 
---asignment functions                              
-
-set           :: RoundMode -> Precision -> Dyadic -> Dyadic
-set r p d = fst $ set_ r p d
-
-
-set_           :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-set_ r p (D d) = unsafePerformIO go
-                    where go = withForeignPtr d $ \p1 -> do {
-                                 pt <- initS (fromIntegral p) ;
-                                 r2 <- mpfr_set pt p1 ((fromIntegral . fromEnum) r) ;
-                                 r1 <- newForeignPtr clear pt ;
-                                 return (D r1, fromIntegral r2)}
  
 ------------------------------------
 -- mpfr constants
@@ -708,36 +879,6 @@ catalan_ r p = withDyadicC r p mpfr_const_catalan
 ----------------------------------------------------------
 -- conversion from basic haskell types to dyadics
 
-fromDouble       :: RoundMode -> Precision -> Double -> Dyadic
-fromDouble r p d = fst $ fromDouble_ r p d
-
-fromInt       :: RoundMode -> Precision -> Int -> Dyadic
-fromInt r p d = fst $ fromInt_ r p d
-
-fromWord       :: RoundMode -> Precision -> Word -> Dyadic
-fromWord r p d = fst $ fromWord_ r p d
-
-fromDouble_       :: RoundMode -> Precision -> Double -> (Dyadic, Int)
-fromDouble_ r p d = unsafePerformIO $ do 
-                           p1 <- initS (fromIntegral p)
-                           r2 <- mpfr_set_d p1 (realToFrac d) ((fromIntegral . fromEnum) r)
-                           r1 <- newForeignPtr clear p1
-                           return (D r1, fromIntegral r2)
-
-fromInt_       :: RoundMode -> Precision -> Int -> (Dyadic, Int)
-fromInt_ r p d = unsafePerformIO $ do 
-                        p1 <- initS (fromIntegral p)
-                        r2 <- mpfr_set_si p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
-                        r1 <- newForeignPtr clear p1
-                        return (D r1, fromIntegral r2)
-
-
-fromWord_       :: RoundMode -> Precision -> Word -> (Dyadic, Int)
-fromWord_ r p d = unsafePerformIO $ do 
-                         p1 <- initS (fromIntegral p)
-                         r2 <- mpfr_set_ui p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
-                         r1 <- newForeignPtr clear p1
-                         return (D r1, fromIntegral r2)
 
 fromIntegerA       :: RoundMode -> Precision -> Integer -> Dyadic
 fromIntegerA r p d = stringToDyadic r p 10 (show d)
@@ -762,9 +903,9 @@ getMantissa   :: Dyadic -> Integer
 getMantissa d = if d < zero then -h else h
                where (h, _) = foldl (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
 
-getExp       :: Dyadic -> Int
-getExp (D d) = (fromIntegral . unsafePerformIO) go
-                 where go = do withForeignPtr d $ \p1 -> 
+getExp   :: Dyadic -> Int
+getExp d = (fromIntegral . unsafePerformIO) go
+                 where go = do with d $ \p1 -> 
                                 mpfr_custom_get_exp p1
 
 --------------------------------------------------------
