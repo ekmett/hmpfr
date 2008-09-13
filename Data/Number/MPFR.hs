@@ -222,13 +222,27 @@ withDyadicUI r p d f = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
 
+withDyadicR       :: Precision -> Dyadic
+                     -> (Ptr MPFR_T -> Ptr MPFR_T -> IO CInt)
+                     -> (Dyadic, Int)
+withDyadicR r d f = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP (fromIntegral p) 0 0 fp
+                  with dummy $ \p1 -> do
+                    with d $ \p2 -> do
+                      r2 <- f p1 p2
+                      r1 <- peekP p1 fp
+                      return (r1, fromIntegral r2)
+                        
+
 checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
 getMantissa'     :: Dyadic -> [Limb]
 getMantissa' (MP p _ _ p1) = unsafePerformIO go
     where go = do withForeignPtr p1 $ \pt -> do 
-                    arr <- peekArray (ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
+                    arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
                     return arr 
 
 {- TODO: this is inefficient 
@@ -237,7 +251,7 @@ binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
 -}
 -- TODO
 binprec   :: Integer -> Precision
-binprec d = floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
+binprec d = Prelude.floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
 
 
 --------------------------------------------------------------------
@@ -440,7 +454,7 @@ fitsSShort r d = withDyadicF d r mpfr_fits_sshort_p /= 0
 
 -- TODO
 decompose   :: Dyadic -> (Integer, Int)
-decompose d = (getMantissa d, getExp d - ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb)
+decompose d = (getMantissa d, getExp d - Prelude.ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb)
 
 -- basic arithmetic operations
 
@@ -1100,6 +1114,122 @@ freeCache :: IO ()
 freeCache = mpfr_free_cache
 
 -- TODO mpfr_sum
+-----------------------------------------------------------------------------------------
+-- integer related functions
+rint       :: RoundMode -> Precision -> Dyadic -> Dyadic
+rint r p d = fst $ rint_ r p d
+
+ceil     :: Precision -> Dyadic -> Dyadic
+ceil p d = fst $ ceil_ p d
+
+floor     :: Precision -> Dyadic -> Dyadic
+floor p d = fst $ floor_ p d
+
+round     :: Precision -> Dyadic -> Dyadic
+round p d = fst $ round_ p d
+
+trunc     :: Precision -> Dyadic -> Dyadic
+trunc p d = fst $ trunc_ p d
+
+rintCeil :: RoundMode -> Precision -> Dyadic -> Dyadic
+rintCeil r p d = fst $ rintCeil_ r p d
+
+rintFloor :: RoundMode -> Precision -> Dyadic -> Dyadic
+rintFloor r p d = fst $ rintFloor_ r p d
+
+rintRound :: RoundMode -> Precision -> Dyadic -> Dyadic
+rintRound r p d = fst $ rintRound_ r p d
+
+rintTrunc :: RoundMode -> Precision -> Dyadic -> Dyadic
+rintTrunc r p d = fst $ rintTrunc_ r p d
+
+frac :: RoundMode -> Precision -> Dyadic -> Dyadic
+frac r p d = fst $ frac_ r p d
+
+remainder          :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+remainder r p d d' = fst $ remainder_ r p d d'
+
+remquo          :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
+remquo r p d d' = case remquo_ r p d d' of
+                     (a, b, _) -> (a, b)
+
+rint_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+rint_ r p d = withDyadic r p d mpfr_rint
+
+ceil_     :: Precision -> Dyadic -> (Dyadic, Int)
+ceil_ p d = withDyadicR p d mpfr_ceil
+
+floor_     :: Precision -> Dyadic -> (Dyadic, Int)
+floor_ p d = withDyadicR p d mpfr_floor
+
+round_     :: Precision -> Dyadic -> (Dyadic, Int)
+round_ p d = withDyadicR p d mpfr_round
+
+trunc_     :: Precision -> Dyadic -> (Dyadic, Int)
+trunc_ p d = withDyadicR p d mpfr_trunc
+
+rintCeil_ :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+rintCeil_ r p d = withDyadic r p d mpfr_rint_ceil
+
+rintFloor_ :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+rintFloor_ r p d = withDyadic r p d mpfr_rint_floor
+
+rintRound_ :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+rintRound_ r p d = withDyadic r p d mpfr_rint_round
+
+rintTrunc_ :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+rintTrunc_ r p d = withDyadic r p d mpfr_rint_trunc
+
+frac_ :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+frac_ r p d = withDyadic r p d mpfr_frac
+
+remainder_          :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
+remainder_ r p d d' = withDyadicBA r p d d' mpfr_remainder
+
+remquo_          :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int, Int)
+remquo_ r p d d' = unsafePerformIO go
+    where go = do ls <- mpfr_custom_get_size p
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP p 0 0 fp
+                  with dummy $ \p1 -> do 
+                    with d $ \p2 -> do
+                      with d' $ \p3 -> do
+                        alloca $ \p4 -> do
+                          r3 <- mpfr_remquo p1 p4 p2 p3 ((fromIntegral . fromEnum) r)
+                          r1 <- peekP p1 fp
+                          r2 <- peek p4
+                          return (r1, fromIntegral r2, fromIntegral r3)
+
+isInteger   :: Dyadic -> Bool
+isInteger d = withDyadicB d mpfr_integer_p /= 0
+
+--------------------------------------------------------------------------------
+-- mischellaneous functions
+nextToward         :: Dyadic -> Dyadic -> Dyadic
+nextToward mp1 mp2 = unsafePerformIO go
+    where go = do let p = fromIntegral (getPrec mp1)
+                  ls <- mpfr_custom_get_size p
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP p 0 0 fp
+                  with dummy $ \p1 -> do
+                      with mp1 $ \p2 -> do 
+                        with mp2 $ \p3 -> do
+                          _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
+                          mpfr_nexttoward p1 p3 
+                          peekP p1 fp
+
+
+nextAbove     :: Dyadic -> Dyadic
+nextAbove mp1 = unsafePerformIO go
+    where go = do let p = fromIntegral (getPrec mp1)
+                  ls <- mpfr_custom_get_size p
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP p 0 0 fp
+                  with dummy $ \p1 -> do
+                      with mp1 $ \p2 -> do 
+                        _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
+                        mpfr_nextabove p1 
+                        peekP p1 fp
 
 nextBelow     :: Dyadic -> Dyadic
 nextBelow mp1 = unsafePerformIO go
@@ -1112,6 +1242,45 @@ nextBelow mp1 = unsafePerformIO go
                         _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
                         mpfr_nextbelow p1 
                         peekP p1 fp
+
+maxD           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+maxD r p d1 d2 = fst $ maxD_ r p d1 d2
+
+minD           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+minD r p d1 d2 = fst $ minD_ r p d1 d2
+
+random2       :: Precision -> MpSize -> Exp -> IO Dyadic
+random2 p m e = do let p = fromIntegral (getPrec mp1)
+                   ls <- mpfr_custom_get_size p
+                   fp <- mallocForeignPtrBytes (fromIntegral ls)
+                   let dummy = MP p 0 0 fp
+                   with dummy $ \p1 -> do
+                     mpfr_random2 p1 m e
+                     peekP p1 fp
+
+getExp   :: Dyadic -> Exp
+getExp d = (fromIntegral . unsafePerformIO) go
+                 where go = do with d $ \p1 -> mpfr_custom_get_exp p1
+
+setExp     :: Dyadic -> Exp -> Dyadic
+setExp d e = unsafePerformIO go
+    where go = do let p = fromIntegral (getPrec mp1)
+                  ls <- mpfr_custom_get_size p
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  let dummy = MP p 0 0 fp
+                  with dummy $ \p1 -> do
+                    with d $ \p2 -> do mpfr_set p1 p2
+                      mpfr_set_exp p1 e
+                      peekP p1 fp
+
+signbit   :: Dyadic -> Bool
+signbit d = withDyadicB d mpfr_signbit
+
+maxD_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
+maxD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_max
+
+minD_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
+minD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_min
 
 ----------------------------------------------------------
 -- powers
@@ -1126,18 +1295,6 @@ nextBelow mp1 = unsafePerformIO go
 
 --  comparison functions
 
-maxD           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-maxD r p d1 d2 = fst $ maxD_ r p d1 d2
-
-minD           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
-minD r p d1 d2 = fst $ minD_ r p d1 d2
-
-maxD_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-maxD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_max
-
-minD_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-minD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_min
-
 sgn   :: Dyadic -> Int 
 sgn d = case compare zero d of
           LT -> 1
@@ -1148,7 +1305,7 @@ sgn d = case compare zero d of
 
 toStringExp       :: Word -> Dyadic -> String
 toStringExp dec d = s ++ case e > 0 of
-                           True  -> case floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
+                           True  -> case Prelude.floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
                                       False -> take e ss ++ let bt = backtrim (drop e ss) in if null bt then "" else "." ++ bt
                                       True  -> head ss : "." ++ let bt = (backtrim . tail) ss in if null bt then "0"
                                                                                                    else bt ++ "e" ++ show (pred e)
@@ -1204,15 +1361,11 @@ getPrec d = fromIntegral (withDyadicP d mpfr_get_prec)
 
 -- | getMantissa and getExp return values such that
 --
--- > d = getMantissa d * 2^(getExp d - ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
+-- > d = getMantissa d * 2^(getExp d - Prelude.ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
 getMantissa   :: Dyadic -> Integer
 getMantissa d = if d < zero then -h else h
                where (h, _) = foldl (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
 
-getExp   :: Dyadic -> Int
-getExp d = (fromIntegral . unsafePerformIO) go
-                 where go = do with d $ \p1 -> 
-                                mpfr_custom_get_exp p1
 
 --------------------------------------------------------
 
