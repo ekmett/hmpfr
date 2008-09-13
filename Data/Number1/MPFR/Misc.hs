@@ -101,3 +101,6 @@ one = fromWord Near minPrec 1
 
 zero :: Dyadic
 zero = fromWord Near minPrec 0
+
+maxPrec      :: Dyadic -> Dyadic -> Precision
+maxPrec d d' = max (getPrec d) (getPrec d')
