@@ -1,11 +1,21 @@
 name:                hmpfr
 version:             0.0
-synopsis:            <Project description>
-description:         <Project description>
-category:            Data
+synopsis:            Haskell binding to MPFR library
+description:         Haskell binding to MPFR library
+category:            Data, Math
 license:             BSD3
 license-file:        LICENSE
+Stability:	     experimental
 author:              Aleš Bizjak
 maintainer:          ales.bizjak@student.fmf.uni-lj.si
 build-Depends:       base
-ghc-options:         
+
+build-type:	     Simple
+build-tools: 	     hsc2hs
+GHC-options:	     -fvia-C -Wall
+include-dirs:	     cbits
+includes:	     mpfr.h chsmpfr.h
+install-includes:    chsmpfr.h
+c-sources:	     cbits/chsmpfr.c
+
+extra-libraries:     mpfr
