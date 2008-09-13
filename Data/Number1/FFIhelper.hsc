@@ -324,10 +324,10 @@ foreign import ccall unsafe "mpfr_cmp_d"
 --TODO cmp_ld, cmp_z, cmp_q, cmp_f
 
 foreign import ccall unsafe "mpfr_cmp_ui_2exp"
-        mpfr_cmp_ui_2exp :: Ptr MPFR_T -> CULong -> CInt -> IO CInt
+        mpfr_cmp_ui_2exp :: Ptr MPFR_T -> CULong -> Exp -> IO CInt
 
 foreign import ccall unsafe "mpfr_cmp_si_2exp"
-        mpfr_cmp_si_2exp :: Ptr MPFR_T -> CLong -> CInt -> IO CInt
+        mpfr_cmp_si_2exp :: Ptr MPFR_T -> CLong -> Exp -> IO CInt
 
 foreign import ccall unsafe "mpfr_cmpabs"
         mpfr_cmpabs :: Ptr MPFR_T -> Ptr MPFR_T -> IO CInt
