@@ -1,9 +1,13 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Misc where
 
 import Data.Number1.MPFR.Internal
+
+import Data.Number1.MPFR.Assignment
+
+import Data.Number1.MPFR.Comparison
 
 nextToward         :: Dyadic -> Dyadic -> Dyadic
 nextToward mp1 mp2 = unsafePerformIO go
@@ -81,3 +85,19 @@ maxD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_max
 
 minD_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
 minD_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_min
+
+getPrec   :: Dyadic -> Precision
+getPrec d = fromIntegral (withDyadicP d mpfr_get_prec)
+
+-- | getMantissa and getExp return values such that
+--
+-- > d = getMantissa d * 2^(getExp d - Prelude.ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
+getMantissa   :: Dyadic -> Integer
+getMantissa d = if less d zero then -h else h
+               where (h, _) = foldl (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
+
+one :: Dyadic
+one = fromWord Near minPrec 1
+
+zero :: Dyadic
+zero = fromWord Near minPrec 0

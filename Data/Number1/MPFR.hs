@@ -49,41 +49,6 @@ module Data.Number1.MPFR (
 
 
 --conversion from dyadics to basic haskell types
-
-toStringExp       :: Word -> Dyadic -> String
-toStringExp dec d = s ++ case e > 0 of
-                           True  -> case Prelude.floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
-                                      False -> take e ss ++ let bt = backtrim (drop e ss) in if null bt then "" else "." ++ bt
-                                      True  -> head ss : "." ++ let bt = (backtrim . tail) ss in if null bt then "0"
-                                                                                                   else bt ++ "e" ++ show (pred e)
-                           False -> head ss : "." ++ (let bt = (backtrim . tail) ss in
-                                                     if null bt then "0" 
-                                                       else bt )
-                                                  ++ "e" ++ show (pred e)
-                    where (str, e') = dyadicToString Near n 10 d
-                          e = fromIntegral e'
-                          n        = max dec 5
-                          (s, ss) = case head str of
-                                      '-' -> ("-", tail str)
-                                      _   -> ("" , str)
-                          backtrim = reverse . dropWhile (== '0') . reverse 
-
-toString       :: Word -> Dyadic -> String
-toString dec d = s ++ case compare 0 e of
-                         LT -> take e ss ++ (let bt = all (== '0') (drop e ss) in if bt then "" else '.' : (drop e ss))
-                               ++ (if fromIntegral n - e < 0 then "e" ++ show (e - fromIntegral n) else "")
-                         GT -> let ee = fromIntegral dec + e in 
-                               if ee <= 0 then "0" else 
-                                   head ss : "." ++ (backtrim . tail . take ee) ss ++ "e" ++ show (pred e)
-                         EQ -> "0." ++ let bt = all (== '0') ss in if bt then "0" else ss
-                  where (str, e') = dyadicToString Near n 10 d
-                        n        = max dec 5
-                        e = fromIntegral e'
-                        (s, ss) = case head str of
-                                    '-' -> ("-", tail str)
-                                    _   -> ("" , str)
-                        backtrim = reverse . dropWhile (== '0') . reverse 
-
  
 ------------------------------------
 -- mpfr constants
@@ -91,15 +56,6 @@ toString dec d = s ++ case compare 0 e of
 ----------------------------------------------------------
 -- conversion from basic haskell types to dyadics
 
-
-fromIntegerA       :: RoundMode -> Precision -> Integer -> Dyadic
-fromIntegerA r p d = stringToDyadic r p 10 (show d)
-
-compose             :: RoundMode -> Precision -> (Integer, Int) -> Dyadic 
-compose r p (i, ii) = div2i r p (fromIntegerA r p i) ii
-
-fromString       :: String -> Precision -> Word -> Dyadic
-fromString s p b = stringToDyadic Near p b s
 
 ---------------------------------------------------------
 
@@ -119,14 +75,6 @@ getMantissa d = if d < zero then -h else h
 --------------------------------------------------------
 
 -- some constants
-minPrec :: Precision
-minPrec = 32
-
-one ::  Dyadic              
-one = fromWord Near minPrec 1
-
-zero :: Dyadic              
-zero = fromWord Near minPrec 0
 
 -- instances
 

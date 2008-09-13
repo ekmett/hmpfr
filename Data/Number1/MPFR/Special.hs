@@ -1,5 +1,5 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Special where
 

@@ -1,9 +1,11 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Assignment where
 
 import Data.Number1.MPFR.Internal
+
+import Data.Number1.MPFR.Arithmetic
 
 set           :: RoundMode -> Precision -> Dyadic -> Dyadic
 set r p d = fst $ set_ r p d
@@ -108,7 +110,7 @@ strtofr         :: RoundMode -> Precision
                 -> Word -- ^ base
                 -> String -> (Dyadic, String)
 strtofr r p b d = case strtofr_ r p b d of
-                    (a, b, _) -> (a,b)
+                    (a, b', _) -> (a,b')
 
 strtofr_         :: RoundMode -> Precision
                    -> Word -- ^ base
@@ -120,7 +122,7 @@ strtofr_ r p b d = unsafePerformIO go
                   with dummy $ \p1 -> do 
                     withCString d $ \p2 -> do
                       alloca $ \p3 -> do
-                        r3 <- mpfr_strtofr p1 p2 p3 (fromIntegral b) ((fromIntegral . fromEnum) p)
+                        r3 <- mpfr_strtofr p1 p2 p3 (fromIntegral b) ((fromIntegral . fromEnum) r)
                         p3' <- peek p3
                         r2 <- peekCString p3'
                         r1 <- peekP p1 fp

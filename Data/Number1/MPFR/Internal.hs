@@ -1,20 +1,20 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Internal (
-       Data.Number1.FFIhelper, 
-       withDyadicsBA, withDyadicBAui, withDyadciBAsi, withDyadicBAis, 
+       module FFIhelper, 
+       withDyadicsBA, withDyadicBAui, withDyadicBAiu, withDyadicBAsi, withDyadicBAis, 
        withDyadicB, withDyadicP, withDyadic, withDyadicBB, withDyadicC, 
        withDyadicF, withDyadicUI, withDyadicR, checkPrec, getMantissa', binprec,
        unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
        withForeignPtr, CInt, CLong, CULong, withCString, peekCString, alloca,
-       peekArray, shiftL, Word
+       peekArray, shiftL, Word, minPrec,
        
-       Dyadic, MPFR_T, Precision
+       Dyadic, Precision
 )
 where
 
-import Data.Number1.FFIhelper
+import Data.Number1.MPFR.FFIhelper as FFIhelper
 
 import Foreign.C(CInt, CLong, CULong, withCString, peekCString)
 import Foreign.Marshal(alloca, peekArray)
@@ -195,3 +195,11 @@ binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
 binprec   :: Integer -> Precision
 binprec d = Prelude.floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
 
+--one ::  Dyadic              
+--one = fromWord Near minPrec 1
+
+--zero :: Dyadic              
+--ggzero = fromWord Near minPrec 0
+
+minPrec :: Precision
+minPrec = 32

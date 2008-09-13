@@ -1,9 +1,10 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Conversion where
 
 import Data.Number1.MPFR.Internal
+import Data.Number1.MPFR.Misc
 
 toDouble       :: RoundMode -> Dyadic -> Double
 toDouble r mp1 = (realToFrac . unsafePerformIO) go
@@ -95,4 +96,3 @@ toString dec d = s ++ case compare 0 e of
                                     '-' -> ("-", tail str)
                                     _   -> ("" , str)
                         backtrim = reverse . dropWhile (== '0') . reverse 
-

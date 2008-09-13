@@ -2,7 +2,7 @@
 #include <chsmpfr.h>
 #include <mpfr.h>
 
-module Data.Number1.FFIhelper where
+module Data.Number1.MPFR.FFIhelper where
 
 import Data.Word
 

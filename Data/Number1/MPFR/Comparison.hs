@@ -1,9 +1,11 @@
 {-# INCLUDE <mpfr.h> #-}
-{-# INCLUDE <chsmpfr.h #-}
+{-# INCLUDE <chsmpfr.h> #-}
 
 module Data.Number1.MPFR.Comparison where
 
 import Data.Number1.MPFR.Internal
+
+import Prelude hiding (isNaN)
 
 cmp         :: Dyadic -> Dyadic -> Maybe Ordering
 cmp mp1 mp2 = if isNaN mp1 || isNaN mp2 then Nothing 
