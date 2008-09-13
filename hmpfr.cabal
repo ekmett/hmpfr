@@ -10,8 +10,15 @@ author:              Aleš Bizjak
 maintainer:          ales.bizjak@student.fmf.uni-lj.si
 build-Depends:       base
 
-Exposed-modules:     Data.Number1.MPFR
-Other-modules:       Data.Number1.FFIhelper
+Exposed-modules:     
+Other-modules:       Data.Number1.MPFR.FFIhelper
+		     Data.Number1.MPFR.Conversion
+		     Data.Number1.MPFR.Assignment
+		     Data.Number1.MPFR.Internal
+		     Data.Number1.MPFR.Misc
+		     Data.Number1.MPFR.Special
+		     Data.Number1.MPFR.Comparison
+		     Data.Number1.MPFR.Arithmetic
 
 build-type:          Simple
 build-tools:         hsc2hs
