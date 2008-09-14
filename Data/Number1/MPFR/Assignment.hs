@@ -7,10 +7,10 @@ import Data.Number1.MPFR.Internal
 
 import Data.Number1.MPFR.Arithmetic
 
-set           :: RoundMode -> Precision -> Dyadic -> Dyadic
+set           :: RoundMode -> Precision -> MPFR -> MPFR
 set r p d = fst $ set_ r p d
 
-set_         :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
+set_         :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 set_ r p mp1 = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -21,16 +21,16 @@ set_ r p mp1 = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
 
-fromWord       :: RoundMode -> Precision -> Word -> Dyadic
+fromWord       :: RoundMode -> Precision -> Word -> MPFR
 fromWord r p d = fst $ fromWord_ r p d
 
-fromInt       :: RoundMode -> Precision -> Int -> Dyadic
+fromInt       :: RoundMode -> Precision -> Int -> MPFR
 fromInt r p d = fst $ fromInt_ r p d
 
-fromDouble       :: RoundMode -> Precision -> Double -> Dyadic
+fromDouble       :: RoundMode -> Precision -> Double -> MPFR
 fromDouble r p d = fst $ fromDouble_ r p d
 
-fromWord_       :: RoundMode -> Precision -> Word -> (Dyadic, Int)
+fromWord_       :: RoundMode -> Precision -> Word -> (MPFR, Int)
 fromWord_ r p d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -40,7 +40,7 @@ fromWord_ r p d = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)                
 
-fromInt_       :: RoundMode -> Precision -> Int -> (Dyadic, Int)
+fromInt_       :: RoundMode -> Precision -> Int -> (MPFR, Int)
 fromInt_ r p d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -50,7 +50,7 @@ fromInt_ r p d = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
 
-fromDouble_       :: RoundMode -> Precision -> Double -> (Dyadic, Int)
+fromDouble_       :: RoundMode -> Precision -> Double -> (MPFR, Int)
 fromDouble_ r p d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -61,13 +61,13 @@ fromDouble_ r p d = unsafePerformIO go
                     return (r1, fromIntegral r2)
   
 -- x * 2 ^ y
-int2w         :: RoundMode -> Precision -> Word -> Int -> Dyadic
+int2w         :: RoundMode -> Precision -> Word -> Int -> MPFR
 int2w r p i e = fst $ int2w_ r p i e
 
-int2i         :: RoundMode -> Precision -> Int -> Int -> Dyadic
+int2i         :: RoundMode -> Precision -> Int -> Int -> MPFR
 int2i r p i e = fst $ int2i_ r p i e
 
-int2w_         :: RoundMode -> Precision -> Word -> Int -> (Dyadic, Int)
+int2w_         :: RoundMode -> Precision -> Word -> Int -> (MPFR, Int)
 int2w_ r p i e = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -77,7 +77,7 @@ int2w_ r p i e = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
 
-int2i_         :: RoundMode -> Precision -> Int -> Int -> (Dyadic, Int)
+int2i_         :: RoundMode -> Precision -> Int -> Int -> (MPFR, Int)
 int2i_ r p i e = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -88,15 +88,15 @@ int2i_ r p i e = unsafePerformIO go
                     return (r1, fromIntegral r2)
 
 
-stringToDyadic         :: RoundMode -> Precision 
+stringToMPFR         :: RoundMode -> Precision 
                        -> Word -- ^ Base 
-                       -> String -> Dyadic
-stringToDyadic r p b d = fst $ stringToDyadic_ r p b d
+                       -> String -> MPFR
+stringToMPFR r p b d = fst $ stringToMPFR_ r p b d
 
-stringToDyadic_         :: RoundMode -> Precision 
+stringToMPFR_         :: RoundMode -> Precision 
                        -> Word -- ^ Base 
-                       -> String -> (Dyadic, Int)
-stringToDyadic_ r p b d = unsafePerformIO go
+                       -> String -> (MPFR, Int)
+stringToMPFR_ r p b d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -108,13 +108,13 @@ stringToDyadic_ r p b d = unsafePerformIO go
 
 strtofr         :: RoundMode -> Precision
                 -> Word -- ^ base
-                -> String -> (Dyadic, String)
+                -> String -> (MPFR, String)
 strtofr r p b d = case strtofr_ r p b d of
                     (a, b', _) -> (a,b')
 
 strtofr_         :: RoundMode -> Precision
                    -> Word -- ^ base
-                   -> String -> (Dyadic, String, Int)
+                   -> String -> (MPFR, String, Int)
 strtofr_ r p b d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -129,7 +129,7 @@ strtofr_ r p b d = unsafePerformIO go
                         return (r1, r2, fromIntegral r3)
                         
                                                                 
-setInf     :: Precision -> Int -> Dyadic
+setInf     :: Precision -> Int -> MPFR
 setInf p i = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -138,7 +138,7 @@ setInf p i = unsafePerformIO go
                     mpfr_set_inf p1 (fromIntegral  i)
                     peekP p1 fp
 
-setNaN   :: Precision -> Dyadic
+setNaN   :: Precision -> MPFR
 setNaN p = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -147,11 +147,11 @@ setNaN p = unsafePerformIO go
                     mpfr_set_nan p1
                     peekP p1 fp
 
-fromIntegerA       :: RoundMode -> Precision -> Integer -> Dyadic
-fromIntegerA r p d = stringToDyadic r p 10 (show d)
+fromIntegerA       :: RoundMode -> Precision -> Integer -> MPFR
+fromIntegerA r p d = stringToMPFR r p 10 (show d)
 
-compose             :: RoundMode -> Precision -> (Integer, Int) -> Dyadic 
+compose             :: RoundMode -> Precision -> (Integer, Int) -> MPFR 
 compose r p (i, ii) = div2i r p (fromIntegerA r p i) ii
 
-fromString       :: String -> Precision -> Word -> Dyadic
-fromString s p b = stringToDyadic Near p b s
+fromString       :: String -> Precision -> Word -> MPFR
+fromString s p b = stringToMPFR Near p b s

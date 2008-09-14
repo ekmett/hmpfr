@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeSynonymInstances #-}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 
@@ -14,7 +15,7 @@ import Data.Maybe
 
 import Data.Ratio
 
-instance Num Dyadic where
+instance Num MPFR where
     d + d'        = add Near (maxPrec d d') d d'
     d - d'        = sub Near (maxPrec d d') d d'
     d * d'        = mul Near (maxPrec d d') d d'
@@ -22,22 +23,22 @@ instance Num Dyadic where
     abs d         = absD Near (getPrec d) d
     signum d      = fromInt Near minPrec (fromMaybe (-1) (sgn d))
     fromInteger i = fromIntegerA Zero (checkPrec $ binprec i) i
-                    -- TODO this isn't totally correct
+                    -- TODO works only partially
 
-instance Real Dyadic where
+instance Real MPFR where
     toRational d = n % 2 ^ e
         where (n', e') = decompose d
               (n, e) = if e' >= 0 then ((n' * 2 ^ e'), 0)
                          else (n', - e')
 
-instance Fractional Dyadic where
+instance Fractional MPFR where
     d / d'         = B.div Up (maxPrec d d') d d'
     fromRational r = (fromInteger n) / (fromInteger d)
         where n = numerator r
               d = denominator r
     recip d        = one / d
 
-instance Floating Dyadic where
+instance Floating MPFR where
     pi           = B.pi Near 53
     exp d        = B.exp Near (getPrec d) d
     log d        = B.log Near (getPrec d) d
@@ -57,7 +58,7 @@ instance Floating Dyadic where
     acosh d      = B.acosh Near (getPrec d) d
     atanh d      = B.atanh Near (getPrec d) d
 
-instance RealFrac Dyadic where
+instance RealFrac MPFR where
     properFraction d = (fromIntegral n, f)
         where r = toRational d
               m = numerator r

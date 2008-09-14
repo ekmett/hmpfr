@@ -7,7 +7,7 @@ license:             BSD3
 license-file:        LICENSE
 Stability:           experimental
 author:              Aleš Bizjak
-maintainer:          ales.bizjak@student.fmf.uni-lj.si
+maintainer:          Aleš Bizjak <ales.bizjak@student.fmf.uni-lj.si>
 build-Depends:       base
 
 Exposed-modules:     Data.Number1.MPFR.Assignment
@@ -20,7 +20,10 @@ Exposed-modules:     Data.Number1.MPFR.Assignment
 		     
 		    
 		     Data.Number1.MPFR.Near
-		     
+		     Data.Number1.MPFR.Up
+		     Data.Number1.MPFR.Down
+		     Data.Number1.MPFR.Zero
+		     Data.Number1.MPFR
 
 Other-modules:       Data.Number1.MPFR.FFIhelper
                      Data.Number1.MPFR.Internal
@@ -28,7 +31,7 @@ Other-modules:       Data.Number1.MPFR.FFIhelper
 
 build-type:          Simple
 build-tools:         hsc2hs
-GHC-options:         -fvia-C -Wall -XTypeSynonymInstances
+GHC-options:         -fvia-C -Wall 
 include-dirs:        cbits
 includes:            mpfr.h chsmpfr.h
 install-includes:    chsmpfr.h

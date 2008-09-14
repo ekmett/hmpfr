@@ -3,14 +3,14 @@
 
 module Data.Number1.MPFR.Internal (
        module FFIhelper, 
-       withDyadicsBA, withDyadicBAui, withDyadicBAiu, withDyadicBAsi, withDyadicBAis, 
-       withDyadicB, withDyadicP, withDyadic, withDyadicBB, withDyadicC, 
-       withDyadicF, withDyadicUI, withDyadicR, checkPrec, getMantissa', binprec,
+       withMPFRsBA, withMPFRBAui, withMPFRBAiu, withMPFRBAsi, withMPFRBAis, 
+       withMPFRB, withMPFRP, withMPFR, withMPFRBB, withMPFRC, 
+       withMPFRF, withMPFRUI, withMPFRR, checkPrec, getMantissa', binprec,
        unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
        withForeignPtr, CInt, CLong, CULong, withCString, peekCString, alloca,
        peekArray, shiftL, Word, minPrec,
        
-       Dyadic, Precision
+       Precision
 )
 where
 
@@ -23,19 +23,16 @@ import Foreign(unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
 import Data.Bits(shiftL)
 
 import Data.Word(Word)
-import Prelude hiding (div, sqrt, read, isNaN, isInfinite, exp, log, sinh, cosh, tanh, pi)
-
-type Dyadic = MPFR_T
 
 type Precision = Word
 
 
 -- these are helper functions, only for internal use
-{-# INLINE withDyadicsBA #-}
-withDyadicsBA               :: RoundMode -> Precision -> Dyadic -> Dyadic
-                               -> (Ptr MPFR_T -> Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                               -> (Dyadic, Int)
-withDyadicsBA r p mp1 mp2 f = unsafePerformIO go
+{-# INLINE withMPFRsBA #-}
+withMPFRsBA               :: RoundMode -> Precision -> MPFR -> MPFR
+                               -> (Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt)
+                               -> (MPFR, Int)
+withMPFRsBA r p mp1 mp2 f = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -46,11 +43,11 @@ withDyadicsBA r p mp1 mp2 f = unsafePerformIO go
                           r1 <- peekP p1 fp
                           return (r1, fromIntegral r2)
 
-{-# INLINE withDyadicBAui #-}
-withDyadicBAui :: RoundMode -> Precision -> Dyadic -> CULong
-                  ->  (Ptr MPFR_T -> Ptr MPFR_T -> CULong -> CRoundMode -> IO CInt)
-                  -> (Dyadic, Int) 
-withDyadicBAui r p mp1 d f = unsafePerformIO go
+{-# INLINE withMPFRBAui #-}
+withMPFRBAui :: RoundMode -> Precision -> MPFR -> CULong
+                  ->  (Ptr MPFR -> Ptr MPFR -> CULong -> CRoundMode -> IO CInt)
+                  -> (MPFR, Int) 
+withMPFRBAui r p mp1 d f = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -60,11 +57,11 @@ withDyadicBAui r p mp1 d f = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
                                 
-{-# INLINE withDyadicBAsi #-}
-withDyadicBAsi             :: RoundMode -> Precision -> Dyadic -> CLong
-                              -> (Ptr MPFR_T -> Ptr MPFR_T -> CLong -> CRoundMode -> IO CInt)
-                              -> (Dyadic, Int)
-withDyadicBAsi r p mp1 d f = unsafePerformIO go 
+{-# INLINE withMPFRBAsi #-}
+withMPFRBAsi             :: RoundMode -> Precision -> MPFR -> CLong
+                              -> (Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt)
+                              -> (MPFR, Int)
+withMPFRBAsi r p mp1 d f = unsafePerformIO go 
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -74,11 +71,11 @@ withDyadicBAsi r p mp1 d f = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
                                   
-{-# INLINE withDyadicBAiu #-}
-withDyadicBAiu             :: RoundMode -> Precision -> CULong -> Dyadic
-                              -> (Ptr MPFR_T -> CULong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                              -> (Dyadic, Int) 
-withDyadicBAiu r p d mp1 f = unsafePerformIO go 
+{-# INLINE withMPFRBAiu #-}
+withMPFRBAiu             :: RoundMode -> Precision -> CULong -> MPFR
+                              -> (Ptr MPFR -> CULong -> Ptr MPFR -> CRoundMode -> IO CInt)
+                              -> (MPFR, Int) 
+withMPFRBAiu r p d mp1 f = unsafePerformIO go 
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -88,11 +85,11 @@ withDyadicBAiu r p d mp1 f = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
 
-{-# INLINE withDyadicBAis #-}
-withDyadicBAis             :: RoundMode -> Precision -> CLong -> Dyadic
-                              -> (Ptr MPFR_T -> CLong -> Ptr MPFR_T -> CRoundMode -> IO CInt)
-                              -> (Dyadic, Int) 
-withDyadicBAis r p d mp1 f = unsafePerformIO go
+{-# INLINE withMPFRBAis #-}
+withMPFRBAis             :: RoundMode -> Precision -> CLong -> MPFR
+                              -> (Ptr MPFR -> CLong -> Ptr MPFR -> CRoundMode -> IO CInt)
+                              -> (MPFR, Int) 
+withMPFRBAis r p d mp1 f = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -102,20 +99,20 @@ withDyadicBAis r p d mp1 f = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
 
-{-# INLINE withDyadicB #-}
-withDyadicB       :: Dyadic -> (Ptr MPFR_T -> IO CInt) -> CInt 
-withDyadicB mp1 f = unsafePerformIO go
+{-# INLINE withMPFRB #-}
+withMPFRB       :: MPFR -> (Ptr MPFR -> IO CInt) -> CInt 
+withMPFRB mp1 f = unsafePerformIO go
     where go = with mp1 $ \p1 -> f p1
 
-withDyadicP       :: Dyadic -> (Ptr MPFR_T -> IO CPrecision) -> CPrecision 
-withDyadicP mp1 f = unsafePerformIO go
+withMPFRP       :: MPFR -> (Ptr MPFR -> IO CPrecision) -> CPrecision 
+withMPFRP mp1 f = unsafePerformIO go
     where go = with mp1 $ \p1 -> f p1
 
-{-# INLINE withDyadic #-}
-withDyadic           :: RoundMode -> Precision -> Dyadic 
-                        -> (Ptr MPFR_T -> Ptr MPFR_T -> CRoundMode -> IO CInt) 
-                        -> (Dyadic, Int)
-withDyadic r p mp1 f = unsafePerformIO go 
+{-# INLINE withMPFR #-}
+withMPFR           :: RoundMode -> Precision -> MPFR 
+                        -> (Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt) 
+                        -> (MPFR, Int)
+withMPFR r p mp1 f = unsafePerformIO go 
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -125,19 +122,19 @@ withDyadic r p mp1 f = unsafePerformIO go
                       r1 <- peekP p1 fp
                       return (r1, fromIntegral r2)
                   
-{-# INLINE withDyadicBB #-}
-withDyadicBB           :: Dyadic -> Dyadic 
-                          -> (Ptr MPFR_T -> Ptr MPFR_T -> IO CInt) 
+{-# INLINE withMPFRBB #-}
+withMPFRBB           :: MPFR -> MPFR 
+                          -> (Ptr MPFR -> Ptr MPFR -> IO CInt) 
                           -> CInt  
-withDyadicBB mp1 mp2 f = unsafePerformIO go
+withMPFRBB mp1 mp2 f = unsafePerformIO go
     where go = do with mp1 $ \p1 -> do 
                     with mp2 $ \p2 -> do 
                                       f p1 p2
                               
-{-# INLINE withDyadicC #-}
-withDyadicC       :: RoundMode -> Precision ->
-                     (Ptr MPFR_T -> CRoundMode -> IO CInt) -> (Dyadic, Int)
-withDyadicC r p f = unsafePerformIO go
+{-# INLINE withMPFRC #-}
+withMPFRC       :: RoundMode -> Precision ->
+                     (Ptr MPFR -> CRoundMode -> IO CInt) -> (MPFR, Int)
+withMPFRC r p f = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -146,16 +143,16 @@ withDyadicC r p f = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
    
-withDyadicF         :: Dyadic -> RoundMode
-                       -> (Ptr MPFR_T -> CRoundMode -> IO CInt)
+withMPFRF         :: MPFR -> RoundMode
+                       -> (Ptr MPFR -> CRoundMode -> IO CInt)
                        -> Int
-withDyadicF mp1 r f = (fromIntegral . unsafePerformIO) go
+withMPFRF mp1 r f = (fromIntegral . unsafePerformIO) go
     where go = do with mp1 $ \p1 -> f p1 ((fromIntegral . fromEnum) r)
 
-withDyadicUI         :: RoundMode -> Precision -> Word
-                        -> (Ptr MPFR_T -> CULong -> CRoundMode -> IO CInt)
-                        -> (Dyadic, Int)
-withDyadicUI r p d f = unsafePerformIO go 
+withMPFRUI         :: RoundMode -> Precision -> Word
+                        -> (Ptr MPFR -> CULong -> CRoundMode -> IO CInt)
+                        -> (MPFR, Int)
+withMPFRUI r p d f = unsafePerformIO go 
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -164,10 +161,10 @@ withDyadicUI r p d f = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
 
-withDyadicR       :: Precision -> Dyadic
-                     -> (Ptr MPFR_T -> Ptr MPFR_T -> IO CInt)
-                     -> (Dyadic, Int)
-withDyadicR p d f = unsafePerformIO go
+withMPFRR       :: Precision -> MPFR
+                     -> (Ptr MPFR -> Ptr MPFR -> IO CInt)
+                     -> (MPFR, Int)
+withMPFRR p d f = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   let dummy = MP (fromIntegral p) 0 0 fp
@@ -181,7 +178,7 @@ withDyadicR p d f = unsafePerformIO go
 checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
-getMantissa'     :: Dyadic -> [Limb]
+getMantissa'     :: MPFR -> [Limb]
 getMantissa' (MP p _ _ p1) = unsafePerformIO go
     where go = do withForeignPtr p1 $ \pt -> do 
                     arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
@@ -195,10 +192,10 @@ binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
 binprec   :: Integer -> Precision
 binprec d = Prelude.floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
 
---one ::  Dyadic              
+--one ::  MPFR              
 --one = fromWord Near minPrec 1
 
---zero :: Dyadic              
+--zero :: MPFR              
 --ggzero = fromWord Near minPrec 0
 
 minPrec :: Precision

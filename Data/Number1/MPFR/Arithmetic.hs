@@ -5,178 +5,178 @@ module Data.Number1.MPFR.Arithmetic where
 
 import Data.Number1.MPFR.Internal
 
-add           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+add           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 add r p d1 d2 = fst $ add_ r p d1 d2 
 
-addw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+addw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 addw r p d1 d = fst $ addw_ r p d1 d 
 
-addi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+addi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 addi r p d1 d = fst $ addi_ r p d1 d 
 
-sub           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+sub           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 sub r p d1 d2 = fst $ sub_ r p d1 d2
 
-subw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+subw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 subw r p d1 d = fst $ subw_ r p d1 d 
 
-subi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+subi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 subi r p d1 d = fst $ subi_ r p d1 d 
 
-wsub          :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic
+wsub          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
 wsub r p d d1 = fst $ wsub_ r p d d1 
 
-isub          :: RoundMode -> Precision -> Int -> Dyadic -> Dyadic
+isub          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
 isub r p d d1 = fst $ isub_ r p d d1 
 
-mul           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+mul           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 mul r p d1 d2 = fst $ mul_ r p d1 d2
 
-mulw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+mulw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 mulw r p d1 d = fst $ mulw_ r p d1 d 
 
-muli          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+muli          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 muli r p d1 d = fst $ muli_ r p d1 d 
 
-sqr       :: RoundMode -> Precision -> Dyadic -> Dyadic 
+sqr       :: RoundMode -> Precision -> MPFR -> MPFR 
 sqr r p d = fst $ sqr_ r p d
 
-div           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+div           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 div r p d1 d2 = fst $ div_ r p d1 d2
 
-divw          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+divw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 divw r p d1 d = fst $ divw_ r p d1 d 
 
-divi          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+divi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 divi r p d1 d = fst $ divi_ r p d1 d 
 
-wdiv          :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic
+wdiv          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
 wdiv r p d d1 = fst $ wdiv_ r p d d1 
 
-idiv          :: RoundMode -> Precision -> Int -> Dyadic -> Dyadic
+idiv          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
 idiv r p d d1 = fst $ idiv_ r p d d1 
 
-sqrt       :: RoundMode -> Precision -> Dyadic -> Dyadic
+sqrt       :: RoundMode -> Precision -> MPFR -> MPFR
 sqrt r p d = fst $ sqrt_ r p d
 
-sqrtw       :: RoundMode -> Precision -> Word -> Dyadic
+sqrtw       :: RoundMode -> Precision -> Word -> MPFR
 sqrtw r p d = fst $ sqrtw_ r p d
 
-cbrt       :: RoundMode -> Precision -> Dyadic -> Dyadic
+cbrt       :: RoundMode -> Precision -> MPFR -> MPFR
 cbrt r p d = fst $ cbrt_ r p d
 
-root         :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+root         :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 root r p d n = fst $ root_ r p d n
 
-pow           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+pow           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 pow r p d1 d2 = fst $ pow_ r p d1 d2 
 
-poww           :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic 
+poww           :: RoundMode -> Precision -> MPFR -> Word -> MPFR 
 poww r p d1 d2 = fst $ poww_ r p d1 d2
 
-powi           :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic 
+powi           :: RoundMode -> Precision -> MPFR -> Int -> MPFR 
 powi r p d1 d2 = fst $ powi_ r p d1 d2
 
-wpoww           :: RoundMode -> Precision -> Word -> Word -> Dyadic 
+wpoww           :: RoundMode -> Precision -> Word -> Word -> MPFR 
 wpoww r p d1 d2 = fst $ wpoww_ r p d1 d2
 
-wpow           :: RoundMode -> Precision -> Word -> Dyadic -> Dyadic 
+wpow           :: RoundMode -> Precision -> Word -> MPFR -> MPFR 
 wpow r p d1 d2 = fst $ wpow_ r p d1 d2
 
-neg       :: RoundMode -> Precision -> Dyadic -> Dyadic
+neg       :: RoundMode -> Precision -> MPFR -> MPFR
 neg r p d = fst $ neg_ r p d
 
-absD      :: RoundMode -> Precision -> Dyadic -> Dyadic 
+absD      :: RoundMode -> Precision -> MPFR -> MPFR 
 absD r p d = fst $ absD_ r p d
 
-dim           :: RoundMode -> Precision -> Dyadic -> Dyadic -> Dyadic
+dim           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 dim r p d1 d2 = fst $ dim_ r p d1 d2 
 
-mul2w           :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+mul2w           :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 mul2w r p d1 d2 = fst $ mul2w_ r p d1 d2
 
-mul2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+mul2i          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 mul2i r p d1 d2 = fst $ mul2i_ r p d1 d2
 
-div2w          :: RoundMode -> Precision -> Dyadic -> Word -> Dyadic
+div2w          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 div2w r p d1 d2 = fst $ div2w_ r p d1 d2
 
-div2i          :: RoundMode -> Precision -> Dyadic -> Int -> Dyadic
+div2i          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 div2i r p d1 d2 = fst $ div2i_ r p d1 d2
 
-add_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-add_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_add
+add_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
+add_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_add
 
-addw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-addw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_add_ui
+addw_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+addw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_add_ui
 
-addi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-addi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_add_si
+addi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+addi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_add_si
 
-sub_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-sub_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_sub
+sub_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
+sub_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_sub
 
-subw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-subw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_sub_ui
+subw_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+subw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_sub_ui
 
-subi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-subi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_sub_si
+subi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+subi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_sub_si
 
-wsub_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
-wsub_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_sub
+wsub_          :: RoundMode -> Precision -> Word -> MPFR -> (MPFR, Int)
+wsub_ r p d d1 = withMPFRBAiu r p (fromIntegral d) d1 mpfr_ui_sub
 
-isub_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
-isub_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_sub
+isub_          :: RoundMode -> Precision -> Int -> MPFR -> (MPFR, Int)
+isub_ r p d d1 = withMPFRBAis r p (fromIntegral d) d1 mpfr_si_sub
 
-mul_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic,Int)
-mul_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_mul
+mul_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
+mul_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_mul
 
-mulw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-mulw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_mul_ui
+mulw_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+mulw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_mul_ui
 
-muli_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-muli_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_mul_si
+muli_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+muli_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_mul_si
 
-sqr_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-sqr_ r p d = withDyadic r p d mpfr_sqr
+sqr_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+sqr_ r p d = withMPFR r p d mpfr_sqr
 
-div_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-div_ r p d1 d2 =  withDyadicsBA r p d1 d2 mpfr_div
+div_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
+div_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_div
 
-divw_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-divw_ r p d1 d = withDyadicBAui r p d1 (fromIntegral d) mpfr_div_ui
+divw_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+divw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_div_ui
 
-divi_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-divi_ r p d1 d = withDyadicBAsi r p d1 (fromIntegral d) mpfr_div_si
+divi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+divi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_div_si
 
-wdiv_          :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic, Int)
-wdiv_ r p d d1 = withDyadicBAiu r p (fromIntegral d) d1 mpfr_ui_div
+wdiv_          :: RoundMode -> Precision -> Word -> MPFR -> (MPFR, Int)
+wdiv_ r p d d1 = withMPFRBAiu r p (fromIntegral d) d1 mpfr_ui_div
 
-idiv_          :: RoundMode -> Precision -> Int -> Dyadic -> (Dyadic, Int)
-idiv_ r p d d1 = withDyadicBAis r p (fromIntegral d) d1 mpfr_si_div
+idiv_          :: RoundMode -> Precision -> Int -> MPFR -> (MPFR, Int)
+idiv_ r p d d1 = withMPFRBAis r p (fromIntegral d) d1 mpfr_si_div
 
-sqrt_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-sqrt_ r p d = withDyadic r p d mpfr_sqrt
+sqrt_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+sqrt_ r p d = withMPFR r p d mpfr_sqrt
  
-sqrtw_       :: RoundMode -> Precision -> Word -> (Dyadic, Int)
-sqrtw_ r p d = withDyadicUI r p d mpfr_sqrt_ui
+sqrtw_       :: RoundMode -> Precision -> Word -> (MPFR, Int)
+sqrtw_ r p d = withMPFRUI r p d mpfr_sqrt_ui
 
-cbrt_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-cbrt_ r p d = withDyadic r p d mpfr_cbrt
+cbrt_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+cbrt_ r p d = withMPFR r p d mpfr_cbrt
 
-root_        :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-root_ r p d n = withDyadicBAui r p d (fromIntegral n) mpfr_root
+root_        :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+root_ r p d n = withMPFRBAui r p d (fromIntegral n) mpfr_root
 
-pow_          :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-pow_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_pow 
+pow_          :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
+pow_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_pow 
 
-poww_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic , Int)
-poww_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_pow_ui
+poww_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR , Int)
+poww_ r p d1 d2 = withMPFRBAui r p d1 (fromIntegral d2) mpfr_pow_ui
 
-powi_           :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic , Int)
-powi_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_pow_si
+powi_           :: RoundMode -> Precision -> MPFR -> Int -> (MPFR , Int)
+powi_ r p d1 d2 = withMPFRBAsi r p d1 (fromIntegral d2) mpfr_pow_si
 
-wpoww_          :: RoundMode -> Precision -> Word -> Word -> (Dyadic , Int)
+wpoww_          :: RoundMode -> Precision -> Word -> Word -> (MPFR , Int)
 wpoww_ r p d1 d2 = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
@@ -186,26 +186,26 @@ wpoww_ r p d1 d2 = unsafePerformIO go
                     r1 <- peekP p1 fp
                     return (r1, fromIntegral r2)
         
-wpow_           :: RoundMode -> Precision -> Word -> Dyadic -> (Dyadic , Int)
-wpow_ r p d1 d2 = withDyadicBAiu r p (fromIntegral d1) d2 mpfr_ui_pow
+wpow_           :: RoundMode -> Precision -> Word -> MPFR -> (MPFR , Int)
+wpow_ r p d1 d2 = withMPFRBAiu r p (fromIntegral d1) d2 mpfr_ui_pow
 
-neg_       :: RoundMode -> Precision -> Dyadic -> (Dyadic, Int)
-neg_ r p d = withDyadic r p d mpfr_neg
+neg_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+neg_ r p d = withMPFR r p d mpfr_neg
 
-absD_      :: RoundMode -> Precision -> Dyadic -> (Dyadic , Int)
-absD_ r p d = withDyadic r p d mpfr_abs
+absD_      :: RoundMode -> Precision -> MPFR -> (MPFR , Int)
+absD_ r p d = withMPFR r p d mpfr_abs
 
-dim_           :: RoundMode -> Precision -> Dyadic -> Dyadic -> (Dyadic, Int)
-dim_ r p d1 d2 = withDyadicsBA r p d1 d2 mpfr_dim
+dim_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
+dim_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_dim
 
-mul2w_           :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-mul2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_mul_2ui
+mul2w_           :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+mul2w_ r p d1 d2 = withMPFRBAui r p d1 (fromIntegral d2) mpfr_mul_2ui
 
-mul2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-mul2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_mul_2si
+mul2i_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+mul2i_ r p d1 d2 = withMPFRBAsi r p d1 (fromIntegral d2) mpfr_mul_2si
 
-div2w_          :: RoundMode -> Precision -> Dyadic -> Word -> (Dyadic, Int)
-div2w_ r p d1 d2 = withDyadicBAui r p d1 (fromIntegral d2) mpfr_div_2ui
+div2w_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
+div2w_ r p d1 d2 = withMPFRBAui r p d1 (fromIntegral d2) mpfr_div_2ui
 
-div2i_          :: RoundMode -> Precision -> Dyadic -> Int -> (Dyadic, Int)
-div2i_ r p d1 d2 = withDyadicBAsi r p d1 (fromIntegral d2) mpfr_div_2si
+div2i_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
+div2i_ r p d1 d2 = withMPFRBAsi r p d1 (fromIntegral d2) mpfr_div_2si
