@@ -1,5 +1,6 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
+
 module Data.Number1.MPFR (
      module Data.Number1.MPFR.Near
 -- | This module should always be imported qualified.

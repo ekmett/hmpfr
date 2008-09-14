@@ -10,7 +10,7 @@ module Data.Number1.MPFR.Base (
          module Data.Number1.MPFR.Integer,
          module Data.Number1.MPFR.Misc,
          RoundMode (Near, Up, Down, Zero),
-         MPFR, Precision, Exp
+         MPFR, Precision, Exp, Dyadic
                               )
 where
 
@@ -24,4 +24,6 @@ import Data.Number1.MPFR.Misc
 
 
 import Data.Number1.MPFR.Internal
+
+type Dyadic = MPFR
 

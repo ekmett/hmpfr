@@ -1,6 +1,6 @@
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Data.Number1.MPFR.Up (
        module B
