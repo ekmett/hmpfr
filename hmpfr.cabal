@@ -10,19 +10,25 @@ author:              Aleš Bizjak
 maintainer:          ales.bizjak@student.fmf.uni-lj.si
 build-Depends:       base
 
-Exposed-modules:     
+Exposed-modules:     Data.Number1.MPFR.Assignment
+                     Data.Number1.MPFR.Conversion
+                     Data.Number1.MPFR.Arithmetic
+                     Data.Number1.MPFR.Comparison
+                     Data.Number1.MPFR.Special
+                     Data.Number1.MPFR.Integer
+                     Data.Number1.MPFR.Misc
+		     
+		    
+		     Data.Number1.MPFR.Near
+		     
+
 Other-modules:       Data.Number1.MPFR.FFIhelper
-		     Data.Number1.MPFR.Conversion
-		     Data.Number1.MPFR.Assignment
-		     Data.Number1.MPFR.Internal
-		     Data.Number1.MPFR.Misc
-		     Data.Number1.MPFR.Special
-		     Data.Number1.MPFR.Comparison
-		     Data.Number1.MPFR.Arithmetic
+                     Data.Number1.MPFR.Internal
+
 
 build-type:          Simple
 build-tools:         hsc2hs
-GHC-options:         -fvia-C -Wall
+GHC-options:         -fvia-C -Wall -XTypeSynonymInstances
 include-dirs:        cbits
 includes:            mpfr.h chsmpfr.h
 install-includes:    chsmpfr.h
