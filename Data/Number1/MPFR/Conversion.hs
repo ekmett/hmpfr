@@ -6,6 +6,8 @@ module Data.Number1.MPFR.Conversion where
 import Data.Number1.MPFR.Internal
 import Data.Number1.MPFR.Misc
 
+import Data.List (isInfixOf)
+
 toDouble       :: RoundMode -> MPFR -> Double
 toDouble r mp1 = (realToFrac . unsafePerformIO) go
     where go = with mp1 $ \p -> mpfr_get_d p ((fromIntegral . fromEnum) r)
@@ -64,7 +66,10 @@ decompose d = (getMantissa d, getExp d - fromIntegral (Prelude.ceiling (fromInte
 
 
 toStringExp       :: Word -> MPFR -> String
-toStringExp dec d = s ++ case e > 0 of
+toStringExp dec d = 
+    if isInfixOf "NaN" ss then "NaN"
+       else if isInfixOf "Inf" ss then s ++ "Infinity"
+               else s ++ case e > 0 of
                            True  -> case Prelude.floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
                                       False -> take e ss ++ let bt = backtrim (drop e ss) in if null bt then "" else "." ++ bt
                                       True  -> head ss : "." ++ let bt = (backtrim . tail) ss in if null bt then "0"
@@ -82,7 +87,10 @@ toStringExp dec d = s ++ case e > 0 of
                           backtrim = reverse . dropWhile (== '0') . reverse 
 
 toString       :: Word -> MPFR -> String
-toString dec d = s ++ case compare 0 e of
+toString dec d =
+    if isInfixOf "NaN" ss then "NaN"
+       else if isInfixOf "Inf" ss then s ++ "Infinity"
+             else s ++ case compare 0 e of
                          LT -> take e ss ++ (let bt = all (== '0') (drop e ss) in if bt then "" else '.' : (drop e ss))
                                ++ (if fromIntegral n - e < 0 then "e" ++ show (e - fromIntegral n) else "")
                          GT -> let ee = fromIntegral dec + e in 

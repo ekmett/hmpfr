@@ -44,7 +44,7 @@ instance Floating MPFR where
     log d        = B.log Up (getPrec d) d
     sqrt d       = B.sqrt Up (getPrec d) d 
     (**) d d'    = B.pow Up (maxPrec d d') d d'
-    logBase d d' = Prelude.log d / Prelude.log d'
+    logBase d d' = Prelude.log d' / Prelude.log d
     sin d        = B.sin Up (getPrec d) d
     cos d        = B.cos Up (getPrec d) d
     tan d        = B.tan Up (getPrec d) d
