@@ -1,13 +1,17 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
-{-# LANGUAGE TypeSynonymInstances #-}
+
+-- | This module defines instances Num, Real, Fractional, Floating and RealFrac of MPFR.
+-- Operations are rounded with RoundMode Zero and computed with max precision of two 
+-- operands or with the precision of the operand. Otherwise it is equivalent to 
+-- Data.Number.MPFR
 
 module Data.Number1.MPFR.Zero (
-       module B
+       module Data.Number1.MPFR.Base 
 )
 where
 
-import Data.Number1.MPFR.Base as B
+import Data.Number1.MPFR.Base 
 
 import Data.Number1.MPFR.Internal
 
@@ -32,31 +36,31 @@ instance Real MPFR where
                          else (n', - e')
 
 instance Fractional MPFR where
-    d / d'         = B.div Zero (maxPrec d d') d d'
+    d / d'         = Data.Number1.MPFR.Base.div Zero (maxPrec d d') d d'
     fromRational r = (fromInteger n) / (fromInteger d)
         where n = numerator r
               d = denominator r
     recip d        = one / d
 
 instance Floating MPFR where
-    pi           = B.pi Zero 53
-    exp d        = B.exp Zero (getPrec d) d
-    log d        = B.log Zero (getPrec d) d
-    sqrt d       = B.sqrt Zero (getPrec d) d 
-    (**) d d'    = B.pow Zero (maxPrec d d') d d'
+    pi           = Data.Number1.MPFR.Base.pi Zero 53
+    exp d        = Data.Number1.MPFR.Base.exp Zero (getPrec d) d
+    log d        = Data.Number1.MPFR.Base.log Zero (getPrec d) d
+    sqrt d       = Data.Number1.MPFR.Base.sqrt Zero (getPrec d) d 
+    (**) d d'    = Data.Number1.MPFR.Base.pow Zero (maxPrec d d') d d'
     logBase d d' = Prelude.log d' / Prelude.log d
-    sin d        = B.sin Zero (getPrec d) d
-    cos d        = B.cos Zero (getPrec d) d
-    tan d        = B.tan Zero (getPrec d) d
-    asin d       = B.asin Zero (getPrec d) d
-    acos d       = B.acos Zero (getPrec d) d
-    atan d       = B.atan Zero (getPrec d) d
-    sinh d       = B.sinh Zero (getPrec d) d
-    cosh d       = B.cosh Zero (getPrec d) d
-    tanh d       = B.tanh Zero (getPrec d) d
-    asinh d      = B.asinh Zero (getPrec d) d
-    acosh d      = B.acosh Zero (getPrec d) d
-    atanh d      = B.atanh Zero (getPrec d) d
+    sin d        = Data.Number1.MPFR.Base.sin Zero (getPrec d) d
+    cos d        = Data.Number1.MPFR.Base.cos Zero (getPrec d) d
+    tan d        = Data.Number1.MPFR.Base.tan Zero (getPrec d) d
+    asin d       = Data.Number1.MPFR.Base.asin Zero (getPrec d) d
+    acos d       = Data.Number1.MPFR.Base.acos Zero (getPrec d) d
+    atan d       = Data.Number1.MPFR.Base.atan Zero (getPrec d) d
+    sinh d       = Data.Number1.MPFR.Base.sinh Zero (getPrec d) d
+    cosh d       = Data.Number1.MPFR.Base.cosh Zero (getPrec d) d
+    tanh d       = Data.Number1.MPFR.Base.tanh Zero (getPrec d) d
+    asinh d      = Data.Number1.MPFR.Base.asinh Zero (getPrec d) d
+    acosh d      = Data.Number1.MPFR.Base.acosh Zero (getPrec d) d
+    atanh d      = Data.Number1.MPFR.Base.atanh Zero (getPrec d) d
 
 instance RealFrac MPFR where
     properFraction d = (fromIntegral n, f)

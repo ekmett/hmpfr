@@ -1,6 +1,6 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
-
+-- | Functions that don't belong anywhere else. See MPFR manual for detailed documentation.
 module Data.Number1.MPFR.Misc where
 
 import Data.Number1.MPFR.Internal

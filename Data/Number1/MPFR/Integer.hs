@@ -1,6 +1,8 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 
+-- | Integer related functions. See MPFR manual for detailed documentation.
+
 module Data.Number1.MPFR.Integer where
 
 import Data.Number1.MPFR.Internal

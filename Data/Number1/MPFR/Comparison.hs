@@ -1,6 +1,7 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
-
+-- | Comparison functions. All the functions that return Maybe Ordering return Nothing
+-- when one of the operands is NaN and  Just _ otherwise.
 module Data.Number1.MPFR.Comparison where
 
 import Data.Number1.MPFR.Misc

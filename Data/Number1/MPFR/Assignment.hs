@@ -1,5 +1,6 @@
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
+-- | Conversion from basic Haskell types to MPFR. See MPFR manual for detailed documentation.
 
 module Data.Number1.MPFR.Assignment where
 
