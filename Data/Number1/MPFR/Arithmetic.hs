@@ -32,7 +32,7 @@ isub r p d d1 = fst $ isub_ r p d d1
       
 mul           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 mul r p d1 d2 = fst $ mul_ r p d1 d2
-      
+
 mulw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 mulw r p d1 d = fst $ mulw_ r p d1 d 
       

@@ -7,7 +7,7 @@ license:             BSD3
 license-file:        LICENSE
 Stability:           experimental
 author:              Aleš Bizjak
-maintainer:          Aleš Bizjak <ales.bizjak@student.fmf.uni-lj.si>
+maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
 build-Depends:       base
 
 Other-modules:       Data.Number1.MPFR.FFIhelper
@@ -34,9 +34,11 @@ Exposed-modules:     Data.Number1.MPFR.Assignment
 build-type:          Simple
 build-tools:         hsc2hs
 GHC-options:         -fvia-C -Wall -O2 -optc-O2
+GHC-prof-options:    -prof -auto-all
 include-dirs:        cbits
 includes:            chsmpfr.h mpfr.h
 install-includes:    chsmpfr.h
 c-sources:           cbits/chsmpfr.c
 
 extra-libraries:     mpfr
+
