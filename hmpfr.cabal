@@ -10,25 +10,25 @@ author:              Aleš Bizjak
 maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
 build-Depends:       base
 
-Other-modules:       Data.Number1.MPFR.FFIhelper
-                     Data.Number1.MPFR.Internal
-		     Data.Number1.MPFR.Base
+Other-modules:       Data.Number.MPFR.FFIhelper
+                     Data.Number.MPFR.Internal
+		     Data.Number.MPFR.Base
 		     
 
-Exposed-modules:     Data.Number1.MPFR.Assignment
-		     Data.Number1.MPFR.Conversion
-                     Data.Number1.MPFR.Arithmetic
-                     Data.Number1.MPFR.Comparison
-                     Data.Number1.MPFR.Special
-                     Data.Number1.MPFR.Integer
-                     Data.Number1.MPFR.Misc
+Exposed-modules:     Data.Number.MPFR.Assignment
+		     Data.Number.MPFR.Conversion
+                     Data.Number.MPFR.Arithmetic
+                     Data.Number.MPFR.Comparison
+                     Data.Number.MPFR.Special
+                     Data.Number.MPFR.Integer
+                     Data.Number.MPFR.Misc
 
-		     Data.Number1.MPFR.Near
-		     Data.Number1.MPFR.Up
-		     Data.Number1.MPFR.Down
-		     Data.Number1.MPFR.Zero
+		     Data.Number.MPFR.Near
+		     Data.Number.MPFR.Up
+		     Data.Number.MPFR.Down
+		     Data.Number.MPFR.Zero
 
-		     Data.Number1.MPFR
+		     Data.Number.MPFR
 
 
 build-type:          Simple
