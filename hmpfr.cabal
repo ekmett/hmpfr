@@ -7,6 +7,7 @@ category:            Data, Math
 license:             BSD3
 license-file:        LICENSE
 Stability:           experimental
+tested-with:	     GHC == 6.8.2 GHC == 6.8.3
 author:              Aleš Bizjak
 maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
 build-Depends:       base
@@ -37,7 +38,7 @@ Extra-source-files:  test/Demo.hs
 
 build-type:          Simple
 build-tools:         hsc2hs
-GHC-options:         -Wall -fno-warn-orphans -O2 -fvia-C
+GHC-options:         -Wall -fno-warn-orphans -O2
 GHC-prof-options:    -prof -auto-all
 include-dirs:        cbits
 includes:            chsmpfr.h mpfr.h
