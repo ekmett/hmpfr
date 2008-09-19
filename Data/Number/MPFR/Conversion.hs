@@ -1,6 +1,19 @@
+{-|
+    Module      :  Data.Number.MPFR.Conversion
+    Description :  wrappers for conversion functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Conversion from MPFR to basic Haskell types. See MPFR manual for detailed documentation.
+-}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
--- | Conversion from MPFR to basic Haskell types. See MPFR manual for detailed documentation.
+
 
 module Data.Number.MPFR.Conversion where
 
@@ -65,8 +78,9 @@ fitsSShort r d = withMPFRF d r mpfr_fits_sshort_p /= 0
 decompose   :: MPFR -> (Integer, Exp)
 decompose d = (getMantissa d, getExp d - fromIntegral (Prelude.ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb))
 
-
-toStringExp       :: Word -> MPFR -> String
+-- | Output a string in base 10 rounded to Near in exponential form.
+toStringExp       :: Word -- ^ number of digits
+                  -> MPFR -> String
 toStringExp dec d = 
     if isInfixOf "NaN" ss then "NaN"
        else if isInfixOf "Inf" ss then s ++ "Infinity"
@@ -87,6 +101,8 @@ toStringExp dec d =
                                       _   -> ("" , str)
                           backtrim = reverse . dropWhile (== '0') . reverse 
 
+-- | Output a string in base 10 rounded to Near. The difference from @toStringExp@ is that
+-- it won't output in exponential form if it is sensible to do so.
 toString       :: Word -> MPFR -> String
 toString dec d =
     if isInfixOf "NaN" ss then "NaN"

@@ -1,7 +1,18 @@
+{-|
+    Module      :  Data.Number.MPFR.Integer
+    Description :  wrappers for integer related functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Integer related functions. See MPFR manual for detailed documentation.
+-}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 
--- | Integer related functions. See MPFR manual for detailed documentation.
 
 module Data.Number.MPFR.Integer where
 

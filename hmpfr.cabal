@@ -1,7 +1,8 @@
 name:                hmpfr
 version:             0.1
 synopsis:            Haskell binding to MPFR library
-description:         Haskell binding to MPFR library
+description:         Haskell binding to MPFR library. Tested with MPFR 2.3.1 and 2.3.2.
+		     Some simple examples of usage can be found in test/Demo.hs.
 category:            Data, Math
 license:             BSD3
 license-file:        LICENSE
@@ -29,6 +30,9 @@ Exposed-modules:     Data.Number.MPFR.Assignment
 		     Data.Number.MPFR.Zero
 
 		     Data.Number.MPFR
+
+Extra-source-files:  test/Demo.hs
+
 
 
 build-type:          Simple

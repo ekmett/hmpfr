@@ -1,7 +1,21 @@
+{-|
+    Module      :  Data.Number.MPFR.Comparison
+    Description :  wrappers for comparison functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Comparison functions. All the functions that return Maybe Ordering return Nothing
+ when one of the operands is NaN and  Just _ otherwise.
+
+-}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
--- | Comparison functions. All the functions that return Maybe Ordering return Nothing
--- when one of the operands is NaN and  Just _ otherwise.
+
 module Data.Number.MPFR.Comparison where
 
 import Data.Number.MPFR.Misc

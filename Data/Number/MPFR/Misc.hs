@@ -1,6 +1,18 @@
+{-|
+    Module      :  Data.Number.MPFR.Misc
+    Description :  wrappers for miscellaneous functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Functions that don't belong anywhere else. See MPFR manual for detailed documentation.
+-}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
--- | Functions that don't belong anywhere else. See MPFR manual for detailed documentation.
+
 module Data.Number.MPFR.Misc where
 
 import Data.Number.MPFR.Internal

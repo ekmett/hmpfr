@@ -1,10 +1,22 @@
+{-|
+    Module      :  Data.Number.MPFR.Zero
+    Description :  top level
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ This module defines instances Num, Real, Fractional, Floating and RealFrac of MPFR.
+ Operations are rounded with RoundMode Zero and computed with max precision of two 
+ operands or with the precision of the operand. Otherwise it is equivalent to 
+ Data.Number.MPFR
+
+-}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
-
--- | This module defines instances Num, Real, Fractional, Floating and RealFrac of MPFR.
--- Operations are rounded with RoundMode Zero and computed with max precision of two 
--- operands or with the precision of the operand. Otherwise it is equivalent to 
--- Data.Number.MPFR
 
 module Data.Number.MPFR.Zero (
        module Data.Number.MPFR.Base 

@@ -1,6 +1,18 @@
+{-|
+    Module      :  Data.Number.MPFR.Special
+    Description :  wrappers for special functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Special functions. See MPFR manual for detailed documentation.
+-}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
--- | Special functions. See MPFR manual for detailed documentation.
+
 module Data.Number.MPFR.Special where
 
 import Data.Number.MPFR.Internal

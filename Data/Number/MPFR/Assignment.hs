@@ -1,6 +1,19 @@
+{-|
+    Module      :  Data.Number.MPFR.Assignment
+    Description :  wrappers for assignment functions
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ Conversion from basic Haskell types to MPFR. See MPFR manual for detailed documentation.
+-}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
--- | Conversion from basic Haskell types to MPFR. See MPFR manual for detailed documentation.
+
 
 module Data.Number.MPFR.Assignment where
 
@@ -154,5 +167,6 @@ fromIntegerA r p d = stringToMPFR r p 10 (show d)
 compose             :: RoundMode -> Precision -> (Integer, Int) -> MPFR 
 compose r p (i, ii) = div2i r p (fromIntegerA r p i) ii
 
+-- | @stringToMPFR@ with default rounding to Near.
 fromString       :: String -> Precision -> Word -> MPFR
 fromString s p b = stringToMPFR Near p b s

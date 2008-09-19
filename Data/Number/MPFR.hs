@@ -1,61 +1,74 @@
+{-|
+    Module      :  Data.Number.MPFR
+    Description :  top level
+    Copyright   :  (c) Aleš Bizjak
+    License     :  BSD3
+
+    Maintainer  :  ales.bizjak0@gmail.com
+    Stability   :  experimental
+    Portability :  portable
+
+ /Naming/
+
+  - functions ending with _ (underscore) usually return a pair (MPFR, Int), where
+ Int is a return value of a corresponding mpfr_ function. See the MPFR manual for 
+ a description of return values.
+
+ - the same functions without the _ return just the MPFR. 
+
+ - mpfr_ prefix in functions is removed
+
+ - _ui and ui_ in function becomes w (stands for Word). For example mpfr_add_ui becomes addw.
+
+ - si_ and _si in functions becomes i (stands for Int).
+
+ - comparison functions which have _p appended loose it. For example mpfr_less_p becomes less.
+
+   /Instances/
+
+  Eq
+ 
+   - NaN \/= Nan, 
+
+   - Infinity = Infinity, 
+
+   - \-Infinity = -Infinity
+
+   - otherwise normal comparison 
+
+
+
+  Ord      
+ 
+   - compare NaN _ = GT
+
+   - compare _ NaN = GT
+
+   - infinity < _ = False
+
+   - \-infinity > _ = False
+
+   - NaN [\<,\>,\>=,<=] _ = False
+
+   This mimics the behaviour of built in Haskell Float and Double.
+
+
+
+ Num
+
+ Operations defined in Num class will be computed exactly (no precision is lost).
+ This isn't particularly useful as precision grows fairly quickly and everything becomes
+ slow so it preferably shouldn't be used.
+
+
+
+  /This module should always be imported qualified./
+
+-}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 
--- | /Naming/
---
---  - functions ending with _ (underscore) usually return a pair (MPFR, Int), where
--- Int is a return value of a corresponding mpfr_ function. See the MPFR manual for 
--- a description of return values.
---
--- - the same functions without the _ return just the MPFR. 
---
--- - mpfr_ prefix in functions is removed
---
--- - _ui and ui_ in function becomes w (stands for Word). For example mpfr_add_ui becomes addw.
---
--- - si_ and _si in functions becomes i (stands for Int).
---
--- - comparison functions which have _p appended loose it. For example mpfr_less_p becomes less.
---
---   /Instances/
---
---  Eq
--- 
---   - NaN \/= Nan, 
---
---   - Infinity = Infinity, 
---
---   - \-Infinity = -Infinity
---
---   - otherwise normal comparison 
---
---
---
---  Ord      
--- 
---   - compare NaN _ = GT
---
---   - compare _ NaN = GT
---
---   - infinity < _ = False
---
---   - \-infinity > _ = False
---
---   - NaN [\<,\>,\>=,<=] _ = False
---
---   This mimics the behaviour of built in Haskell Float and Double.
---
---
---
--- Num
---
--- Operations defined in Num class will be computed exactly (no precision is lost).
--- This isn't particularly useful as precision grows fairly quickly and everything becomes
--- slow so it preferably shouldn't be used.
---
---
---
---  /This module should always be imported qualified./
 
 module Data.Number.MPFR (
      module Data.Number.MPFR.Base
