@@ -33,7 +33,7 @@ Exposed-modules:     Data.Number1.MPFR.Assignment
 
 build-type:          Simple
 build-tools:         hsc2hs
-GHC-options:         -fvia-C -Wall -O2 -optc-O2
+GHC-options:         -Wall -fno-warn-orphans -O2 -fvia-C
 GHC-prof-options:    -prof -auto-all
 include-dirs:        cbits
 includes:            chsmpfr.h mpfr.h

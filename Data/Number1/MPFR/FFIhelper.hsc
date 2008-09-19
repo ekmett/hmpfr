@@ -45,11 +45,10 @@ instance Storable MPFR where
     sizeOf _ = #size __mpfr_struct
     alignment _ = (undefined :: Int)
     peek = error "MPFR.peek: Not needed and not applicable"
-    poke p (MP prec s e fp) = do withForeignPtr fp $ \p1 -> do 
-                                      #{poke __mpfr_struct, _mpfr_prec} p prec
-                                      #{poke __mpfr_struct, _mpfr_sign} p s 
-                                      #{poke __mpfr_struct, _mpfr_exp} p e
-                                      #{poke __mpfr_struct, _mpfr_d} p p1
+    poke p (MP prec s e fp) = do #{poke __mpfr_struct, _mpfr_prec} p prec
+                                 #{poke __mpfr_struct, _mpfr_sign} p s 
+                                 #{poke __mpfr_struct, _mpfr_exp} p e
+                                 withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} p p1
 
 peekP      :: Ptr MPFR -> ForeignPtr Limb -> IO MPFR
 peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
