@@ -10,6 +10,7 @@ Stability:           experimental
 tested-with:	     GHC == 6.8.2 GHC == 6.8.3
 author:              Aleš Bizjak
 maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
+Homepage:	     http://code.haskell.org/hmpfr/
 build-Depends:       base
 
 Other-modules:       Data.Number.MPFR.FFIhelper
