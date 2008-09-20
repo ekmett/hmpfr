@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable #-}
 #include <chsmpfr.h>
 #include <mpfr.h>
 
@@ -12,9 +12,10 @@ import Foreign.C.String(CString)
 import Foreign.C.Types(CULong, CLong, CInt, CUInt, CDouble, CChar)
 import Foreign.Ptr(FunPtr, Ptr)
 
-
 import Foreign.Storable
 import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
+
+import Data.Typeable(Typeable)
 
 data RoundMode = Near | Zero | Up | Down | GMP_RND_MAX | GMP_RNDNA 
 
@@ -39,7 +40,7 @@ data MPFR = MP { precision :: !CPrecision,
                  sign :: !Sign,
                  exponent :: !Exp,
                  limbs :: !(ForeignPtr Limb)
-}
+} deriving (Typeable)
 
 instance Storable MPFR where
     sizeOf _ = #size __mpfr_struct
