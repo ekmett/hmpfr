@@ -6,7 +6,7 @@
 
     Maintainer  :  ales.bizjak0@gmail.com
     Stability   :  experimental
-    Portability :  portable
+    Portability :  non-portable
 
  Conversion from basic Haskell types to MPFR. See MPFR manual for detailed documentation.
 -}

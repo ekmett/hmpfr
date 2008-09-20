@@ -6,7 +6,7 @@
 
     Maintainer  :  ales.bizjak0@gmail.com
     Stability   :  experimental
-    Portability :  portable
+    Portability :  non-portable
 
  Comparison functions. All the functions that return Maybe Ordering return Nothing
  when one of the operands is NaN and  Just _ otherwise.

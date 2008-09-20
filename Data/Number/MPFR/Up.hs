@@ -6,7 +6,7 @@
 
     Maintainer  :  ales.bizjak0@gmail.com
     Stability   :  experimental
-    Portability :  portable
+    Portability :  non-portable
 
   This module defines instances Num, Real, Fractional, Floating and RealFrac of MPFR.
   Operations are rounded with RoundMode Up and computed with max precision of two 

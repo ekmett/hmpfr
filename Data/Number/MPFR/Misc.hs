@@ -6,7 +6,7 @@
 
     Maintainer  :  ales.bizjak0@gmail.com
     Stability   :  experimental
-    Portability :  portable
+    Portability :  non-portable
 
  Functions that don't belong anywhere else. See MPFR manual for detailed documentation.
 -}
