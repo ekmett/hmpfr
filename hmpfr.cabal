@@ -9,7 +9,7 @@ license-file:        LICENSE
 Stability:           experimental
 tested-with:	     GHC == 6.8.2 GHC == 6.8.3
 author:              Aleš Bizjak
-maintainer:          <ales.bizjak0@gmail.com>
+maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
 Homepage:	     http://code.haskell.org/hmpfr/
 build-Depends:       base
 
