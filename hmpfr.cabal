@@ -1,5 +1,5 @@
 name:                hmpfr
-version:             0.1
+version:             0.1.1
 synopsis:            Haskell binding to MPFR library
 description:         Haskell binding to MPFR library. Tested with MPFR 2.3.1 and 2.3.2.
 		     Some simple examples of usage can be found in test/Demo.hs.
