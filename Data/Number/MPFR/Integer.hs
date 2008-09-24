@@ -92,8 +92,8 @@ remquo_          :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int, Int)
 remquo_ r p d d' = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
-                  with dummy $ \p1 -> do 
+                  alloca $ \p1 -> do
+                    pokeDummy p1 fp p
                     with d $ \p2 -> do
                       with d' $ \p3 -> do
                         alloca $ \p4 -> do

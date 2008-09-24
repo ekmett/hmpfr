@@ -22,11 +22,11 @@ import Data.Number.MPFR.Assignment
 
 nextToward         :: MPFR -> MPFR -> MPFR
 nextToward mp1 mp2 = unsafePerformIO go
-    where go = do let p = fromIntegral (getPrec mp1)
-                  ls <- mpfr_custom_get_size p
+    where go = do let p = getPrec mp1
+                  ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP p 0 0 fp
-                  with dummy $ \p1 -> do
+                  alloca $ \p1 -> do
+                      pokeDummy p1 fp p
                       with mp1 $ \p2 -> do 
                         with mp2 $ \p3 -> do
                           _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
@@ -36,11 +36,11 @@ nextToward mp1 mp2 = unsafePerformIO go
 
 nextAbove     :: MPFR -> MPFR
 nextAbove mp1 = unsafePerformIO go
-    where go = do let p = fromIntegral (getPrec mp1)
-                  ls <- mpfr_custom_get_size p
+    where go = do let p = getPrec mp1
+                  ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP p 0 0 fp
-                  with dummy $ \p1 -> do
+                  alloca $ \p1 -> do
+                      pokeDummy p1 fp p
                       with mp1 $ \p2 -> do 
                         _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
                         mpfr_nextabove p1 
@@ -48,11 +48,11 @@ nextAbove mp1 = unsafePerformIO go
 
 nextBelow     :: MPFR -> MPFR
 nextBelow mp1 = unsafePerformIO go
-    where go = do let p = fromIntegral (getPrec mp1)
-                  ls <- mpfr_custom_get_size p
+    where go = do let p = getPrec mp1
+                  ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP p 0 0 fp
-                  with dummy $ \p1 -> do
+                  alloca $ \p1 -> do
+                      pokeDummy p1 fp p
                       with mp1 $ \p2 -> do 
                         _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
                         mpfr_nextbelow p1 
@@ -67,8 +67,8 @@ minD r p d1 d2 = fst $ minD_ r p d1 d2
 random2       :: Precision -> MpSize -> Exp -> IO MPFR
 random2 p m e = do ls <- mpfr_custom_get_size (fromIntegral p)
                    fp <- mallocForeignPtrBytes (fromIntegral ls)
-                   let dummy = MP (fromIntegral p) 0 0 fp
-                   with dummy $ \p1 -> do
+                   alloca $ \p1 -> do
+                     pokeDummy p1 fp p
                      mpfr_random2 p1 m e
                      peekP p1 fp
 
@@ -78,11 +78,11 @@ getExp d = (fromIntegral . unsafePerformIO) go
 
 setExp     :: MPFR -> Exp -> MPFR
 setExp d e = unsafePerformIO go
-    where go = do let p = fromIntegral (getPrec d)
-                  ls <- mpfr_custom_get_size p
+    where go = do let p = getPrec d
+                  ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP p 0 0 fp
-                  with dummy $ \p1 -> do
+                  alloca $ \p1 -> do
+                    pokeDummy p1 fp p
                     with d $ \p2 -> do 
                       mpfr_set p1 p2 ((fromIntegral . fromEnum) Near)
                       mpfr_set_exp p1 e

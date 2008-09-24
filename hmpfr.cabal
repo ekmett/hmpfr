@@ -39,7 +39,7 @@ Data-files:	     README
 
 build-type:          Simple
 build-tools:         hsc2hs
-GHC-options:         -Wall -fno-warn-orphans -O2
+GHC-options:         -Wall -fno-warn-orphans -O2 -fvia-C -optc-O2
 GHC-prof-options:    -prof -auto-all
 include-dirs:        cbits
 includes:            chsmpfr.h mpfr.h

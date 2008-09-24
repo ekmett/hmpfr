@@ -11,9 +11,9 @@ import Data.Int
 import Foreign.C.String(CString)
 import Foreign.C.Types(CULong, CLong, CInt, CUInt, CDouble, CChar)
 import Foreign.Ptr(FunPtr, Ptr)
-
+import Foreign.Marshal(alloca)
 import Foreign.Storable
-import Foreign.ForeignPtr (ForeignPtr, withForeignPtr)
+import Foreign.ForeignPtr (ForeignPtr, withForeignPtr, mallocForeignPtrBytes)
 
 import Data.Typeable(Typeable)
 
@@ -50,12 +50,30 @@ instance Storable MPFR where
                                  #{poke __mpfr_struct, _mpfr_sign} p s 
                                  #{poke __mpfr_struct, _mpfr_exp} p e
                                  withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} p p1
-
+{-# INLINE peekP #-}
 peekP      :: Ptr MPFR -> ForeignPtr Limb -> IO MPFR
 peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
 	        r21 <- #{peek __mpfr_struct, _mpfr_sign} p
 		r22 <- #{peek __mpfr_struct, _mpfr_exp} p
                 return (MP r11 r21 r22 fp)
+{-# INLINE withDummy #-}
+withDummy     :: Word -> (Ptr MPFR -> IO CInt) -> IO (MPFR, Int)
+withDummy w f = do alloca $ \ptr -> do
+                      ls <- mpfr_custom_get_size (fromIntegral w)
+                      fp <- mallocForeignPtrBytes (fromIntegral ls)
+                      #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral w :: CPrecision)
+                      #{poke __mpfr_struct, _mpfr_sign} ptr (1 :: Sign) 
+                      #{poke __mpfr_struct, _mpfr_exp} ptr (0 :: Exp)
+                      withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} ptr p1
+                      r2 <- f ptr
+                      r1 <- peekP ptr fp
+                      return (r1, fromIntegral r2)
+
+pokeDummy          :: Ptr MPFR -> ForeignPtr Limb -> Word -> IO ()
+pokeDummy ptr fp p = do #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral p :: CPrecision)
+                        #{poke __mpfr_struct, _mpfr_sign} ptr (0 :: Sign) 
+                        #{poke __mpfr_struct, _mpfr_exp} ptr (0 :: Exp)
+                        withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} ptr p1
 
 bitsPerMPLimb :: Int 
 bitsPerMPLimb = 8 * #size mp_limb_t

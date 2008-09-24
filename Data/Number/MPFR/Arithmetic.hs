@@ -191,13 +191,8 @@ powi_ r p d1 d2 = withMPFRBAsi r p d1 (fromIntegral d2) mpfr_pow_si
       
 wpoww_          :: RoundMode -> Precision -> Word -> Word -> (MPFR , Int)
 wpoww_ r p d1 d2 = unsafePerformIO go
-    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
-                  fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
-                  with dummy $ \p1 -> do 
-                    r2 <- mpfr_ui_pow_ui p1 (fromIntegral d1) (fromIntegral d2) ((fromIntegral . fromEnum) r)
-                    r1 <- peekP p1 fp
-                    return (r1, fromIntegral r2)
+    where go = do withDummy p $ \p1 -> do 
+                    mpfr_ui_pow_ui p1 (fromIntegral d1) (fromIntegral d2) ((fromIntegral . fromEnum) r)
         
 wpow_           :: RoundMode -> Precision -> Word -> MPFR -> (MPFR , Int)
 wpow_ r p d1 d2 = withMPFRBAiu r p (fromIntegral d1) d2 mpfr_ui_pow

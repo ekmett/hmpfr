@@ -222,12 +222,12 @@ sincos_ :: RoundMode
 sincos_ r p p' d = unsafePerformIO go 
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
                   ls' <- mpfr_custom_get_size (fromIntegral p')
                   fp' <- mallocForeignPtrBytes (fromIntegral ls')
-                  let dummy' = MP (fromIntegral p') 0 0 fp'
-                  with dummy $ \p1 -> do 
-                    with dummy' $ \p2 -> do 
+                  alloca $ \p1 -> do 
+                    pokeDummy p1 fp (fromIntegral ls)
+                    alloca $ \p2 -> do 
+                      pokeDummy p2 fp' (fromIntegral ls')
                       with d $ \p3 -> do
                         r3 <- mpfr_sin_cos p1 p2 p3 ((fromIntegral . fromEnum) r)
                         r1 <- peekP p1 fp
@@ -295,8 +295,8 @@ lgamma_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int, Int)
 lgamma_ r p d = unsafePerformIO go
     where go = do ls <- mpfr_custom_get_size (fromIntegral p)
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
-                  with dummy $ \p1 -> do
+                  alloca $ \p1 -> do
+                    pokeDummy p1 fp (fromIntegral ls)
                     with d $ \p2 -> do
                       alloca $ \p3 -> do
                         r3 <- mpfr_lgamma p1 p3 p2 ((fromIntegral . fromEnum) r)
@@ -336,29 +336,19 @@ yn_ r p i d = withMPFRBAis r p (fromIntegral i) d mpfr_yn
 
 fma_                 :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> (MPFR, Int)
 fma_ r p mp1 mp2 mp3 = unsafePerformIO go
-    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
-                  fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
-                  with dummy $ \p1 -> do
+    where go = do withDummy p $ \p1 -> do
                     with mp1 $ \p2 -> do 
                       with mp2 $ \p3 -> do 
                         with mp3 $ \p4 -> do 
-                          r2 <- mpfr_fma p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
-                          r1 <- peekP p1 fp 
-                          return (r1, fromIntegral r2)
+                          mpfr_fma p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
 
 fms_                 :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> (MPFR, Int)
 fms_ r p mp1 mp2 mp3 = unsafePerformIO go
-    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
-                  fp <- mallocForeignPtrBytes (fromIntegral ls)
-                  let dummy = MP (fromIntegral p) 0 0 fp
-                  with dummy $ \p1 -> do
+    where go = do withDummy p $ \p1 -> do
                     with mp1 $ \p2 -> do 
                       with mp2 $ \p3 -> do 
                         with mp3 $ \p4 -> do 
-                          r2 <- mpfr_fms p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
-                          r1 <- peekP p1 fp
-                          return (r1, fromIntegral r2)
+                          mpfr_fms p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
 
 agm_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 agm_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_agm
