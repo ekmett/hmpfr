@@ -19,6 +19,8 @@ import Data.Number.MPFR.Internal
 
 import Data.Number.MPFR.Assignment
 
+import Data.List(foldl')
+
 
 nextToward         :: MPFR -> MPFR -> MPFR
 nextToward mp1 mp2 = unsafePerformIO go
@@ -98,14 +100,16 @@ minD_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
 minD_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_min
 
 getPrec   :: MPFR -> Precision
-getPrec d = fromIntegral (withMPFRP d mpfr_get_prec)
+getPrec (MP p _ _ _) = fromIntegral p -- fromIntegral (withMPFRP d mpfr_get_prec)
 
 -- | getMantissa and getExp return values such that
 --
 -- > d = getMantissa d * 2^(getExp d - Prelude.ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
+--
+-- Currently it doesn't handle special values correctly.
 getMantissa   :: MPFR -> Integer
 getMantissa d = toInteger (sign d) * h
-               where (h, _) = foldl (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
+    where (h, _) = foldl' (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
 
 one :: MPFR
 one = fromWord Near minPrec 1

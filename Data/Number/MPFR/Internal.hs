@@ -78,11 +78,11 @@ withMPFRBAis r p d !mp1 f = unsafePerformIO go
                      
 {-# INLINE withMPFRB #-}
 withMPFRB       :: MPFR -> (Ptr MPFR -> IO CInt) -> CInt 
-withMPFRB mp1 !f = unsafePerformIO go
+withMPFRB !mp1 f = unsafePerformIO go
     where go = with mp1 $ \p1 -> f p1
 
 withMPFRP       :: MPFR -> (Ptr MPFR -> IO CPrecision) -> CPrecision 
-withMPFRP mp1 !f = unsafePerformIO go
+withMPFRP !mp1 f = unsafePerformIO go
     where go = with mp1 $ \p1 -> f p1
 
 {-# INLINE withMPFR #-}
@@ -98,7 +98,7 @@ withMPFR r p !mp1 f = unsafePerformIO go
 withMPFRBB           :: MPFR -> MPFR 
                           -> (Ptr MPFR -> Ptr MPFR -> IO CInt) 
                           -> CInt  
-withMPFRBB mp1 mp2 f = unsafePerformIO go
+withMPFRBB !mp1 !mp2 f = unsafePerformIO go
     where go = do with mp1 $ \p1 -> do 
                     with mp2 $ \p2 -> do 
                                       f p1 p2
@@ -128,7 +128,7 @@ withMPFRUI r p d f = unsafePerformIO go
 withMPFRR       :: Precision -> MPFR
                      -> (Ptr MPFR -> Ptr MPFR -> IO CInt)
                      -> (MPFR, Int)
-withMPFRR p d f = unsafePerformIO go
+withMPFRR p !d f = unsafePerformIO go
     where go = do withDummy p $ \p1 -> do
                     with d $ \p2 -> do
                       f p1 p2
