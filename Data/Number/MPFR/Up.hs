@@ -42,7 +42,7 @@ instance Num MPFR where
                     -- TODO works only partially
 
 instance Real MPFR where
-    toRational d = if d == 0 then 0 % 1 else n % 2 ^ e
+    toRational d = n % 2 ^ e
         where (n', e') = decompose d
               (n, e) = if e' >= 0 then ((n' * 2 ^ e'), 0)
                          else (n', - e')

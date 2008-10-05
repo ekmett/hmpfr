@@ -76,7 +76,8 @@ fitsSShort r d = withMPFRF d r mpfr_fits_sshort_p /= 0
 
 -- TODO
 decompose   :: MPFR -> (Integer, Exp)
-decompose d = (getMantissa d, getExp d - fromIntegral (Prelude.ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb))
+decompose d = if dm == 0 then (0, 0) else (dm, getExp d - fromIntegral (Prelude.ceiling (fromIntegral (getPrec d) / fromIntegral bitsPerMPLimb :: Double) * bitsPerMPLimb))
+    where dm = getMantissa d
 
 -- | Output a string in base 10 rounded to Near in exponential form.
 toStringExp       :: Word -- ^ number of digits

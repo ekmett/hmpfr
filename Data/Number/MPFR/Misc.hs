@@ -21,7 +21,6 @@ import Data.Number.MPFR.Assignment
 
 import Data.List(foldl')
 
-
 nextToward         :: MPFR -> MPFR -> MPFR
 nextToward mp1 mp2 = unsafePerformIO go
     where go = do let p = getPrec mp1
