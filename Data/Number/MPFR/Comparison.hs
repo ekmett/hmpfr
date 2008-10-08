@@ -72,16 +72,16 @@ cmpabs mp1 mp2 = if isNaN mp1 || isNaN mp2 then Nothing
                    else Just (compare (withMPFRBB mp1 mp2 mpfr_cmpabs) 0)
 
 isNaN   :: MPFR -> Bool
-isNaN d = withMPFRB d mpfr_nan_p /= 0
+isNaN (MP _ _ e _) = e == expNaN -- withMPFRB d mpfr_nan_p /= 0
 
 isInfinite   :: MPFR -> Bool
-isInfinite d = withMPFRB d mpfr_inf_p /= 0 
+isInfinite (MP _ _ e _) = e == expInf -- withMPFRB d mpfr_inf_p /= 0 
 
 isNumber   :: MPFR -> Bool
 isNumber d = withMPFRB d mpfr_number_p /= 0 
 
 isZero   :: MPFR -> Bool
-isZero d = withMPFRB d mpfr_zero_p /= 0
+isZero (MP _ _ e _) = e == expZero --withMPFRB d mpfr_zero_p /= 0
 
 sgn     :: MPFR -> Maybe Int 
 sgn mp1 = case (cmpw mp1 0) of
