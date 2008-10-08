@@ -11,6 +11,9 @@ s p n = s' 1 0
 s'    :: M.Precision -> Int -> M.MPFR
 s' p  = foldl (M.addi M.Near p) 0 . enumFromTo 1
 
+s'' :: M.Precision -> Int -> M.MPFR
+s'' p = foldl ((. M.fromInt M.Up p) . (+)) M.zero . enumFromTo 1
+
 -- compute pi with precision of n bits
 pi' n = M.pi M.Near n
 
