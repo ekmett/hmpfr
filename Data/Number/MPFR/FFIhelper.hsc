@@ -25,7 +25,7 @@ instance Enum RoundMode where
     fromEnum Up          = #{const GMP_RNDU} 
     fromEnum Down        = #{const GMP_RNDD} 
     fromEnum GMP_RND_MAX = #{const GMP_RND_MAX}
-    fromEnum GMP_RNDNA    = #{const GMP_RNDNA}
+    fromEnum GMP_RNDNA   = #{const GMP_RNDNA}
     
     toEnum #{const GMP_RNDN}    = Near
     toEnum #{const GMP_RNDZ}    = Zero
@@ -36,10 +36,10 @@ instance Enum RoundMode where
     toEnum i                    = error $ "RoundMode.toEnum called with illegal argument :" ++ show i 
 
 
-data MPFR = MP { precision :: !CPrecision,
-                 sign :: !Sign,
-                 exponent :: !Exp,
-                 limbs :: !(ForeignPtr Limb)
+data MPFR = MP { precision :: {-# UNPACK #-} !CPrecision,
+                 sign :: {-# UNPACK #-} !Sign,
+                 exponent :: {-# UNPACK #-} !Exp,
+                 limbs :: {-# UNPACK #-} !(ForeignPtr Limb)
 } deriving (Typeable)
 
 instance Storable MPFR where
@@ -53,8 +53,8 @@ instance Storable MPFR where
 {-# INLINE peekP #-}
 peekP      :: Ptr MPFR -> ForeignPtr Limb -> IO MPFR
 peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
-	        r21 <- #{peek __mpfr_struct, _mpfr_sign} p
-		r22 <- #{peek __mpfr_struct, _mpfr_exp} p
+                r21 <- #{peek __mpfr_struct, _mpfr_sign} p
+                r22 <- #{peek __mpfr_struct, _mpfr_exp} p
                 return (MP r11 r21 r22 fp)
 {-# INLINE withDummy #-}
 withDummy     :: Word -> (Ptr MPFR -> IO CInt) -> IO (MPFR, Int)
@@ -69,6 +69,7 @@ withDummy w f = do alloca $ \ptr -> do
                       r1 <- peekP ptr fp
                       return (r1, fromIntegral r2)
 
+{-# INLINE pokeDummy #-}
 pokeDummy          :: Ptr MPFR -> ForeignPtr Limb -> Word -> IO ()
 pokeDummy ptr fp p = do #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral p :: CPrecision)
                         #{poke __mpfr_struct, _mpfr_sign} ptr (0 :: Sign) 
@@ -80,6 +81,13 @@ bitsPerMPLimb = 8 * #size mp_limb_t
 
 expZero :: Exp
 expZero = #const __MPFR_EXP_ZERO
+
+expNaN :: Exp
+expNaN = #const __MPFR_EXP_NAN
+
+expInf :: Exp
+expInf = #const __MPFR_EXP_INF
+
 
 type CRoundMode = CInt
 

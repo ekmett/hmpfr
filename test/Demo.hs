@@ -1,6 +1,6 @@
 module Demo where
 
-import qualified Data.Number.MPFR as M
+import qualified Data.Number.MPFR.Up as M
 
 -- compute the sum from 1 to n with precision of p bits rounded to Near
 s     :: M.Precision -> Int -> M.MPFR

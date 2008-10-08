@@ -103,12 +103,15 @@ getPrec (MP p _ _ _) = fromIntegral p -- fromIntegral (withMPFRP d mpfr_get_prec
 
 -- | getMantissa and getExp return values such that
 --
--- > d = getMantissa d * 2^(getExp d - Prelude.ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
+-- > d = getMantissa d * 2^(getExp d - ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
 --
--- Currently it doesn't handle special values correctly.
+-- If case of 0, NaN or +-Inf it will return 0
 getMantissa   :: MPFR -> Integer
-getMantissa d = toInteger (sign d) * h
-    where (h, _) = foldl' (\(a,b) c -> (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb)) (0,0) (getMantissa' d) 
+getMantissa d@(MP _ s e _) | e /= expInf && e /= expNaN && e /= expZero = toInteger s * h
+                           | otherwise                                  = 0
+    where (h, _) = foldl' (\(a,b) c ->
+                               (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb))
+                   (0,0) (getMantissa' d) 
 
 one :: MPFR
 one = fromWord Near minPrec 1

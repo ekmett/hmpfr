@@ -19,11 +19,11 @@ module Data.Number.MPFR.Arithmetic
 import Data.Number.MPFR.Internal
 
 add           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-add r p d1 d2 = fst $ add_ r p d1 d2 
+add r p d1 d2 = fst $ add_ r p d1 d2
       
 addw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
 addw r p d1 d = fst $ addw_ r p d1 d 
-      
+
 addi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 addi r p d1 d = fst $ addi_ r p d1 d 
       
@@ -122,7 +122,7 @@ add_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_add
       
 addw_          :: RoundMode -> Precision -> MPFR -> Word -> (MPFR, Int)
 addw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_add_ui
-      
+
 addi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
 addi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_add_si
       
@@ -140,7 +140,7 @@ wsub_ r p d d1 = withMPFRBAiu r p (fromIntegral d) d1 mpfr_ui_sub
       
 isub_          :: RoundMode -> Precision -> Int -> MPFR -> (MPFR, Int)
 isub_ r p d d1 = withMPFRBAis r p (fromIntegral d) d1 mpfr_si_sub
-      
+
 mul_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 mul_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_mul
       

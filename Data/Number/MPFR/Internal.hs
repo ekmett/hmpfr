@@ -54,8 +54,8 @@ withMPFRBAsi             :: RoundMode -> Precision -> MPFR -> CLong
                               -> (Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt)
                               -> (MPFR, Int)
 withMPFRBAsi r p !mp1 d f = unsafePerformIO go 
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
+    where go = do withDummy p $ \ p1 -> do
+                    with mp1 $ \ p2 -> do
                       f p1 p2 d ((fromIntegral . fromEnum) r)
                                   
 {-# INLINE withMPFRBAiu #-}
@@ -139,8 +139,7 @@ checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
 getMantissa'     :: MPFR -> [Limb]
-getMantissa' (MP p _ e p1) | e == expZero = []
-                           | otherwise    = unsafePerformIO go
+getMantissa' (MP p _ e p1) = unsafePerformIO go
     where go = do withForeignPtr p1 $ \pt -> do 
                     arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
                     return arr 
