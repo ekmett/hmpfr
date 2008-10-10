@@ -139,7 +139,7 @@ checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
 getMantissa'     :: MPFR -> [Limb]
-getMantissa' (MP p _ e p1) = unsafePerformIO go
+getMantissa' (MP p _ _ p1) = unsafePerformIO go
     where go = do withForeignPtr p1 $ \pt -> do 
                     arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
                     return arr 
