@@ -83,11 +83,17 @@ isNumber d = withMPFRB d mpfr_number_p /= 0
 isZero   :: MPFR -> Bool
 isZero (MP _ _ e _) = e == expZero --withMPFRB d mpfr_zero_p /= 0
 
+
+sgn                               :: MPFR -> Maybe Int 
+sgn mp1@(MP _ s _ _) | isZero mp1 = Just 0
+                     | isNaN mp1  = Nothing
+                     | otherwise  = Just $ fromIntegral $ signum s
+{-
 sgn     :: MPFR -> Maybe Int 
 sgn mp1 = case (cmpw mp1 0) of
             Nothing -> Nothing
             Just x -> Just (pred . fromEnum $ x)
-
+-}
 -- TODO Maybe Bool????
 greater       :: MPFR -> MPFR -> Bool
 greater d1 d2 = withMPFRBB d1 d2 mpfr_greater_p /= 0

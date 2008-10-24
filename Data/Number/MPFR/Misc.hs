@@ -73,9 +73,9 @@ random2 p m e = do ls <- mpfr_custom_get_size (fromIntegral p)
                      mpfr_random2 p1 m e
                      peekP p1 fp
 
-getExp   :: MPFR -> Exp
-getExp d = (fromIntegral . unsafePerformIO) go
-                 where go = do with d $ \p1 -> mpfr_custom_get_exp p1
+getExp              :: MPFR -> Exp
+getExp (MP _ _ e _) = e {-(fromIntegral . unsafePerformIO) go
+                 where go = do with d $ \p1 -> mpfr_custom_get_exp p1-}
 
 setExp     :: MPFR -> Exp -> MPFR
 setExp d e = unsafePerformIO go
