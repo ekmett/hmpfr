@@ -19,6 +19,8 @@ import Data.Number.MPFR.Internal
 
 import Data.Number.MPFR.Assignment
 
+import Data.Number.MPFR.Comparison
+
 import Data.List(foldl')
 
 nextToward         :: MPFR -> MPFR -> MPFR
@@ -93,10 +95,22 @@ signbit   :: MPFR -> Bool
 signbit d = withMPFRB d mpfr_signbit /= 0
 
 maxD_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
-maxD_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_max
+--maxD_ r pw d1 d2 = withMPFRsBA r pw d1 d2 mpfr_max
+
+maxD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromIntegral pw == p' && e > expInf && e' > expInf = 
+                                                 case cmp d1 d2 of 
+                                                   Just LT -> (d2, 0)
+                                                   _ -> (d1, 0)
+                                             | otherwise           = withMPFRsBA r pw d1 d2 mpfr_max
+
 
 minD_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
-minD_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_min
+--minD_ r pw d1 d2 = withMPFRsBA r pw d1 d2 mpfr_min
+minD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromIntegral pw == p' && e > expInf && e' > expInf = 
+                                                 case cmp d1 d2 of 
+                                                   Just GT -> (d2, 0)
+                                                   _ -> (d1, 0)
+                                             | otherwise = withMPFRsBA r pw d1 d2 mpfr_min
 
 getPrec   :: MPFR -> Precision
 getPrec (MP p _ _ _) = fromIntegral p -- fromIntegral (withMPFRP d mpfr_get_prec)

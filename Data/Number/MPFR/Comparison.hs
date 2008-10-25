@@ -18,17 +18,29 @@
 
 module Data.Number.MPFR.Comparison where
 
-import Data.Number.MPFR.Misc
+--import Data.Number.MPFR.Misc
 
 import Data.Number.MPFR.Internal
 
-import Prelude hiding (isNaN)
+import Prelude hiding (isNaN, exponent, isInfinite)
 
 import Data.Maybe
 
-cmp         :: MPFR -> MPFR -> Maybe Ordering
-cmp mp1 mp2 = if isNaN mp1 || isNaN mp2 then Nothing 
-                else Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
+cmp                                                            :: MPFR -> MPFR -> Maybe Ordering
+cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | isNaN mp1 || isNaN mp2 = Nothing 
+                                        | e > expInf && e' > expInf = 
+                                            if  s /= s' then Just $ compare (signum s) (signum s') -- now both are non-singular
+                                              else if e /= e' then Just $ compare (fromIntegral s * e) (fromIntegral s * e')
+                                                else Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
+                                        | isZero mp1             = case isZero mp2 of
+                                                                     True -> Just EQ
+                                                                     False -> Just . toEnum . (+ 1) . negate . fromIntegral $ signum s' 
+                                        | isZero mp2             = Just . toEnum . (+ 1) . fromIntegral $ signum s
+                                        | isInfinite mp1         = case isInfinite mp2 of
+                                                                     True -> Just $ compare s s'
+                                                                     False -> Just $ compare s 0
+                                        | isInfinite mp2         = Just $ compare 0 s'
+                                        
 
 cmpw       :: MPFR -> Word -> Maybe Ordering
 cmpw mp1 w = if isNaN mp1 then Nothing else Just (compare (unsafePerformIO go) 0)
@@ -67,6 +79,7 @@ cmp2i d w e = unsafePerformIO go
                     if r2 == 0 then return (Just (compare r1 0))
                       else do mpfr_clear_erangeflag
                               return Nothing
+
 cmpabs         :: MPFR -> MPFR -> Maybe Ordering
 cmpabs mp1 mp2 = if isNaN mp1 || isNaN mp2 then Nothing 
                    else Just (compare (withMPFRBB mp1 mp2 mpfr_cmpabs) 0)
@@ -96,23 +109,23 @@ sgn mp1 = case (cmpw mp1 0) of
 -}
 -- TODO Maybe Bool????
 greater       :: MPFR -> MPFR -> Bool
-greater d1 d2 = withMPFRBB d1 d2 mpfr_greater_p /= 0
+greater d1 d2 = maybe False (== GT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_greater_p /= 0
 
 greatereq       :: MPFR -> MPFR -> Bool
-greatereq d1 d2 = withMPFRBB d1 d2 mpfr_greaterequal_p /= 0
+greatereq d1 d2 = maybe False (/= LT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_greaterequal_p /= 0
 
 less       :: MPFR -> MPFR -> Bool
-less d1 d2 = withMPFRBB d1 d2 mpfr_less_p /= 0
+less d1 d2 = maybe False (== LT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_less_p /= 0
 
 lesseq       :: MPFR -> MPFR -> Bool
-lesseq d1 d2 = withMPFRBB d1 d2 mpfr_lessequal_p /= 0
+lesseq d1 d2 = maybe False (/= GT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_lessequal_p /= 0
 
 lessgreater       :: MPFR -> MPFR -> Maybe Bool
 lessgreater d1 d2 = if isNaN d1 || isNaN d2 then Nothing 
                       else Just (withMPFRBB d1 d2 mpfr_lessgreater_p /= 0)
 
 equal       :: MPFR -> MPFR -> Bool
-equal d1 d2 = withMPFRBB d1 d2 mpfr_equal_p /= 0
+equal d1 d2 = maybe False (== EQ) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_equal_p /= 0
 
 unordered       :: MPFR -> MPFR -> Maybe Bool
 unordered d1 d2 = if isNaN d1 || isNaN d2 then Nothing 
@@ -128,6 +141,6 @@ instance Ord MPFR where
     (<=)         = lesseq
     (>)          = greater
     (>=)         = greatereq
-    max d d'     = maxD Zero (maxPrec d d') d d'
-    min d d'     = minD Zero (maxPrec d d') d d'
+--    max d d'     = maxD Zero (maxPrec d d') d d'
+--    min d d'     = minD Zero (maxPrec d d') d d'
                     

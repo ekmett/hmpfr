@@ -18,6 +18,8 @@ module Data.Number.MPFR.Arithmetic
 
 import Data.Number.MPFR.Internal
 
+import Prelude hiding(isNaN)
+
 add           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 add r p d1 d2 = fst $ add_ r p d1 d2
       
@@ -197,8 +199,9 @@ wpoww_ r p d1 d2 = unsafePerformIO go
 wpow_           :: RoundMode -> Precision -> Word -> MPFR -> (MPFR , Int)
 wpow_ r p d1 d2 = withMPFRBAiu r p (fromIntegral d1) d2 mpfr_ui_pow
       
-neg_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
-neg_ r p d = withMPFR r p d mpfr_neg
+neg_                       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+neg_ r p mp1@(MP p' s e fp) | p' == fromIntegral p && e /= expNaN = (MP p' (negate s) e fp, 0)
+                            | otherwise = withMPFR r p mp1 mpfr_neg
       
 absD_      :: RoundMode -> Precision -> MPFR -> (MPFR , Int)
 absD_ r p d = withMPFR r p d mpfr_abs
