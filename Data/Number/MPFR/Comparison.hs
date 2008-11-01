@@ -26,12 +26,12 @@ import Prelude hiding (isNaN, exponent, isInfinite)
 
 import Data.Maybe
 
-cmp                                                            :: MPFR -> MPFR -> Maybe Ordering
+cmp                                                              :: MPFR -> MPFR -> Maybe Ordering
 cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | isNaN mp1 || isNaN mp2 = Nothing 
-                                        | e > expInf && e' > expInf = 
-                                            if  s /= s' then Just $ compare (signum s) (signum s') -- now both are non-singular
-                                              else if e /= e' then Just $ compare (fromIntegral s * e) (fromIntegral s * e')
-                                                else Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
+                                        | e > expInf && e' > expInf = case (s /= s', e /= e') of
+                                                                        (True, _) -> Just $ compare (signum s) (signum s')
+                                                                        (_, True) -> Just $ compare (fromIntegral s * e) (fromIntegral s * e')
+                                                                        (False, False) -> Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
                                         | isZero mp1             = case isZero mp2 of
                                                                      True -> Just EQ
                                                                      False -> Just . toEnum . (+ 1) . negate . fromIntegral $ signum s' 
@@ -40,7 +40,6 @@ cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | isNaN mp1 || isNaN mp2 = Nothing
                                                                      True -> Just $ compare s s'
                                                                      False -> Just $ compare s 0
                                         | isInfinite mp2         = Just $ compare 0 s'
-                                        
 
 cmpw       :: MPFR -> Word -> Maybe Ordering
 cmpw mp1 w = if isNaN mp1 then Nothing else Just (compare (unsafePerformIO go) 0)

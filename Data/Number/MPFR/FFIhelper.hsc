@@ -50,6 +50,7 @@ instance Storable MPFR where
                                  #{poke __mpfr_struct, _mpfr_sign} p s 
                                  #{poke __mpfr_struct, _mpfr_exp} p e
                                  withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} p p1
+
 {-# INLINE peekP #-}
 peekP      :: Ptr MPFR -> ForeignPtr Limb -> IO MPFR
 peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p

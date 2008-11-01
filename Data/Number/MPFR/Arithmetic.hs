@@ -204,7 +204,8 @@ neg_ r p mp1@(MP p' s e fp) | p' == fromIntegral p && e /= expNaN = (MP p' (nega
                             | otherwise = withMPFR r p mp1 mpfr_neg
       
 absD_      :: RoundMode -> Precision -> MPFR -> (MPFR , Int)
-absD_ r p d = withMPFR r p d mpfr_abs
+absD_ r p d@(MP p' s e fp) | p' == fromIntegral p && e /= expNaN = (MP p' (abs s) e fp, 0)
+                           | otherwise                           = withMPFR r p d mpfr_abs
       
 dim_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
 dim_ r p d1 d2 = withMPFRsBA r p d1 d2 mpfr_dim
