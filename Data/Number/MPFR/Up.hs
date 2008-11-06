@@ -38,8 +38,7 @@ instance Num MPFR where
     negate d      = neg Up (getPrec d) d
     abs d         = absD Up (getPrec d) d
     signum d      = fromInt Up minPrec (fromMaybe (-1) (sgn d))
-    fromInteger i = fromIntegerA Zero (checkPrec $ binprec i) i
-                    -- TODO works only partially
+    fromInteger i = fromIntegerA Zero (checkPrec $ binprec i) i 
 
 instance Real MPFR where
     toRational d = n % 2 ^ e

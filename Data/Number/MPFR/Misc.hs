@@ -119,7 +119,7 @@ getPrec (MP p _ _ _) = fromIntegral p -- fromIntegral (withMPFRP d mpfr_get_prec
 --
 -- > d = getMantissa d * 2^(getExp d - ceiling ((getPrec d) / bitsPerMPLimb)* bitsPerMPLimb )
 --
--- If case of 0, NaN or +-Inf it will return 0
+-- In case of 0, NaN or +-Inf it will return 0
 getMantissa   :: MPFR -> Integer
 getMantissa d@(MP _ s e _) | e /= expInf && e /= expNaN && e /= expZero = toInteger s * h
                            | otherwise                                  = 0

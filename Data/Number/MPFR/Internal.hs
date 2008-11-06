@@ -134,7 +134,7 @@ withMPFRR p !d f = unsafePerformIO go
                       f p1 p2
 
                         
-
+{-# INLINE checkPrec #-}
 checkPrec :: Precision -> Precision
 checkPrec = max minPrec
 
@@ -149,8 +149,10 @@ binprec   :: Integer -> Precision
 binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
 -}
 -- TODO
+{-# INLINE binprec #-}
 binprec   :: Integer -> Precision
-binprec d = Prelude.floor (logBase 2 (fromInteger (if d >= 0 then d else -d)) :: Double) + 1
+binprec d | d == 0 = minPrec
+          | otherwise = Prelude.floor (logBase 2 (abs . fromInteger $ d) :: Double) + 1
 
 --one ::  MPFR              
 --one = fromWord Near minPrec 1

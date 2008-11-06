@@ -26,20 +26,23 @@ import Prelude hiding (isNaN, exponent, isInfinite)
 
 import Data.Maybe
 
-cmp                                                              :: MPFR -> MPFR -> Maybe Ordering
-cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | isNaN mp1 || isNaN mp2 = Nothing 
-                                        | e > expInf && e' > expInf = case (s /= s', e /= e') of
-                                                                        (True, _) -> Just $ compare (signum s) (signum s')
-                                                                        (_, True) -> Just $ compare (fromIntegral s * e) (fromIntegral s * e')
-                                                                        (False, False) -> Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
-                                        | isZero mp1             = case isZero mp2 of
-                                                                     True -> Just EQ
-                                                                     False -> Just . toEnum . (+ 1) . negate . fromIntegral $ signum s' 
+{-# INLINE cmp #-}
+cmp :: MPFR -> MPFR -> Maybe Ordering
+cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | e > expInf && e' > expInf = 
+                                            case (s /= s', e /= e') of
+                                              (True, _) -> Just $ compare (signum s) (signum s')
+                                              (_, True) -> Just $ compare (fromIntegral s * e) (fromIntegral s * e')
+                                              (False, False) -> Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
+                                        | isZero mp1             = 
+                                            case isZero mp2 of
+                                              True -> Just EQ
+                                              False -> Just . toEnum . (+ 1) . negate . fromIntegral $ signum s' 
                                         | isZero mp2             = Just . toEnum . (+ 1) . fromIntegral $ signum s
                                         | isInfinite mp1         = case isInfinite mp2 of
                                                                      True -> Just $ compare s s'
                                                                      False -> Just $ compare s 0
                                         | isInfinite mp2         = Just $ compare 0 s'
+                                        | isNaN mp1 || isNaN mp2 = Nothing 
 
 cmpw       :: MPFR -> Word -> Maybe Ordering
 cmpw mp1 w = if isNaN mp1 then Nothing else Just (compare (unsafePerformIO go) 0)
@@ -83,19 +86,22 @@ cmpabs         :: MPFR -> MPFR -> Maybe Ordering
 cmpabs mp1 mp2 = if isNaN mp1 || isNaN mp2 then Nothing 
                    else Just (compare (withMPFRBB mp1 mp2 mpfr_cmpabs) 0)
 
+{-# INLINE isNaN #-}
 isNaN   :: MPFR -> Bool
 isNaN (MP _ _ e _) = e == expNaN -- withMPFRB d mpfr_nan_p /= 0
 
+{-# INLINE isInfinite #-}
 isInfinite   :: MPFR -> Bool
 isInfinite (MP _ _ e _) = e == expInf -- withMPFRB d mpfr_inf_p /= 0 
 
 isNumber   :: MPFR -> Bool
 isNumber d = withMPFRB d mpfr_number_p /= 0 
 
+{-# INLINE isZero #-}
 isZero   :: MPFR -> Bool
 isZero (MP _ _ e _) = e == expZero --withMPFRB d mpfr_zero_p /= 0
 
-
+{-# INLINE sgn #-}
 sgn                               :: MPFR -> Maybe Int 
 sgn mp1@(MP _ s _ _) | isZero mp1 = Just 0
                      | isNaN mp1  = Nothing
