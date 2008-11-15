@@ -40,7 +40,7 @@ Data-files:          README
 build-type:          Simple
 build-tools:         hsc2hs
 GHC-options:         -Wall -fno-warn-orphans -O2 -funfolding-keeness-factor=10
-GHC-prof-options:    -prof -auto-all
+GHC-prof-options:    -prof -auto
 include-dirs:        cbits
 includes:            chsmpfr.h mpfr.h
 install-includes:    chsmpfr.h
