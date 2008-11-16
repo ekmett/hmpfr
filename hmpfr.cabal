@@ -36,6 +36,7 @@ Exposed-modules:     Data.Number.MPFR.Assignment
 Extra-source-files:  test/Demo.hs
 
 Data-files:          README
+		     dict.txt
 
 build-type:          Simple
 build-tools:         hsc2hs
