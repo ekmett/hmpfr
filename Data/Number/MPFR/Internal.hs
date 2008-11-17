@@ -20,6 +20,7 @@ import Data.Number.MPFR.FFIhelper as FFIhelper
 import Foreign.C(CInt, CLong, CULong, withCString, peekCString)
 import Foreign.Marshal(alloca, peekArray)
 import Foreign(unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with, withForeignPtr)
+import Foreign.Storable(sizeOf)
 
 import Data.Bits(shiftL)
 
@@ -161,4 +162,4 @@ binprec d | d == 0 = minPrec
 --ggzero = fromWord Near minPrec 0
 
 minPrec :: Precision
-minPrec = 32
+minPrec = fromIntegral $ 8 * sizeOf (undefined :: Int)

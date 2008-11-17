@@ -1,3 +1,5 @@
+{-# LANGUAGE MagicHash, CPP #-}
+
 {-|
     Module      :  Data.Number.MPFR.Near
     Description :  top level
@@ -30,6 +32,11 @@ import Data.Maybe
 
 import Data.Ratio
 
+#if __GLASGOW_HASKELL__ >= 610
+import GHC.Integer.Internals
+#endif
+import GHC.Exts
+
 instance Num MPFR where
     d + d'        = add Near (maxPrec d d') d d'
     d - d'        = sub Near (maxPrec d d') d d'
@@ -37,8 +44,8 @@ instance Num MPFR where
     negate d      = neg Near (getPrec d) d
     abs d         = absD Near (getPrec d) d
     signum d      = fromInt Near minPrec (fromMaybe (-1) (sgn d))
-    fromInteger i = fromIntegerA Zero (checkPrec $ binprec i) i
-                    -- TODO works only partially
+    fromInteger (S# i) = fromInt Near minPrec (I# i)
+    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral $ I# n * bitsPerIntegerLimb) i 
 
 instance Real MPFR where
     toRational d = n % 2 ^ e

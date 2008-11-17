@@ -1,5 +1,3 @@
-- better (and correct for all integers) conversion from Integer to MPFR
-
 - optimize, there is still too much overhead with peek and poke
 
 - maybe provide "impure" versions of operations in IO

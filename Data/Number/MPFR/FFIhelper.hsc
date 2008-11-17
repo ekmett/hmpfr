@@ -80,6 +80,9 @@ pokeDummy ptr fp p = do #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral p ::
 bitsPerMPLimb :: Int 
 bitsPerMPLimb = 8 * #size mp_limb_t
 
+bitsPerIntegerLimb :: Int
+bitsPerIntegerLimb = bitsPerMPLimb
+
 expZero :: Exp
 expZero = #const __MPFR_EXP_ZERO
 

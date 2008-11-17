@@ -1,3 +1,5 @@
+{-# LANGUAGE MagicHash, CPP #-}
+
 {-|
     Module      :  Data.Number.MPFR.Up
     Description :  top level
@@ -31,6 +33,11 @@ import Data.Maybe
 
 import Data.Ratio
 
+#if __GLASGOW_HASKELL__ >= 610
+import GHC.Integer.Internals
+#endif
+import GHC.Exts
+
 instance Num MPFR where
     d + d'        = add Up (maxPrec d d') d d'
     d - d'        = sub Up (maxPrec d d') d d'
@@ -38,7 +45,8 @@ instance Num MPFR where
     negate d      = neg Up (getPrec d) d
     abs d         = absD Up (getPrec d) d
     signum d      = fromInt Up minPrec (fromMaybe (-1) (sgn d))
-    fromInteger i = fromIntegerA Zero (checkPrec $ binprec i) i 
+    fromInteger (S# i) = fromInt Up minPrec (I# i)
+    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral $ I# n * bitsPerIntegerLimb) i 
 
 instance Real MPFR where
     toRational d = n % 2 ^ e
