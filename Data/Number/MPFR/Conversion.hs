@@ -28,11 +28,11 @@ toDouble r mp1 = (realToFrac . unsafePerformIO) go
 
 toDouble2exp     :: RoundMode -> MPFR -> (Double, Int)
 toDouble2exp r mp1 = unsafePerformIO go 
-    where go = do with mp1 $ \p1 -> do
-                    alloca $ \p2 -> do
-                      r1 <- mpfr_get_d_2exp p2 p1 ((fromIntegral . fromEnum) r)
-                      r2 <- peek p2
-                      return (realToFrac r1, fromIntegral r2)
+    where go = with mp1 $ \p1 ->
+                   alloca $ \p2 -> do
+                       r1 <- mpfr_get_d_2exp p2 p1 ((fromIntegral . fromEnum) r)
+                       r2 <- peek p2
+                       return (realToFrac r1, fromIntegral r2)
                       
 toInt     :: RoundMode -> MPFR -> Int
 toInt r mp1 = (fromIntegral . unsafePerformIO) go
@@ -48,7 +48,7 @@ mpfrToString           :: RoundMode
                    -> Word -- ^ base
                    -> MPFR -> (String, Exp)
 mpfrToString r n b mp1 = unsafePerformIO go 
-    where go = with mp1 $ \p1 -> do
+    where go = with mp1 $ \p1 ->
                  alloca $ \p2 -> do
                      p3 <- mpfr_get_str nullPtr p2 (fromIntegral b) (fromIntegral n) p1 ((fromIntegral . fromEnum) r)
                      r1 <- peekCString p3 
@@ -86,18 +86,24 @@ decompose d@(MP p _ e _) | e == expInf  = error "Don't know how to decompose Inf
 -- | Output a string in base 10 rounded to Near in exponential form.
 toStringExp       :: Word -- ^ number of digits
                   -> MPFR -> String
-toStringExp dec d = 
-    if isInfixOf "NaN" ss then "NaN"
-       else if isInfixOf "Inf" ss then s ++ "Infinity"
-               else s ++ case e > 0 of
-                           True  -> case Prelude.floor (logBase 10 2 * fromIntegral (getExp d) :: Double) > dec  of
-                                      False -> take e ss ++ let bt = backtrim (drop e ss) in if null bt then "" else "." ++ bt
-                                      True  -> head ss : "." ++ let bt = (backtrim . tail) ss in if null bt then "0"
-                                                                                                   else bt ++ "e" ++ show (pred e)
-                           False -> head ss : "." ++ (let bt = (backtrim . tail) ss in
-                                                     if null bt then "0" 
-                                                       else bt )
-                                                  ++ "e" ++ show (pred e)
+toStringExp dec d | isInfixOf "NaN" ss = "NaN"
+                  | isInfixOf "Inf" ss = s ++ "Infinity"
+                  | otherwise          = 
+                      s ++ case e > 0 of
+                             True  -> case Prelude.floor prec > dec  of
+                                        False -> take e ss ++ 
+                                                 let bt = backtrim (drop e ss)
+                                                 in if null bt then "" 
+                                                    else '.' : bt
+                                        True  -> head ss : '.' :
+                                                 let bt = (backtrim . tail) ss 
+                                                 in if null bt then "0"
+                                                    else bt ++ "e" ++ show (pred e)
+                             False -> head ss : '.' : 
+                                      (let bt = (backtrim . tail) ss in
+                                       if null bt then "0" 
+                                       else bt )
+                                      ++ "e" ++ show (pred e)
                     where (str, e') = mpfrToString Near n 10 d
                           e = fromIntegral e'
                           n        = max dec 5
@@ -105,20 +111,27 @@ toStringExp dec d =
                                       '-' -> ("-", tail str)
                                       _   -> ("" , str)
                           backtrim = reverse . dropWhile (== '0') . reverse 
+                          prec = logBase 10 2 * fromIntegral (getExp d) :: Double
 
 -- | Output a string in base 10 rounded to Near. The difference from @toStringExp@ is that
 -- it won't output in exponential form if it is sensible to do so.
 toString       :: Word -> MPFR -> String
-toString dec d =
-    if isInfixOf "NaN" ss then "NaN"
-       else if isInfixOf "Inf" ss then s ++ "Infinity"
-             else s ++ case compare 0 e of
-                         LT -> take e ss ++ (let bt = all (== '0') (drop e ss) in if bt then "" else '.' : (drop e ss))
-                               ++ (if fromIntegral n - e < 0 then "e" ++ show (e - fromIntegral n) else "")
-                         GT -> let ee = fromIntegral dec + e in 
-                               if ee <= 0 then "0" else 
-                                   head ss : "." ++ (backtrim . tail . take ee) ss ++ "e" ++ show (pred e)
-                         EQ -> "0." ++ let bt = all (== '0') ss in if bt then "0" else ss
+toString dec d | isInfixOf "NaN" ss = "NaN"
+               | isInfixOf "Inf" ss = s ++ "Infinity"
+               | otherwise          = 
+                   s ++ case compare 0 e of
+                          LT -> take e ss ++ 
+                                (let bt = all (== '0') (drop e ss) 
+                                 in if bt then "" else '.' : drop e ss)
+                                ++ (if fromIntegral n - e < 0 
+                                    then 'e' : show (e - fromIntegral n) 
+                                    else "")
+                          GT -> let ee = fromIntegral dec + e in 
+                                if ee <= 0 then "0" else 
+                                   head ss : '.' : (backtrim . tail . take ee) ss
+                                            ++ "e" ++ show (pred e)
+                          EQ -> "0." ++ let bt = all (== '0') ss 
+                                        in if bt then "0" else ss
                   where (str, e') = mpfrToString Near n 10 d
                         n        = max dec 5
                         e = fromIntegral e'

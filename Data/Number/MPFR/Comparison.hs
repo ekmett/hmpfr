@@ -113,24 +113,24 @@ sgn mp1 = case (cmpw mp1 0) of
             Just x -> Just (pred . fromEnum $ x)
 -}
 -- TODO Maybe Bool????
-greater       :: MPFR -> MPFR -> Bool
-greater d1 d2 = maybe False (== GT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_greater_p /= 0
+greater    :: MPFR -> MPFR -> Bool
+greater d1 = maybe False (== GT) . cmp d1 --withMPFRBB d1 d2 mpfr_greater_p /= 0
 
-greatereq       :: MPFR -> MPFR -> Bool
-greatereq d1 d2 = maybe False (/= LT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_greaterequal_p /= 0
+greatereq    :: MPFR -> MPFR -> Bool
+greatereq d1 = maybe False (/= LT) . cmp d1 --withMPFRBB d1 d2 mpfr_greaterequal_p /= 0
 
-less       :: MPFR -> MPFR -> Bool
-less d1 d2 = maybe False (== LT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_less_p /= 0
+less    :: MPFR -> MPFR -> Bool
+less d1 = maybe False (== LT) . cmp d1 --withMPFRBB d1 d2 mpfr_less_p /= 0
 
-lesseq       :: MPFR -> MPFR -> Bool
-lesseq d1 d2 = maybe False (/= GT) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_lessequal_p /= 0
+lesseq    :: MPFR -> MPFR -> Bool
+lesseq d1 = maybe False (/= GT) . cmp d1  --withMPFRBB d1 d2 mpfr_lessequal_p /= 0
 
 lessgreater       :: MPFR -> MPFR -> Maybe Bool
 lessgreater d1 d2 = if isNaN d1 || isNaN d2 then Nothing 
                       else Just (withMPFRBB d1 d2 mpfr_lessgreater_p /= 0)
 
-equal       :: MPFR -> MPFR -> Bool
-equal d1 d2 = maybe False (== EQ) (cmp d1 d2) --withMPFRBB d1 d2 mpfr_equal_p /= 0
+equal    :: MPFR -> MPFR -> Bool
+equal d1 = maybe False (== EQ) . cmp d1 --withMPFRBB d1 d2 mpfr_equal_p /= 0
 
 unordered       :: MPFR -> MPFR -> Maybe Bool
 unordered d1 d2 = if isNaN d1 || isNaN d2 then Nothing 
@@ -141,11 +141,11 @@ instance Eq MPFR where
     (==) = equal
 
 instance Ord MPFR where
-    compare d d' = fromMaybe GT (cmp d d')
-    (<)          = less
-    (<=)         = lesseq
-    (>)          = greater
-    (>=)         = greatereq
+    compare d = fromMaybe GT . cmp d
+    (<)       = less
+    (<=)      = lesseq
+    (>)       = greater
+    (>=)      = greatereq
 --    max d d'     = maxD Zero (maxPrec d d') d d'
 --    min d d'     = minD Zero (maxPrec d d') d d'
                     

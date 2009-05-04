@@ -17,164 +17,164 @@ module Data.Number.MPFR.Special where
 
 import Data.Number.MPFR.Internal
 
-log       :: RoundMode -> Precision -> MPFR -> MPFR
-log r p d = fst $ log_ r p d
+log     :: RoundMode -> Precision -> MPFR -> MPFR
+log r p = fst . log_ r p
 
-log2       :: RoundMode -> Precision -> MPFR -> MPFR
-log2 r p d = fst $ log2_ r p d
+log2     :: RoundMode -> Precision -> MPFR -> MPFR
+log2 r p = fst . log2_ r p
 
-log10       :: RoundMode -> Precision -> MPFR -> MPFR
-log10 r p d = fst $ log10_ r p d
+log10     :: RoundMode -> Precision -> MPFR -> MPFR
+log10 r p = fst . log10_ r p
 
-exp       :: RoundMode -> Precision -> MPFR -> MPFR
-exp r p d = fst $ exp_ r p d
+exp     :: RoundMode -> Precision -> MPFR -> MPFR
+exp r p = fst . exp_ r p
 
-exp2       :: RoundMode -> Precision -> MPFR -> MPFR
-exp2 r p d = fst $ exp2_ r p d
+exp2     :: RoundMode -> Precision -> MPFR -> MPFR
+exp2 r p = fst . exp2_ r p
 
-exp10       :: RoundMode -> Precision -> MPFR -> MPFR
-exp10 r p d = fst $ exp10_ r p d
+exp10     :: RoundMode -> Precision -> MPFR -> MPFR
+exp10 r p = fst . exp10_ r p
 
-sin       :: RoundMode -> Precision -> MPFR -> MPFR
-sin r p d = fst $ sin_ r p d
+sin     :: RoundMode -> Precision -> MPFR -> MPFR
+sin r p = fst . sin_ r p
 
-cos       :: RoundMode -> Precision -> MPFR -> MPFR
-cos r p d = fst $ cos_ r p d
+cos     :: RoundMode -> Precision -> MPFR -> MPFR
+cos r p = fst . cos_ r p
 
-tan       :: RoundMode -> Precision -> MPFR -> MPFR
-tan r p d = fst $ tan_ r p d 
+tan     :: RoundMode -> Precision -> MPFR -> MPFR
+tan r p = fst . tan_ r p
 
-sec       :: RoundMode -> Precision -> MPFR -> MPFR
-sec r p d = fst $ sec_ r p d
+sec     :: RoundMode -> Precision -> MPFR -> MPFR
+sec r p = fst . sec_ r p
 
-csc       :: RoundMode -> Precision -> MPFR -> MPFR
-csc r p d = fst $ csc_ r p d
+csc     :: RoundMode -> Precision -> MPFR -> MPFR
+csc r p = fst . csc_ r p
 
-cot       :: RoundMode -> Precision -> MPFR -> MPFR
-cot r p d = fst $ cot_ r p d 
+cot     :: RoundMode -> Precision -> MPFR -> MPFR
+cot r p = fst . cot_ r p
 
-sincos :: RoundMode
-       -> Precision -- ^ precision to compute sin
-       -> Precision -- ^ precision to compute cos 
-       -> MPFR
-       -> (MPFR, MPFR) -- ^ return (sin x, cos x)
+sincos          :: RoundMode
+                -> Precision -- ^ precision to compute sin
+                -> Precision -- ^ precision to compute cos 
+                -> MPFR
+                -> (MPFR, MPFR) -- ^ return (sin x, cos x)
 sincos r p p' d = case sincos_ r p p' d of
                     (a, b, _) -> (a, b)
 
-asin       :: RoundMode -> Precision -> MPFR -> MPFR
-asin r p d = fst $ asin_ r p d
+asin     :: RoundMode -> Precision -> MPFR -> MPFR
+asin r p = fst . asin_ r p
 
-acos       :: RoundMode -> Precision -> MPFR -> MPFR
-acos r p d = fst $ acos_ r p d
+acos     :: RoundMode -> Precision -> MPFR -> MPFR
+acos r p = fst . acos_ r p
 
-atan       :: RoundMode -> Precision -> MPFR -> MPFR
-atan r p d = fst $ atan_ r p d 
+atan     :: RoundMode -> Precision -> MPFR -> MPFR
+atan r p = fst . atan_ r p
 
-atan2          :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-atan2 r p d d' = fst $ atan2_ r p d d'
+atan2       :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+atan2 r p d = fst . atan2_ r p d
 
-sinh       :: RoundMode -> Precision -> MPFR -> MPFR
-sinh r p d = fst $ sinh_ r p d
+sinh     :: RoundMode -> Precision -> MPFR -> MPFR
+sinh r p = fst . sinh_ r p
 
-cosh       :: RoundMode -> Precision -> MPFR -> MPFR
-cosh r p d = fst $ cosh_ r p d
+cosh     :: RoundMode -> Precision -> MPFR -> MPFR
+cosh r p = fst . cosh_ r p
 
-tanh       :: RoundMode -> Precision -> MPFR -> MPFR
-tanh r p d = fst $ tanh_ r p d 
+tanh     :: RoundMode -> Precision -> MPFR -> MPFR
+tanh r p = fst . tanh_ r p
 
-sech       :: RoundMode -> Precision -> MPFR -> MPFR
-sech r p d = fst $ sech_ r p d
+sech     :: RoundMode -> Precision -> MPFR -> MPFR
+sech r p = fst . sech_ r p
 
-csch       :: RoundMode -> Precision -> MPFR -> MPFR
-csch r p d = fst $ csch_ r p d
+csch     :: RoundMode -> Precision -> MPFR -> MPFR
+csch r p = fst . csch_ r p
 
-coth       :: RoundMode -> Precision -> MPFR -> MPFR
-coth r p d = fst $ coth_ r p d 
+coth     :: RoundMode -> Precision -> MPFR -> MPFR
+coth r p = fst . coth_ r p
 
-acosh       :: RoundMode -> Precision -> MPFR -> MPFR
-acosh r p d = fst $ acosh_ r p d
+acosh     :: RoundMode -> Precision -> MPFR -> MPFR
+acosh r p = fst . acosh_ r p
 
-asinh       :: RoundMode -> Precision -> MPFR -> MPFR
-asinh r p d = fst $ asinh_ r p d
+asinh     :: RoundMode -> Precision -> MPFR -> MPFR
+asinh r p = fst . asinh_ r p
 
-atanh       :: RoundMode -> Precision -> MPFR -> MPFR
-atanh r p d = fst $ atanh_ r p d 
+atanh     :: RoundMode -> Precision -> MPFR -> MPFR
+atanh r p = fst . atanh_ r p
 
-facw       :: RoundMode -> Precision -> Word -> MPFR
-facw r p d = fst $ facw_ r p d
+facw     :: RoundMode -> Precision -> Word -> MPFR
+facw r p = fst . facw_ r p
 
-log1p       :: RoundMode -> Precision -> MPFR -> MPFR
-log1p r p d = fst $ log1p_ r p d
+log1p     :: RoundMode -> Precision -> MPFR -> MPFR
+log1p r p = fst . log1p_ r p
 
-expm1       :: RoundMode -> Precision -> MPFR -> MPFR
-expm1 r p d = fst $ expm1_ r p d
+expm1     :: RoundMode -> Precision -> MPFR -> MPFR
+expm1 r p = fst . expm1_ r p
 
-eint       :: RoundMode -> Precision -> MPFR -> MPFR
-eint r p d = fst $ eint_ r p d
+eint     :: RoundMode -> Precision -> MPFR -> MPFR
+eint r p = fst . eint_ r p
 
-gamma       :: RoundMode -> Precision -> MPFR -> MPFR
-gamma r p d = fst $ gamma_ r p d
+gamma     :: RoundMode -> Precision -> MPFR -> MPFR
+gamma r p = fst . gamma_ r p
 
-lngamma       :: RoundMode -> Precision -> MPFR -> MPFR
-lngamma r p d = fst $ lngamma_ r p d
+lngamma     :: RoundMode -> Precision -> MPFR -> MPFR
+lngamma r p = fst . lngamma_ r p
 
 lgamma       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 lgamma r p d = case lgamma_ r p d of 
                  (a, b, _) -> (a,b)
 
-zeta       :: RoundMode -> Precision -> MPFR -> MPFR
-zeta r p d = fst $ zeta_ r p d
+zeta     :: RoundMode -> Precision -> MPFR -> MPFR
+zeta r p = fst . zeta_ r p
 
-zetaw       :: RoundMode -> Precision -> Word -> MPFR
-zetaw r p d = fst $ zetaw_ r p d
+zetaw     :: RoundMode -> Precision -> Word -> MPFR
+zetaw r p = fst . zetaw_ r p
 
-erf       :: RoundMode -> Precision -> MPFR -> MPFR
-erf r p d = fst $ erf_ r p d
+erf     :: RoundMode -> Precision -> MPFR -> MPFR
+erf r p = fst . erf_ r p
 
-erfc       :: RoundMode -> Precision -> MPFR -> MPFR
-erfc r p d = fst $ erfc_ r p d
+erfc     :: RoundMode -> Precision -> MPFR -> MPFR
+erfc r p = fst . erfc_ r p
 
-j0       :: RoundMode -> Precision -> MPFR -> MPFR
-j0 r p d = fst $ j0_ r p d
+j0     :: RoundMode -> Precision -> MPFR -> MPFR
+j0 r p = fst . j0_ r p
 
-j1       :: RoundMode -> Precision -> MPFR -> MPFR
-j1 r p d = fst $ j1_ r p d
+j1     :: RoundMode -> Precision -> MPFR -> MPFR
+j1 r p = fst . j1_ r p
 
-jn         :: RoundMode -> Precision -> Int -> MPFR -> MPFR
-jn r p w d = fst $ jn_ r p w d
+jn       :: RoundMode -> Precision -> Int -> MPFR -> MPFR
+jn r p w = fst . jn_ r p w
 
-y0       :: RoundMode -> Precision -> MPFR -> MPFR
-y0 r p d = fst $ y0_ r p d
+y0     :: RoundMode -> Precision -> MPFR -> MPFR
+y0 r p = fst . y0_ r p
 
-y1       :: RoundMode -> Precision -> MPFR -> MPFR
-y1 r p d = fst $ y1_ r p d
+y1     :: RoundMode -> Precision -> MPFR -> MPFR
+y1 r p = fst . y1_ r p
 
-yn         :: RoundMode -> Precision -> Int -> MPFR -> MPFR
-yn r p w d = fst $ yn_ r p w d
+yn       :: RoundMode -> Precision -> Int -> MPFR -> MPFR
+yn r p w = fst . yn_ r p w
 
-fma              :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> MPFR
-fma r p d1 d2 d3 = fst $ fma_ r p d1 d2 d3
+fma           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> MPFR
+fma r p d1 d2 = fst . fma_ r p d1 d2
 
-fms              :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> MPFR
-fms r p d1 d2 d3 = fst $ fms_ r p d1 d2 d3
+fms           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> MPFR
+fms r p d1 d2 = fst . fms_ r p d1 d2
 
-agm           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-agm r p d1 d2 = fst $ agm_ r p d1 d2
+agm        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+agm r p d1 = fst . agm_ r p d1
 
-hypot           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-hypot r p d1 d2 = fst $ hypot_ r p d1 d2
+hypot        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+hypot r p d1 = fst . hypot_ r p d1
 
-pi :: RoundMode -> Precision -> MPFR
-pi r p = fst $ pi_ r p
+pi   :: RoundMode -> Precision -> MPFR
+pi r = fst . pi_ r
 
-log2c     :: RoundMode -> Precision -> MPFR
-log2c r p = fst $ pi_ r p
+log2c   :: RoundMode -> Precision -> MPFR
+log2c r = fst . pi_ r
 
-euler     :: RoundMode -> Precision -> MPFR
-euler r p = fst $ pi_ r p
+euler   :: RoundMode -> Precision -> MPFR
+euler r = fst . pi_ r
 
-catalan     :: RoundMode -> Precision -> MPFR
-catalan r p = fst $ pi_ r p
+catalan   :: RoundMode -> Precision -> MPFR
+catalan r = fst . pi_ r
 
 
 log_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
@@ -297,7 +297,7 @@ lgamma_ r p d = unsafePerformIO go
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   alloca $ \p1 -> do
                     pokeDummy p1 fp (fromIntegral ls)
-                    with d $ \p2 -> do
+                    with d $ \p2 ->
                       alloca $ \p3 -> do
                         r3 <- mpfr_lgamma p1 p3 p2 ((fromIntegral . fromEnum) r)
                         r2 <- peek p3
@@ -336,19 +336,19 @@ yn_ r p i d = withMPFRBAis r p (fromIntegral i) d mpfr_yn
 
 fma_                 :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> (MPFR, Int)
 fma_ r p mp1 mp2 mp3 = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do 
-                      with mp2 $ \p3 -> do 
-                        with mp3 $ \p4 -> do 
-                          mpfr_fma p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
+    where go = withDummy p $ \p1 -> 
+                 with mp1 $ \p2 -> 
+                   with mp2 $ \p3 ->
+                     with mp3 $ \p4 ->
+                       mpfr_fma p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
 
 fms_                 :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR -> (MPFR, Int)
 fms_ r p mp1 mp2 mp3 = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do 
-                      with mp2 $ \p3 -> do 
-                        with mp3 $ \p4 -> do 
-                          mpfr_fms p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
+    where go = withDummy p $ \p1 ->
+                 with mp1 $ \p2 -> 
+                   with mp2 $ \p3 ->
+                     with mp3 $ \p4 ->
+                       mpfr_fms p1 p2 p3 p4 ((fromIntegral . fromEnum) r) 
 
 agm_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 agm_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_agm

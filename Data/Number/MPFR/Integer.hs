@@ -18,38 +18,38 @@ module Data.Number.MPFR.Integer where
 
 import Data.Number.MPFR.Internal
 
-rint       :: RoundMode -> Precision -> MPFR -> MPFR
-rint r p d = fst $ rint_ r p d
+rint     :: RoundMode -> Precision -> MPFR -> MPFR
+rint r p = fst . rint_ r p
 
-ceil     :: Precision -> MPFR -> MPFR
-ceil p d = fst $ ceil_ p d
+ceil   :: Precision -> MPFR -> MPFR
+ceil p = fst . ceil_ p
 
-floor     :: Precision -> MPFR -> MPFR
-floor p d = fst $ floor_ p d
+floor   :: Precision -> MPFR -> MPFR
+floor p = fst . floor_ p
 
-round     :: Precision -> MPFR -> MPFR
-round p d = fst $ round_ p d
+round   :: Precision -> MPFR -> MPFR
+round p = fst . round_ p
 
-trunc     :: Precision -> MPFR -> MPFR
-trunc p d = fst $ trunc_ p d
+trunc   :: Precision -> MPFR -> MPFR
+trunc p = fst . trunc_ p
 
-rintCeil :: RoundMode -> Precision -> MPFR -> MPFR
-rintCeil r p d = fst $ rintCeil_ r p d
+rintCeil     :: RoundMode -> Precision -> MPFR -> MPFR
+rintCeil r p = fst . rintCeil_ r p
 
-rintFloor :: RoundMode -> Precision -> MPFR -> MPFR
-rintFloor r p d = fst $ rintFloor_ r p d
+rintFloor     :: RoundMode -> Precision -> MPFR -> MPFR
+rintFloor r p = fst . rintFloor_ r p
 
-rintRound :: RoundMode -> Precision -> MPFR -> MPFR
-rintRound r p d = fst $ rintRound_ r p d
+rintRound     :: RoundMode -> Precision -> MPFR -> MPFR
+rintRound r p = fst . rintRound_ r p
 
-rintTrunc :: RoundMode -> Precision -> MPFR -> MPFR
-rintTrunc r p d = fst $ rintTrunc_ r p d
+rintTrunc     :: RoundMode -> Precision -> MPFR -> MPFR
+rintTrunc r p = fst . rintTrunc_ r p
 
-frac :: RoundMode -> Precision -> MPFR -> MPFR
-frac r p d = fst $ frac_ r p d
+frac     :: RoundMode -> Precision -> MPFR -> MPFR
+frac r p = fst . frac_ r p
 
-remainder          :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-remainder r p d d' = fst $ remainder_ r p d d'
+remainder       :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+remainder r p d = fst . remainder_ r p d
 
 remquo          :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
 remquo r p d d' = case remquo_ r p d d' of
@@ -94,8 +94,8 @@ remquo_ r p d d' = unsafePerformIO go
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   alloca $ \p1 -> do
                     pokeDummy p1 fp p
-                    with d $ \p2 -> do
-                      with d' $ \p3 -> do
+                    with d $ \p2 -> 
+                      with d' $ \p3 -> 
                         alloca $ \p4 -> do
                           r3 <- mpfr_remquo p1 p4 p2 p3 ((fromIntegral . fromEnum) r)
                           r1 <- peekP p1 fp

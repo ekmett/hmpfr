@@ -30,7 +30,7 @@ nextToward mp1 mp2 = unsafePerformIO go
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   alloca $ \p1 -> do
                       pokeDummy p1 fp p
-                      with mp1 $ \p2 -> do 
+                      with mp1 $ \p2 ->
                         with mp2 $ \p3 -> do
                           _ <- mpfr_set p1 p2 ((fromIntegral . fromEnum) Near) 
                           mpfr_nexttoward p1 p3 
@@ -61,11 +61,11 @@ nextBelow mp1 = unsafePerformIO go
                         mpfr_nextbelow p1 
                         peekP p1 fp
 
-maxD           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-maxD r p d1 d2 = fst $ maxD_ r p d1 d2
+maxD        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+maxD r p d1 = fst . maxD_ r p d1
 
-minD           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-minD r p d1 d2 = fst $ minD_ r p d1 d2
+minD        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+minD r p d1 = fst . minD_ r p d1
 
 random2       :: Precision -> MpSize -> Exp -> IO MPFR
 random2 p m e = do ls <- mpfr_custom_get_size (fromIntegral p)
@@ -124,7 +124,7 @@ getMantissa   :: MPFR -> Integer
 getMantissa d@(MP _ s e _) | e /= expInf && e /= expNaN && e /= expZero = toInteger s * h
                            | otherwise                                  = 0
     where (h, _) = foldl' (\(a,b) c ->
-                               (a + (toInteger c) `shiftL` b, b + bitsPerMPLimb))
+                               (a + toInteger c `shiftL` b, b + bitsPerMPLimb))
                    (0,0) (getMantissa' d) 
 
 one :: MPFR

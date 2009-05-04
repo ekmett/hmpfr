@@ -20,122 +20,122 @@ import Data.Number.MPFR.Internal
 
 import Prelude hiding(isNaN)
 
-add           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-add r p d1 d2 = fst $ add_ r p d1 d2
+add        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+add r p d1 = fst . add_ r p d1
       
-addw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-addw r p d1 d = fst $ addw_ r p d1 d 
+addw        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+addw r p d1 = fst . addw_ r p d1
 
-addi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-addi r p d1 d = fst $ addi_ r p d1 d 
+addi        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+addi r p d1 = fst . addi_ r p d1
 
-addd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
-addd r p d1 d = fst $ addd_ r p d1 d 
+addd        :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+addd r p d1 = fst . addd_ r p d1
 
-sub           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-sub r p d1 d2 = fst $ sub_ r p d1 d2
+sub        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+sub r p d1 = fst . sub_ r p d1
       
-subw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-subw r p d1 d = fst $ subw_ r p d1 d 
+subw        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+subw r p d1 = fst . subw_ r p d1
       
-subi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-subi r p d1 d = fst $ subi_ r p d1 d 
+subi        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+subi r p d1 = fst . subi_ r p d1
 
-subd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
-subd r p d1 d = fst $ subd_ r p d1 d 
+subd        :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+subd r p d1 = fst . subd_ r p d1
       
-wsub          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
-wsub r p d d1 = fst $ wsub_ r p d d1 
+wsub       :: RoundMode -> Precision -> Word -> MPFR -> MPFR
+wsub r p d = fst . wsub_ r p d
       
-isub          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
-isub r p d d1 = fst $ isub_ r p d d1 
+isub       :: RoundMode -> Precision -> Int -> MPFR -> MPFR
+isub r p d = fst . isub_ r p d
 
-dsub          :: RoundMode -> Precision -> Double -> MPFR -> MPFR
-dsub r p d d1 = fst $ dsub_ r p d d1 
+dsub       :: RoundMode -> Precision -> Double -> MPFR -> MPFR
+dsub r p d = fst . dsub_ r p d
       
-mul           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-mul r p d1 d2 = fst $ mul_ r p d1 d2
+mul        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+mul r p d1 = fst . mul_ r p d1
 
-mulw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-mulw r p d1 d = fst $ mulw_ r p d1 d 
+mulw        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+mulw r p d1 = fst . mulw_ r p d1
       
-muli          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-muli r p d1 d = fst $ muli_ r p d1 d 
+muli        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+muli r p d1 = fst . muli_ r p d1
 
-muld          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
-muld r p d1 d = fst $ muld_ r p d1 d 
+muld        :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+muld r p d1 = fst . muld_ r p d1
       
-sqr       :: RoundMode -> Precision -> MPFR -> MPFR 
-sqr r p d = fst $ sqr_ r p d
+sqr     :: RoundMode -> Precision -> MPFR -> MPFR 
+sqr r p = fst . sqr_ r p
       
-div           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-div r p d1 d2 = fst $ div_ r p d1 d2
+div        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+div r p d1 = fst . div_ r p d1
       
-divw          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-divw r p d1 d = fst $ divw_ r p d1 d 
+divw        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+divw r p d1 = fst . divw_ r p d1
       
-divi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-divi r p d1 d = fst $ divi_ r p d1 d 
+divi        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+divi r p d1 = fst . divi_ r p d1
 
-divd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
-divd r p d1 d = fst $ divd_ r p d1 d 
+divd        :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+divd r p d1 = fst . divd_ r p d1
       
-wdiv          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
-wdiv r p d d1 = fst $ wdiv_ r p d d1 
+wdiv       :: RoundMode -> Precision -> Word -> MPFR -> MPFR
+wdiv r p d = fst . wdiv_ r p d
       
-idiv          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
-idiv r p d d1 = fst $ idiv_ r p d d1 
+idiv       :: RoundMode -> Precision -> Int -> MPFR -> MPFR
+idiv r p d = fst . idiv_ r p d
 
-ddiv          :: RoundMode -> Precision -> Double -> MPFR -> MPFR
-ddiv r p d d1 = fst $ ddiv_ r p d d1 
+ddiv       :: RoundMode -> Precision -> Double -> MPFR -> MPFR
+ddiv r p d = fst . ddiv_ r p d
       
-sqrt       :: RoundMode -> Precision -> MPFR -> MPFR
-sqrt r p d = fst $ sqrt_ r p d
+sqrt     :: RoundMode -> Precision -> MPFR -> MPFR
+sqrt r p = fst . sqrt_ r p
       
-sqrtw       :: RoundMode -> Precision -> Word -> MPFR
-sqrtw r p d = fst $ sqrtw_ r p d
+sqrtw     :: RoundMode -> Precision -> Word -> MPFR
+sqrtw r p = fst . sqrtw_ r p
       
-cbrt       :: RoundMode -> Precision -> MPFR -> MPFR
-cbrt r p d = fst $ cbrt_ r p d
+cbrt     :: RoundMode -> Precision -> MPFR -> MPFR
+cbrt r p = fst . cbrt_ r p
       
-root         :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-root r p d n = fst $ root_ r p d n
+root       :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+root r p d = fst . root_ r p d
       
-pow           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-pow r p d1 d2 = fst $ pow_ r p d1 d2 
+pow        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+pow r p d1 = fst . pow_ r p d1
       
-poww           :: RoundMode -> Precision -> MPFR -> Word -> MPFR 
-poww r p d1 d2 = fst $ poww_ r p d1 d2
+poww        :: RoundMode -> Precision -> MPFR -> Word -> MPFR 
+poww r p d1 = fst . poww_ r p d1
       
-powi           :: RoundMode -> Precision -> MPFR -> Int -> MPFR 
-powi r p d1 d2 = fst $ powi_ r p d1 d2
+powi        :: RoundMode -> Precision -> MPFR -> Int -> MPFR 
+powi r p d1 = fst . powi_ r p d1
       
-wpoww           :: RoundMode -> Precision -> Word -> Word -> MPFR 
-wpoww r p d1 d2 = fst $ wpoww_ r p d1 d2
+wpoww       :: RoundMode -> Precision -> Word -> Word -> MPFR 
+wpoww r p d = fst . wpoww_ r p d
       
-wpow           :: RoundMode -> Precision -> Word -> MPFR -> MPFR 
-wpow r p d1 d2 = fst $ wpow_ r p d1 d2
+wpow        :: RoundMode -> Precision -> Word -> MPFR -> MPFR 
+wpow r p d1 = fst . wpow_ r p d1
       
-neg       :: RoundMode -> Precision -> MPFR -> MPFR
-neg r p d = fst $ neg_ r p d
+neg     :: RoundMode -> Precision -> MPFR -> MPFR
+neg r p = fst . neg_ r p
       
-absD      :: RoundMode -> Precision -> MPFR -> MPFR 
-absD r p d = fst $ absD_ r p d
+absD     :: RoundMode -> Precision -> MPFR -> MPFR 
+absD r p = fst . absD_ r p
       
-dim           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
-dim r p d1 d2 = fst $ dim_ r p d1 d2 
+dim        :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+dim r p d1 = fst . dim_ r p d1 
       
-mul2w           :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-mul2w r p d1 d2 = fst $ mul2w_ r p d1 d2
+mul2w        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+mul2w r p d1 = fst . mul2w_ r p d1
       
-mul2i          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-mul2i r p d1 d2 = fst $ mul2i_ r p d1 d2
+mul2i        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+mul2i r p d1 = fst . mul2i_ r p d1
       
-div2w          :: RoundMode -> Precision -> MPFR -> Word -> MPFR
-div2w r p d1 d2 = fst $ div2w_ r p d1 d2
+div2w        :: RoundMode -> Precision -> MPFR -> Word -> MPFR
+div2w r p d1 = fst . div2w_ r p d1
       
-div2i          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
-div2i r p d1 d2 = fst $ div2i_ r p d1 d2
+div2i        :: RoundMode -> Precision -> MPFR -> Int -> MPFR
+div2i r p d1 = fst . div2i_ r p d1
       
 add_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 add_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_add
@@ -230,7 +230,7 @@ powi_ r p d1 d2 = withMPFRBAsi r p d1 (fromIntegral d2) mpfr_pow_si
       
 wpoww_          :: RoundMode -> Precision -> Word -> Word -> (MPFR , Int)
 wpoww_ r p d1 d2 = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do 
+    where go = withDummy p $ \p1 -> 
                     mpfr_ui_pow_ui p1 (fromIntegral d1) (fromIntegral d2) ((fromIntegral . fromEnum) r)
         
 wpow_           :: RoundMode -> Precision -> Word -> MPFR -> (MPFR , Int)

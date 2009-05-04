@@ -95,7 +95,7 @@ instance Num MPFR where
     d * d'        = mul Zero (getPrec d + getPrec d') d d'
     negate d      = neg Zero (getPrec d) d
     abs d         = absD Zero (getPrec d) d
-    signum d      = fromInt Zero minPrec (fromMaybe (-1) (sgn d))
+    signum        = fromInt Zero minPrec . fromMaybe (-1) . sgn
     fromInteger (S# i) = fromInt Zero minPrec (I# i)
     fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral $ I# n * bitsPerIntegerLimb) i 
 

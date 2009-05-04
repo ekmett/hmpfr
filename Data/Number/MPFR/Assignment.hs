@@ -21,68 +21,68 @@ import Data.Number.MPFR.Internal
 
 import Data.Number.MPFR.Arithmetic
 
-set           :: RoundMode -> Precision -> MPFR -> MPFR
-set r p d = fst $ set_ r p d
+set     :: RoundMode -> Precision -> MPFR -> MPFR
+set r p = fst . set_ r p
 
 set_         :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 set_ r p mp1 = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do 
-                      mpfr_set p1 p2 ((fromIntegral . fromEnum) r) 
+    where go = withDummy p $ \p1 ->
+                 with mp1 $ \p2 -> 
+                   mpfr_set p1 p2 ((fromIntegral . fromEnum) r) 
 
-fromWord       :: RoundMode -> Precision -> Word -> MPFR
-fromWord r p d = fst $ fromWord_ r p d
+fromWord     :: RoundMode -> Precision -> Word -> MPFR
+fromWord r p = fst . fromWord_ r p
 
-fromInt       :: RoundMode -> Precision -> Int -> MPFR
-fromInt r p d = fst $ fromInt_ r p d
+fromInt     :: RoundMode -> Precision -> Int -> MPFR
+fromInt r p = fst . fromInt_ r p
 
-fromDouble       :: RoundMode -> Precision -> Double -> MPFR
-fromDouble r p d = fst $ fromDouble_ r p d
+fromDouble     :: RoundMode -> Precision -> Double -> MPFR
+fromDouble r p = fst . fromDouble_ r p
 
 fromWord_       :: RoundMode -> Precision -> Word -> (MPFR, Int)
 fromWord_ r p d = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do 
-                    mpfr_set_ui p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+                   mpfr_set_ui p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
 
 fromInt_       :: RoundMode -> Precision -> Int -> (MPFR, Int)
 fromInt_ r p d = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    mpfr_set_si p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+                   mpfr_set_si p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
                     
 fromDouble_       :: RoundMode -> Precision -> Double -> (MPFR, Int)
 fromDouble_ r p d = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do 
-                    mpfr_set_d p1 (realToFrac d) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+                   mpfr_set_d p1 (realToFrac d) ((fromIntegral . fromEnum) r)
                       
 -- x * 2 ^ y
 int2w         :: RoundMode -> Precision -> Word -> Int -> MPFR
-int2w r p i e = fst $ int2w_ r p i e
+int2w r p i = fst . int2w_ r p i
 
 int2i         :: RoundMode -> Precision -> Int -> Int -> MPFR
-int2i r p i e = fst $ int2i_ r p i e
+int2i r p i = fst . int2i_ r p i
 
 int2w_         :: RoundMode -> Precision -> Word -> Int -> (MPFR, Int)
 int2w_ r p i e = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    mpfr_set_ui_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 -> 
+                   mpfr_set_ui_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
                     
 int2i_         :: RoundMode -> Precision -> Int -> Int -> (MPFR, Int)
 int2i_ r p i e = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    mpfr_set_si_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+                   mpfr_set_si_2exp p1 (fromIntegral i) (fromIntegral e) ((fromIntegral . fromEnum) r)
                     
-stringToMPFR         :: RoundMode -> Precision 
-                       -> Word -- ^ Base 
-                       -> String -> MPFR
-stringToMPFR r p b d = fst $ stringToMPFR_ r p b d
+stringToMPFR       :: RoundMode -> Precision 
+                     -> Word -- ^ Base 
+                     -> String -> MPFR
+stringToMPFR r p b = fst . stringToMPFR_ r p b
 
 stringToMPFR_         :: RoundMode -> Precision 
                        -> Word -- ^ Base 
                        -> String -> (MPFR, Int)
 stringToMPFR_ r p b d = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do 
-                    withCString d $ \p2 -> do 
-                      mpfr_set_str p1 p2 (fromIntegral b) ((fromIntegral . fromEnum) r) 
+    where go = withDummy p $ \p1 ->
+                   withCString d $ \p2 ->
+                       mpfr_set_str p1 p2 (fromIntegral b) ((fromIntegral . fromEnum) r) 
 
 strtofr         :: RoundMode -> Precision
                 -> Word -- ^ base
@@ -98,7 +98,7 @@ strtofr_ r p b d = unsafePerformIO go
                   fp <- mallocForeignPtrBytes (fromIntegral ls)
                   alloca $ \p1 -> do 
                     pokeDummy p1 fp p
-                    withCString d $ \p2 -> do
+                    withCString d $ \p2 ->
                       alloca $ \p3 -> do
                         r3 <- mpfr_strtofr p1 p2 p3 (fromIntegral b) ((fromIntegral . fromEnum) r)
                         p3' <- peek p3
@@ -125,8 +125,8 @@ setNaN p = unsafePerformIO go
                     mpfr_set_nan p1
                     peekP p1 fp
 
-fromIntegerA       :: RoundMode -> Precision -> Integer -> MPFR
-fromIntegerA r p d = stringToMPFR r p 10 (show d)
+fromIntegerA     :: RoundMode -> Precision -> Integer -> MPFR
+fromIntegerA r p = stringToMPFR r p 10 . show 
 
 compose             :: RoundMode -> Precision -> (Integer, Int) -> MPFR 
 compose r p (i, ii) = div2i r p (fromIntegerA r p i) ii

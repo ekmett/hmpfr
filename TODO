@@ -1,3 +1,2 @@
 - optimize, there is still too much overhead with peek and poke
 
-- maybe provide "impure" versions of operations in IO
