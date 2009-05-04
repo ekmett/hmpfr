@@ -45,8 +45,19 @@ rintRound r p = fst . rintRound_ r p
 rintTrunc     :: RoundMode -> Precision -> MPFR -> MPFR
 rintTrunc r p = fst . rintTrunc_ r p
 
+modf          :: RoundMode
+              -> Precision -- ^ precision to integral part
+              -> Precision -- ^ precision to fractional part
+              -> MPFR
+              -> (MPFR, MPFR) -- ^ return (integral part, fractional part)
+modf r p p' d = case modf_ r p p' d of
+                    (a, b, _) -> (a, b)
+
 frac     :: RoundMode -> Precision -> MPFR -> MPFR
 frac r p = fst . frac_ r p
+
+fmod       :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
+fmod r p d = fst . fmod_ r p d
 
 remainder       :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 remainder r p d = fst . remainder_ r p d
@@ -82,8 +93,31 @@ rintRound_ r p d = withMPFR r p d mpfr_rint_round
 rintTrunc_ :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 rintTrunc_ r p d = withMPFR r p d mpfr_rint_trunc
 
+modf_          :: RoundMode
+               -> Precision -- ^ precision to compute integral part
+               -> Precision -- ^ precision to compute fractional part 
+               -> MPFR
+               -> (MPFR, MPFR, Int)
+modf_ r p p' d = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  ls' <- mpfr_custom_get_size (fromIntegral p')
+                  fp' <- mallocForeignPtrBytes (fromIntegral ls')
+                  alloca $ \p1 -> do 
+                    pokeDummy p1 fp (fromIntegral ls)
+                    alloca $ \p2 -> do 
+                      pokeDummy p2 fp' (fromIntegral ls')
+                      with d $ \p3 -> do
+                        r3 <- mpfr_modf p1 p2 p3 ((fromIntegral . fromEnum) r)
+                        r1 <- peekP p1 fp
+                        r2 <- peekP p2 fp'
+                        return (r1, r2, fromIntegral r3)
+
 frac_ :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 frac_ r p d = withMPFR r p d mpfr_frac
+
+fmod_          :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
+fmod_ r p d d' = withMPFRsBA r p d d' mpfr_fmod
 
 remainder_          :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 remainder_ r p d d' = withMPFRsBA r p d d' mpfr_remainder

@@ -313,6 +313,9 @@ foreign import ccall unsafe "mpfr_sqrt"
 foreign import ccall unsafe "mpfr_sqrt_ui"
         mpfr_sqrt_ui :: Ptr MPFR -> CULong -> CRoundMode -> IO CInt
 
+foreign import ccall unsafe "mpfr_rec_sqrt"
+        mpfr_rec_sqrt :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
+
 foreign import ccall unsafe "mpfr_cbrt"
         mpfr_cbrt :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
@@ -486,6 +489,8 @@ foreign import ccall unsafe "mpfr_sinh"
 foreign import ccall unsafe "mpfr_tanh"
         mpfr_tanh :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
 
+foreign import ccall unsafe "mpfr_sinh_cosh"
+        mpfr_sinh_cosh :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_sech"
         mpfr_sech :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
@@ -513,6 +518,9 @@ foreign import ccall unsafe "mpfr_log1p"
 
 foreign import ccall unsafe "mpfr_expm1"
         mpfr_expm1 :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_li2"
+        mpfr_li2 :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_eint"
         mpfr_eint :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
@@ -621,6 +629,12 @@ foreign import ccall unsafe "mpfr_rint_trunc"
 
 foreign import ccall unsafe "mpfr_frac"
         mpfr_frac :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_modf"
+        mpfr_modf :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_fmod"
+        mpfr_fmod :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_remainder" 
         mpfr_remainder :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt

@@ -94,6 +94,9 @@ sqrt r p = fst . sqrt_ r p
       
 sqrtw     :: RoundMode -> Precision -> Word -> MPFR
 sqrtw r p = fst . sqrtw_ r p
+
+recSqrt     :: RoundMode -> Precision -> MPFR -> MPFR
+recSqrt r p = fst . recSqrt_ r p
       
 cbrt     :: RoundMode -> Precision -> MPFR -> MPFR
 cbrt r p = fst . cbrt_ r p
@@ -212,6 +215,9 @@ sqrt_ r p d = withMPFR r p d mpfr_sqrt
       
 sqrtw_       :: RoundMode -> Precision -> Word -> (MPFR, Int)
 sqrtw_ r p d = withMPFRUI r p d mpfr_sqrt_ui
+
+recSqrt_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+recSqrt_ r p d = withMPFR r p d mpfr_rec_sqrt
       
 cbrt_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 cbrt_ r p d = withMPFR r p d mpfr_cbrt

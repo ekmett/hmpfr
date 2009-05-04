@@ -82,6 +82,14 @@ cosh r p = fst . cosh_ r p
 tanh     :: RoundMode -> Precision -> MPFR -> MPFR
 tanh r p = fst . tanh_ r p
 
+sinhcosh          :: RoundMode
+                  -> Precision -- ^ precision to compute sin
+                  -> Precision -- ^ precision to compute cos 
+                  -> MPFR
+                  -> (MPFR, MPFR) -- ^ return (sin x, cos x)
+sinhcosh r p p' d = case sinhcosh_ r p p' d of
+                    (a, b, _) -> (a, b)
+
 sech     :: RoundMode -> Precision -> MPFR -> MPFR
 sech r p = fst . sech_ r p
 
@@ -111,6 +119,9 @@ expm1 r p = fst . expm1_ r p
 
 eint     :: RoundMode -> Precision -> MPFR -> MPFR
 eint r p = fst . eint_ r p
+
+li2     :: RoundMode -> Precision -> MPFR -> MPFR
+li2 r p = fst . li2_ r p
 
 gamma     :: RoundMode -> Precision -> MPFR -> MPFR
 gamma r p = fst . gamma_ r p
@@ -255,6 +266,26 @@ cosh_ r p d = withMPFR r p d mpfr_cosh
 tanh_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 tanh_ r p d = withMPFR r p d mpfr_tanh
 
+sinhcosh_          :: RoundMode
+                   -> Precision -- ^ precision to compute sinh
+                   -> Precision -- ^ precision to compute cosh 
+                   -> MPFR
+                   -> (MPFR, MPFR, Int)
+sinhcosh_ r p p' d = unsafePerformIO go 
+    where go = do ls <- mpfr_custom_get_size (fromIntegral p)
+                  fp <- mallocForeignPtrBytes (fromIntegral ls)
+                  ls' <- mpfr_custom_get_size (fromIntegral p')
+                  fp' <- mallocForeignPtrBytes (fromIntegral ls')
+                  alloca $ \p1 -> do 
+                    pokeDummy p1 fp (fromIntegral ls)
+                    alloca $ \p2 -> do 
+                      pokeDummy p2 fp' (fromIntegral ls')
+                      with d $ \p3 -> do
+                        r3 <- mpfr_sinh_cosh p1 p2 p3 ((fromIntegral . fromEnum) r)
+                        r1 <- peekP p1 fp
+                        r2 <- peekP p2 fp'
+                        return (r1, r2, fromIntegral r3)
+
 sech_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 sech_ r p d = withMPFR r p d mpfr_sech
 
@@ -284,6 +315,9 @@ expm1_ r p d = withMPFR r p d mpfr_expm1
 
 eint_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 eint_ r p d = withMPFR r p d mpfr_eint
+
+li2_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
+li2_ r p d = withMPFR r p d mpfr_li2
 
 gamma_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 gamma_ r p d = withMPFR r p d mpfr_gamma
