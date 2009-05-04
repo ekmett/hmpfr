@@ -4,7 +4,8 @@
 
 module Data.Number.MPFR.Internal (
        module FFIhelper, 
-       withMPFRsBA, withMPFRBAui, withMPFRBAiu, withMPFRBAsi, withMPFRBAis, 
+       withMPFRsBA, withMPFRBAui, withMPFRBAiu, withMPFRBAd,
+       withMPFRBAsi, withMPFRBAis,  withMPFRBAd', 
        withMPFRB, withMPFRP, withMPFR, withMPFRBB, withMPFRC, 
        withMPFRF, withMPFRUI, withMPFRR, checkPrec, getMantissa', binprec,
        unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
@@ -17,7 +18,7 @@ where
 
 import Data.Number.MPFR.FFIhelper as FFIhelper
 
-import Foreign.C(CInt, CLong, CULong, withCString, peekCString)
+import Foreign.C(CInt, CLong, CULong, CDouble, withCString, peekCString)
 import Foreign.Marshal(alloca, peekArray)
 import Foreign(unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with, withForeignPtr)
 import Foreign.Storable(sizeOf)
@@ -76,6 +77,24 @@ withMPFRBAis r p d !mp1 f = unsafePerformIO go
     where go = do withDummy p $ \p1 -> do
                     with mp1 $ \p2 -> do
                       f p1 d p2 ((fromIntegral . fromEnum) r)
+{-# INLINE withMPFRBAd #-}
+withMPFRBAd              :: RoundMode -> Precision -> MPFR -> CDouble
+                               -> (Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt)
+                               -> (MPFR, Int)
+withMPFRBAd r p !mp1 d f = unsafePerformIO go 
+    where go = do withDummy p $ \ p1 -> do
+                    with mp1 $ \ p2 -> do
+                      f p1 p2 d ((fromIntegral . fromEnum) r)
+                                  
+{-# INLINE withMPFRBAd' #-}
+withMPFRBAd'              :: RoundMode -> Precision -> CDouble -> MPFR
+                               -> (Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt)
+                               -> (MPFR, Int) 
+withMPFRBAd' r p d !mp1 f = unsafePerformIO go 
+    where go = do withDummy p $ \p1 -> do
+                    with mp1 $ \p2 -> do
+                      f p1 d p2 ((fromIntegral . fromEnum) r)
+
                      
 {-# INLINE withMPFRB #-}
 withMPFRB       :: MPFR -> (Ptr MPFR -> IO CInt) -> CInt 

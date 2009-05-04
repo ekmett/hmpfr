@@ -238,6 +238,9 @@ foreign import ccall unsafe "mpfr_add_ui"
 foreign import ccall unsafe "mpfr_add_si"
         mpfr_add_si :: Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt
 
+foreign import ccall unsafe "mpfr_add_d"
+        mpfr_add_d :: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
+
 -- TODO add_z, add_q
 
 foreign import ccall unsafe "mpfr_sub"
@@ -255,6 +258,12 @@ foreign import ccall unsafe "mpfr_si_sub"
 foreign import ccall unsafe "mpfr_sub_si"
         mpfr_sub_si :: Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt
 
+foreign import ccall unsafe "mpfr_sub_d"
+        mpfr_sub_d :: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_d_sub"
+        mpfr_d_sub :: Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt
+
 --TODO sub_z, sub_q
 
 foreign import ccall unsafe "mpfr_mul"
@@ -265,6 +274,9 @@ foreign import ccall unsafe "mpfr_mul_ui"
 
 foreign import ccall unsafe "mpfr_mul_si"
         mpfr_mul_si :: Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_mul_d"
+        mpfr_mul_d:: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
 
 --TODO mul_z, mul_q
 
@@ -285,6 +297,13 @@ foreign import ccall unsafe "mpfr_si_div"
 
 foreign import ccall unsafe "mpfr_div_si"
         mpfr_div_si :: Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_div_d"
+        mpfr_div_d :: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
+
+foreign import ccall unsafe "mpfr_d_div"
+        mpfr_d_div :: Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt
+
 
 -- TODO div_z, div_q
 

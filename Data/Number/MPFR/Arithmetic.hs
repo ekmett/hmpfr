@@ -28,7 +28,10 @@ addw r p d1 d = fst $ addw_ r p d1 d
 
 addi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 addi r p d1 d = fst $ addi_ r p d1 d 
-      
+
+addd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+addd r p d1 d = fst $ addd_ r p d1 d 
+
 sub           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 sub r p d1 d2 = fst $ sub_ r p d1 d2
       
@@ -37,12 +40,18 @@ subw r p d1 d = fst $ subw_ r p d1 d
       
 subi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 subi r p d1 d = fst $ subi_ r p d1 d 
+
+subd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+subd r p d1 d = fst $ subd_ r p d1 d 
       
 wsub          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
 wsub r p d d1 = fst $ wsub_ r p d d1 
       
 isub          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
 isub r p d d1 = fst $ isub_ r p d d1 
+
+dsub          :: RoundMode -> Precision -> Double -> MPFR -> MPFR
+dsub r p d d1 = fst $ dsub_ r p d d1 
       
 mul           :: RoundMode -> Precision -> MPFR -> MPFR -> MPFR
 mul r p d1 d2 = fst $ mul_ r p d1 d2
@@ -52,6 +61,9 @@ mulw r p d1 d = fst $ mulw_ r p d1 d
       
 muli          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 muli r p d1 d = fst $ muli_ r p d1 d 
+
+muld          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+muld r p d1 d = fst $ muld_ r p d1 d 
       
 sqr       :: RoundMode -> Precision -> MPFR -> MPFR 
 sqr r p d = fst $ sqr_ r p d
@@ -64,12 +76,18 @@ divw r p d1 d = fst $ divw_ r p d1 d
       
 divi          :: RoundMode -> Precision -> MPFR -> Int -> MPFR
 divi r p d1 d = fst $ divi_ r p d1 d 
+
+divd          :: RoundMode -> Precision -> MPFR -> Double -> MPFR
+divd r p d1 d = fst $ divd_ r p d1 d 
       
 wdiv          :: RoundMode -> Precision -> Word -> MPFR -> MPFR
 wdiv r p d d1 = fst $ wdiv_ r p d d1 
       
 idiv          :: RoundMode -> Precision -> Int -> MPFR -> MPFR
 idiv r p d d1 = fst $ idiv_ r p d d1 
+
+ddiv          :: RoundMode -> Precision -> Double -> MPFR -> MPFR
+ddiv r p d d1 = fst $ ddiv_ r p d d1 
       
 sqrt       :: RoundMode -> Precision -> MPFR -> MPFR
 sqrt r p d = fst $ sqrt_ r p d
@@ -127,6 +145,9 @@ addw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_add_ui
 
 addi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
 addi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_add_si
+
+addd_          :: RoundMode -> Precision -> MPFR -> Double -> (MPFR, Int)
+addd_ r p d1 d = withMPFRBAd r p d1 (realToFrac d) mpfr_add_d
       
 sub_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 sub_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_sub
@@ -136,12 +157,19 @@ subw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_sub_ui
       
 subi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
 subi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_sub_si
+
+subd_          :: RoundMode -> Precision -> MPFR -> Double -> (MPFR, Int)
+subd_ r p d1 d = withMPFRBAd r p d1 (realToFrac d) mpfr_sub_d
       
 wsub_          :: RoundMode -> Precision -> Word -> MPFR -> (MPFR, Int)
 wsub_ r p d d1 = withMPFRBAiu r p (fromIntegral d) d1 mpfr_ui_sub
       
 isub_          :: RoundMode -> Precision -> Int -> MPFR -> (MPFR, Int)
 isub_ r p d d1 = withMPFRBAis r p (fromIntegral d) d1 mpfr_si_sub
+
+dsub_          :: RoundMode -> Precision -> Double -> MPFR -> (MPFR, Int)
+dsub_ r p d d1 = withMPFRBAd' r p (realToFrac d) d1 mpfr_d_sub
+
 
 mul_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR,Int)
 mul_ r p d1 d2 =  withMPFRsBA r p d1 d2 mpfr_mul
@@ -151,6 +179,9 @@ mulw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_mul_ui
       
 muli_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
 muli_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_mul_si
+
+muld_          :: RoundMode -> Precision -> MPFR -> Double -> (MPFR, Int)
+muld_ r p d1 d = withMPFRBAd r p d1 (realToFrac d) mpfr_mul_d
       
 sqr_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 sqr_ r p d = withMPFR r p d mpfr_sqr
@@ -163,12 +194,18 @@ divw_ r p d1 d = withMPFRBAui r p d1 (fromIntegral d) mpfr_div_ui
       
 divi_          :: RoundMode -> Precision -> MPFR -> Int -> (MPFR, Int)
 divi_ r p d1 d = withMPFRBAsi r p d1 (fromIntegral d) mpfr_div_si
+
+divd_          :: RoundMode -> Precision -> MPFR -> Double -> (MPFR, Int)
+divd_ r p d1 d = withMPFRBAd r p d1 (realToFrac d) mpfr_div_d
       
 wdiv_          :: RoundMode -> Precision -> Word -> MPFR -> (MPFR, Int)
 wdiv_ r p d d1 = withMPFRBAiu r p (fromIntegral d) d1 mpfr_ui_div
       
 idiv_          :: RoundMode -> Precision -> Int -> MPFR -> (MPFR, Int)
 idiv_ r p d d1 = withMPFRBAis r p (fromIntegral d) d1 mpfr_si_div
+
+ddiv_          :: RoundMode -> Precision -> Double -> MPFR -> (MPFR, Int)
+ddiv_ r p d d1 = withMPFRBAd' r p (realToFrac d) d1 mpfr_d_div
       
 sqrt_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)
 sqrt_ r p d = withMPFR r p d mpfr_sqrt
