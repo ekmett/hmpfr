@@ -44,7 +44,7 @@ data MPFR = MP { precision :: {-# UNPACK #-} !CPrecision,
 
 instance Storable MPFR where
     sizeOf _ = #size __mpfr_struct
-    alignment _ = (undefined :: Int)
+    alignment _ = alignment (undefined :: #{type mpfr_prec_t})
     peek = error "MPFR.peek: Not needed and not applicable"
     poke p (MP prec s e fp) = do #{poke __mpfr_struct, _mpfr_prec} p prec
                                  #{poke __mpfr_struct, _mpfr_sign} p s 
