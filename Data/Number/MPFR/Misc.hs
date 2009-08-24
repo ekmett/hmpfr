@@ -76,8 +76,7 @@ random2 p m e = do ls <- mpfr_custom_get_size (fromIntegral p)
                      peekP p1 fp
 
 getExp              :: MPFR -> Exp
-getExp (MP _ _ e _) = e {-(fromIntegral . unsafePerformIO) go
-                 where go = do with d $ \p1 -> mpfr_custom_get_exp p1-}
+getExp (MP _ _ e _) = e 
 
 setExp     :: MPFR -> Exp -> MPFR
 setExp d e = unsafePerformIO go
@@ -95,8 +94,6 @@ signbit   :: MPFR -> Bool
 signbit d = withMPFRB d mpfr_signbit /= 0
 
 maxD_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
---maxD_ r pw d1 d2 = withMPFRsBA r pw d1 d2 mpfr_max
-
 maxD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromIntegral pw == p' && e > expInf && e' > expInf = 
                                                  case cmp d1 d2 of 
                                                    Just LT -> (d2, 0)
@@ -105,7 +102,6 @@ maxD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromInteg
 
 
 minD_           :: RoundMode -> Precision -> MPFR -> MPFR -> (MPFR, Int)
---minD_ r pw d1 d2 = withMPFRsBA r pw d1 d2 mpfr_min
 minD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromIntegral pw == p' && e > expInf && e' > expInf = 
                                                  case cmp d1 d2 of 
                                                    Just GT -> (d2, 0)
@@ -113,7 +109,7 @@ minD_ r pw d1@(MP p _ e _) d2@(MP p' _ e' _) | fromIntegral pw == p && fromInteg
                                              | otherwise = withMPFRsBA r pw d1 d2 mpfr_min
 
 getPrec   :: MPFR -> Precision
-getPrec (MP p _ _ _) = fromIntegral p -- fromIntegral (withMPFRP d mpfr_get_prec)
+getPrec (MP p _ _ _) = fromIntegral p
 
 -- | getMantissa and getExp return values such that
 --
