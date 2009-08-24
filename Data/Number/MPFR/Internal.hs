@@ -7,7 +7,7 @@ module Data.Number.MPFR.Internal (
        withMPFRsBA, withMPFRBAui, withMPFRBAiu, withMPFRBAd,
        withMPFRBAsi, withMPFRBAis,  withMPFRBAd', 
        withMPFRB, withMPFRP, withMPFR, withMPFRBB, withMPFRC, 
-       withMPFRF, withMPFRUI, withMPFRR, checkPrec, getMantissa', binprec,
+       withMPFRF, withMPFRUI, withMPFRR, checkPrec, getMantissa',
        unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
        withForeignPtr, CInt, CLong, CULong, withCString, peekCString, alloca,
        peekArray, shiftL, Word, minPrec,
@@ -163,22 +163,6 @@ getMantissa' (MP p _ _ p1) = unsafePerformIO go
     where go = do withForeignPtr p1 $ \pt -> do 
                     arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
                     return arr 
-
-{- TODO: this is inefficient 
-binprec   :: Integer -> Precision
-binprec i = length (takeWhile (/= 0) (iterate (flip shiftR 1) i)
--}
--- TODO
-{-# INLINE binprec #-}
-binprec   :: Integer -> Precision
-binprec d | d == 0 = minPrec
-          | otherwise = Prelude.floor (logBase 2 (abs . fromInteger $ d) :: Double) + 1
-
---one ::  MPFR              
---one = fromWord Near minPrec 1
-
---zero :: MPFR              
---ggzero = fromWord Near minPrec 0
 
 minPrec :: Precision
 minPrec = fromIntegral $ 8 * sizeOf (undefined :: Int)
