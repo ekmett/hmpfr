@@ -46,7 +46,7 @@ instance Num MPFR where
     abs d         = absD Zero (getPrec d) d
     signum        = fromInt Zero minPrec . fromMaybe (-1) . sgn
     fromInteger (S# i) = fromInt Zero minPrec (I# i)
-    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral $ I# n * bitsPerIntegerLimb) i 
+    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral . abs $ I# n * bitsPerIntegerLimb) i 
 
 instance Real MPFR where
     toRational d = n % 2 ^ e

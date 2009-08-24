@@ -97,7 +97,7 @@ instance Num MPFR where
     abs d         = absD Zero (getPrec d) d
     signum        = fromInt Zero minPrec . fromMaybe (-1) . sgn
     fromInteger (S# i) = fromInt Zero minPrec (I# i)
-    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral $ I# n * bitsPerIntegerLimb) i 
+    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral . abs $ I# n * bitsPerIntegerLimb) i 
 
 addPrec       :: Dyadic -> Dyadic -> Precision
 addPrec d1 d2 = fromIntegral (max (p1 + e1 - e3) (p2 + e2 - e3)) + 1
