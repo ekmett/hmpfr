@@ -44,9 +44,9 @@ toWord r mp1 = (fromIntegral . unsafePerformIO) go
 
 
 mpfrToString           :: RoundMode 
-                   -> Word -- ^ number of decimals
-                   -> Word -- ^ base
-                   -> MPFR -> (String, Exp)
+                       ord -- ^ number of decimals
+                       ord -- ^ base
+                       MPFR -> (String, Exp)
 mpfrToString r n b mp1 = unsafePerformIO go 
     where go = with mp1 $ \p1 ->
                  alloca $ \p2 -> do
