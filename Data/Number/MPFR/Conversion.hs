@@ -43,10 +43,10 @@ toWord r mp1 = (fromIntegral . unsafePerformIO) go
     where go = with mp1 $ \p -> mpfr_get_ui p ((fromIntegral . fromEnum) r)
 
 
-mpfrToString           :: RoundMode 
-                       ord -- ^ number of decimals
-                       ord -- ^ base
-                       MPFR -> (String, Exp)
+mpfrToString           :: RoundMode
+                       -> Word -- ^ number of decimals
+                       -> Word -- ^ base
+                       -> MPFR -> (String, Exp)
 mpfrToString r n b mp1 = unsafePerformIO go 
     where go = with mp1 $ \p1 ->
                  alloca $ \p2 -> do
@@ -88,22 +88,25 @@ toStringExp       :: Word -- ^ number of digits
                   -> MPFR -> String
 toStringExp dec d | isInfixOf "NaN" ss = "NaN"
                   | isInfixOf "Inf" ss = s ++ "Infinity"
-                  | otherwise          = 
-                      s ++ case e > 0 of
-                             True  -> case Prelude.floor prec > dec  of
-                                        False -> take e ss ++ 
-                                                 let bt = backtrim (drop e ss)
-                                                 in if null bt then "" 
-                                                    else '.' : bt
-                                        True  -> head ss : '.' :
-                                                 let bt = (backtrim . tail) ss 
-                                                 in if null bt then "0"
-                                                    else bt ++ "e" ++ show (pred e)
-                             False -> head ss : '.' : 
-                                      (let bt = (backtrim . tail) ss in
-                                       if null bt then "0" 
-                                       else bt )
-                                      ++ "e" ++ show (pred e)
+                  | e > 0              = 
+                      s ++ if Prelude.floor prec <= dec
+                           then 
+                               take e ss ++ 
+                               let bt = backtrim (drop e ss)
+                               in if null bt 
+                                  then "" 
+                                  else '.' : bt
+                           else head ss : '.' :
+                                let bt = (backtrim . tail) ss 
+                                in if null bt 
+                                   then "0"
+                                   else bt ++ "e" ++ show (pred e)
+                  | otherwise = 
+                      head ss : '.' : 
+                               (let bt = (backtrim . tail) ss in
+                                if null bt then "0" 
+                                else bt )
+                               ++ "e" ++ show (pred e)
                     where (str, e') = mpfrToString Near n 10 d
                           e = fromIntegral e'
                           n        = max dec 5
