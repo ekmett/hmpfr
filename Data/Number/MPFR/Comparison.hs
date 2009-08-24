@@ -28,21 +28,19 @@ import Data.Maybe
 
 {-# INLINE cmp #-}
 cmp :: MPFR -> MPFR -> Maybe Ordering
-cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) | e > expInf && e' > expInf = 
-                                            case (s /= s', e /= e') of
-                                              (True, _) -> Just $ compare (signum s) (signum s')
-                                              (_, True) -> Just $ compare (fromIntegral s * e) (fromIntegral s * e')
-                                              (False, False) -> Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
-                                        | isNaN mp1 || isNaN mp2 = Nothing 
-                                        | isZero mp1             = 
-                                            case isZero mp2 of
-                                              True -> Just EQ
-                                              False -> Just . toEnum . (+ 1) . negate . fromIntegral $ signum s' 
-                                        | isZero mp2             = Just . toEnum . (+ 1) . fromIntegral $ signum s
-                                        | isInfinite mp1         = case isInfinite mp2 of
-                                                                     True -> Just $ compare s s'
-                                                                     False -> Just $ compare s 0
-                                        | isInfinite mp2         = Just $ compare 0 s'
+cmp mp1@(MP _ s e _) mp2@(MP _ s' e' _) 
+    | e > expInf && e' > expInf = 
+        case (s /= s', e /= e') of
+          (True, _) -> Just $ compare (signum s) (signum s')
+          (_, True) -> Just $ compare (fromIntegral s * e) (fromIntegral s * e')
+          (False, False) -> Just (compare (withMPFRBB mp1 mp2 mpfr_cmp) 0)
+    | isNaN mp1 || isNaN mp2 = Nothing 
+    | isZero mp1             = Just $ if isZero mp2 
+                                      then EQ 
+                                      else toEnum . (+ 1) . negate . fromIntegral . signum $ s'
+    | isZero mp2             = Just . toEnum . (+ 1) . fromIntegral $ signum s
+    | isInfinite mp1         = Just .compare s $ if isInfinite mp2 then s' else 0 
+    | isInfinite mp2         = Just $ compare 0 s'
 
 cmpw       :: MPFR -> Word -> Maybe Ordering
 cmpw mp1 w = if isNaN mp1 then Nothing else Just (compare (unsafePerformIO go) 0)
