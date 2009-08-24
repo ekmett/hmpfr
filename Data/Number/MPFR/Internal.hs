@@ -36,10 +36,10 @@ withMPFRsBA               :: RoundMode -> Precision -> MPFR -> MPFR
                                -> (Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt)
                                -> (MPFR, Int)
 withMPFRsBA r p !mp1 !mp2 f = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      with mp2 $ \p3 -> do
-                          f p1 p2 p3 ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 -> 
+               with mp1 $ \p2 -> 
+               with mp2 $ \p3 -> 
+               f p1 p2 p3 ((fromIntegral . fromEnum) r)
                           
 
 {-# INLINE withMPFRBAui #-}
@@ -47,111 +47,107 @@ withMPFRBAui :: RoundMode -> Precision -> MPFR -> CULong
                   ->  (Ptr MPFR -> Ptr MPFR -> CULong -> CRoundMode -> IO CInt)
                   -> (MPFR, Int) 
 withMPFRBAui r p !mp1 d f = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      f p1 p2 d ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 -> 
+               with mp1 $ \p2 -> 
+               f p1 p2 d ((fromIntegral . fromEnum) r)
                                 
 {-# INLINE withMPFRBAsi #-}
 withMPFRBAsi             :: RoundMode -> Precision -> MPFR -> CLong
                               -> (Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt)
                               -> (MPFR, Int)
 withMPFRBAsi r p !mp1 d f = unsafePerformIO go 
-    where go = do withDummy p $ \ p1 -> do
-                    with mp1 $ \ p2 -> do
-                      f p1 p2 d ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \ p1 -> 
+               with mp1 $ \ p2 -> 
+               f p1 p2 d ((fromIntegral . fromEnum) r)
                                   
 {-# INLINE withMPFRBAiu #-}
 withMPFRBAiu             :: RoundMode -> Precision -> CULong -> MPFR
                               -> (Ptr MPFR -> CULong -> Ptr MPFR -> CRoundMode -> IO CInt)
                               -> (MPFR, Int) 
 withMPFRBAiu r p d !mp1 f = unsafePerformIO go 
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      f p1 d p2 ((fromIntegral . fromEnum) r)
-                      
+    where go = withDummy p $ \p1 -> 
+               with mp1 $ \p2 -> 
+               f p1 d p2 ((fromIntegral . fromEnum) r)
+                     
 {-# INLINE withMPFRBAis #-}
 withMPFRBAis             :: RoundMode -> Precision -> CLong -> MPFR
                               -> (Ptr MPFR -> CLong -> Ptr MPFR -> CRoundMode -> IO CInt)
                               -> (MPFR, Int) 
 withMPFRBAis r p d !mp1 f = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      f p1 d p2 ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+               with mp1 $ \p2 -> 
+               f p1 d p2 ((fromIntegral . fromEnum) r)
 {-# INLINE withMPFRBAd #-}
 withMPFRBAd              :: RoundMode -> Precision -> MPFR -> CDouble
                                -> (Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt)
                                -> (MPFR, Int)
 withMPFRBAd r p !mp1 d f = unsafePerformIO go 
-    where go = do withDummy p $ \ p1 -> do
-                    with mp1 $ \ p2 -> do
-                      f p1 p2 d ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \ p1 ->
+               with mp1 $ \ p2 ->
+               f p1 p2 d ((fromIntegral . fromEnum) r)
                                   
 {-# INLINE withMPFRBAd' #-}
 withMPFRBAd'              :: RoundMode -> Precision -> CDouble -> MPFR
                                -> (Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt)
                                -> (MPFR, Int) 
 withMPFRBAd' r p d !mp1 f = unsafePerformIO go 
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      f p1 d p2 ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+               with mp1 $ \p2 ->
+               f p1 d p2 ((fromIntegral . fromEnum) r)
 
                      
 {-# INLINE withMPFRB #-}
 withMPFRB       :: MPFR -> (Ptr MPFR -> IO CInt) -> CInt 
 withMPFRB !mp1 f = unsafePerformIO go
-    where go = with mp1 $ \p1 -> f p1
+    where go = with mp1 f
 
 withMPFRP       :: MPFR -> (Ptr MPFR -> IO CPrecision) -> CPrecision 
 withMPFRP !mp1 f = unsafePerformIO go
-    where go = with mp1 $ \p1 -> f p1
+    where go = with mp1 f
 
 {-# INLINE withMPFR #-}
 withMPFR           :: RoundMode -> Precision -> MPFR 
                         -> (Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt) 
                         -> (MPFR, Int)
 withMPFR r p !mp1 f = unsafePerformIO go 
-    where go = do withDummy p $ \p1 -> do
-                    with mp1 $ \p2 -> do
-                      f p1 p2 ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+               with mp1 $ \p2 ->
+               f p1 p2 ((fromIntegral . fromEnum) r)
                       
 {-# INLINE withMPFRBB #-}
 withMPFRBB           :: MPFR -> MPFR 
                           -> (Ptr MPFR -> Ptr MPFR -> IO CInt) 
                           -> CInt  
 withMPFRBB !mp1 !mp2 f = unsafePerformIO go
-    where go = do with mp1 $ \p1 -> do 
-                    with mp2 $ \p2 -> do 
-                                      f p1 p2
+    where go = with mp1 $ with mp2 . f
                               
 {-# INLINE withMPFRC #-}
 withMPFRC       :: RoundMode -> Precision ->
                      (Ptr MPFR -> CRoundMode -> IO CInt) -> (MPFR, Int)
 withMPFRC r p f = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    f p1 ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+               f p1 ((fromIntegral . fromEnum) r)
    
 withMPFRF         :: MPFR -> RoundMode
                        -> (Ptr MPFR -> CRoundMode -> IO CInt)
                        -> Int
 withMPFRF !mp1 r f = (fromIntegral . unsafePerformIO) go
-    where go = do with mp1 $ \p1 -> f p1 ((fromIntegral . fromEnum) r)
+    where go = with mp1 $ \p1 -> f p1 ((fromIntegral . fromEnum) r)
 
 {-# INLINE withMPFRUI #-}
 withMPFRUI         :: RoundMode -> Precision -> Word
                         -> (Ptr MPFR -> CULong -> CRoundMode -> IO CInt)
                         -> (MPFR, Int)
 withMPFRUI r p d f = unsafePerformIO go 
-    where go = do withDummy p $ \p1 -> do
-                    f p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
+    where go = withDummy p $ \p1 ->
+               f p1 (fromIntegral d) ((fromIntegral . fromEnum) r)
                     
 {-# INLINE withMPFRR #-}
 withMPFRR       :: Precision -> MPFR
                      -> (Ptr MPFR -> Ptr MPFR -> IO CInt)
                      -> (MPFR, Int)
 withMPFRR p !d f = unsafePerformIO go
-    where go = do withDummy p $ \p1 -> do
-                    with d $ \p2 -> do
-                      f p1 p2
+    where go = withDummy p $ with d . f
 
                         
 {-# INLINE checkPrec #-}
@@ -160,9 +156,8 @@ checkPrec = max minPrec
 
 getMantissa'     :: MPFR -> [Limb]
 getMantissa' (MP p _ _ p1) = unsafePerformIO go
-    where go = do withForeignPtr p1 $ \pt -> do 
-                    arr <- peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb)) pt ;
-                    return arr 
+    where go = withForeignPtr p1 $ 
+               peekArray (Prelude.ceiling ((fromIntegral p ::Double) / fromIntegral bitsPerMPLimb))
 
 minPrec :: Precision
 minPrec = fromIntegral $ 8 * sizeOf (undefined :: Int)
