@@ -2,14 +2,14 @@ name:                hmpfr
 version:             0.2.1
 synopsis:            Haskell binding to MPFR library
 description:         Haskell binding to MPFR library. This version is compatible
-		     only with 2.4.* and will not work with previous releases
-		     of the MPFR library.
+                     only with 2.4.* and will not work with previous releases
+                     of the MPFR library.
                      Some simple examples of usage can be found in test/Demo.hs.
 category:            Data, Math
 license:             BSD3
 license-file:        LICENSE
 Stability:           experimental
-tested-with:         GHC == 6.10.2
+tested-with:         GHC == 6.10.4
 author:              Aleš Bizjak
 maintainer:          Aleš Bizjak <ales.bizjak0@gmail.com>
 Homepage:            http://code.haskell.org/hmpfr/
@@ -20,11 +20,12 @@ Extra-source-files:  test/Demo.hs
 
 Data-files:          README
                      dict.txt
+                     ChangeLog
 
 Library
-  build-Depends:       base
+  build-Depends:       base > 3 && < 5
   if impl(ghc >= 6.10)
-    build-depends:     integer
+     build-Depends:    base >= 4, integer
 
   Other-modules:       Data.Number.MPFR.FFIhelper
                        Data.Number.MPFR.Internal
