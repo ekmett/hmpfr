@@ -128,16 +128,8 @@ foreign import ccall unsafe "mpfr_set_ui_wrap"
 foreign import ccall unsafe "mpfr_set_si_wrap"
         mpfr_set_si :: Ptr MPFR -> CLong -> CRoundMode -> IO CInt
 
---TODO set_uj, set_sj
-
 foreign import ccall unsafe "mpfr_set_d"
         mpfr_set_d :: Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
-
---foreign import ccall unsafe "mfpr_set_ld"
-  --      mpfr_set_ld :: Ptr MPFR -> #{type long double} -> CRoundMode -> IO CInt
---long double does not seem to be supported
-
---TODO set_decimal64, set_z, set_q, set_f
 
 foreign import ccall unsafe "mpfr_set_ui_2exp"
         mpfr_set_ui_2exp :: Ptr MPFR -> CULong -> Exp -> CRoundMode -> IO CInt
@@ -145,7 +137,6 @@ foreign import ccall unsafe "mpfr_set_ui_2exp"
 foreign import ccall unsafe "mpfr_set_si_2exp"
         mpfr_set_si_2exp :: Ptr MPFR -> CLong -> Exp -> CRoundMode -> IO CInt
 
---TODO set_uj_2exp, set_sj_2exp
 
 foreign import ccall unsafe "mpfr_set_str"
         mpfr_set_str :: Ptr MPFR -> CString -> CInt -> CRoundMode -> IO CInt
@@ -162,9 +153,6 @@ foreign import ccall unsafe "mpfr_set_nan"
 foreign import ccall unsafe "mpfr_swap"
         mpfr_swap :: Ptr MPFR -> Ptr MPFR -> IO ()
 
--- THINK combined initialization and assignment functions are non-applicable
--- with custom interface?
-
 --------------------------------------------------------------------------------
 
 
@@ -172,27 +160,15 @@ foreign import ccall unsafe "mpfr_swap"
 foreign import ccall unsafe "mpfr_get_d"
         mpfr_get_d :: Ptr MPFR -> CRoundMode -> IO CDouble
 
--- TODO get_decimal64
-
 foreign import ccall unsafe "mpfr_get_d_2exp"
         mpfr_get_d_2exp :: Ptr CLong -> Ptr MPFR -> CRoundMode -> IO CDouble
 
--- TODO get_ld_2exp
 -- !!!!!!! next 4 set erange flags
 foreign import ccall unsafe "mpfr_get_si" 
         mpfr_get_si :: Ptr MPFR -> CRoundMode -> IO CLong
 
 foreign import ccall unsafe "mpfr_get_ui" 
         mpfr_get_ui :: Ptr MPFR -> CRoundMode -> IO CULong
-
-{-
-foreign import ccall unsafe "mpfr_get_sj_wrap"
-        mpfr_get_sj :: Ptr MPFR -> CRoundMode -> IO #type intmax_t
-
-foreign import ccall unsafe "mpfr_get_uj_wrap"
-        mpft_get_uj :: Ptr MPFR -> CRoundMode -> IO #type uintmax_t
--}
---TODO get_z_exp, get_z, get_f, 
 
 foreign import ccall unsafe "mpfr_get_str"
         mpfr_get_str :: CString -> Ptr Exp -> CInt -> CUInt -> Ptr MPFR ->  CRoundMode -> IO CString
@@ -241,8 +217,6 @@ foreign import ccall unsafe "mpfr_add_si"
 foreign import ccall unsafe "mpfr_add_d"
         mpfr_add_d :: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
 
--- TODO add_z, add_q
-
 foreign import ccall unsafe "mpfr_sub"
         mpfr_sub :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
@@ -264,8 +238,6 @@ foreign import ccall unsafe "mpfr_sub_d"
 foreign import ccall unsafe "mpfr_d_sub"
         mpfr_d_sub :: Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt
 
---TODO sub_z, sub_q
-
 foreign import ccall unsafe "mpfr_mul"
         mpfr_mul :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt 
 
@@ -277,8 +249,6 @@ foreign import ccall unsafe "mpfr_mul_si"
 
 foreign import ccall unsafe "mpfr_mul_d"
         mpfr_mul_d:: Ptr MPFR -> Ptr MPFR -> CDouble -> CRoundMode -> IO CInt
-
---TODO mul_z, mul_q
 
 foreign import ccall unsafe "mpfr_sqr"
         mpfr_sqr :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
@@ -304,9 +274,6 @@ foreign import ccall unsafe "mpfr_div_d"
 foreign import ccall unsafe "mpfr_d_div"
         mpfr_d_div :: Ptr MPFR -> CDouble -> Ptr MPFR -> CRoundMode -> IO CInt
 
-
--- TODO div_z, div_q
-
 foreign import ccall unsafe "mpfr_sqrt"
         mpfr_sqrt :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
@@ -331,14 +298,11 @@ foreign import ccall unsafe "mpfr_pow_ui"
 foreign import ccall unsafe "mpfr_pow_si"
         mpfr_pow_si :: Ptr MPFR -> Ptr MPFR -> CLong -> CRoundMode -> IO CInt
 
---TODO pow_z
-
 foreign import ccall unsafe "mpfr_ui_pow_ui"
         mpfr_ui_pow_ui :: Ptr MPFR -> CULong -> CULong -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_ui_pow"
         mpfr_ui_pow :: Ptr MPFR -> CULong -> Ptr MPFR -> CRoundMode -> IO CInt
-
 
 foreign import ccall unsafe "mpfr_neg"
         mpfr_neg :: Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt 
@@ -377,8 +341,6 @@ foreign import ccall unsafe "mpfr_cmp_si_wrap"
 
 foreign import ccall unsafe "mpfr_cmp_d"
         mpfr_cmp_d :: Ptr MPFR -> CDouble -> IO CInt
-
---TODO cmp_ld, cmp_z, cmp_q, cmp_f
 
 foreign import ccall unsafe "mpfr_cmp_ui_2exp"
         mpfr_cmp_ui_2exp :: Ptr MPFR -> CULong -> Exp -> IO CInt
@@ -466,7 +428,6 @@ foreign import ccall unsafe "mpfr_cot"
 foreign import ccall unsafe "mpfr_sin_cos"
         mpfr_sin_cos :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
-
 foreign import ccall unsafe "mpfr_asin"
         mpfr_asin :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
 
@@ -478,7 +439,6 @@ foreign import ccall unsafe "mpfr_atan"
 
 foreign import ccall unsafe "mpfr_atan2"
         mpfr_atan2 :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
-
 
 foreign import ccall unsafe "mpfr_cosh"
         mpfr_cosh :: Ptr MPFR -> Ptr MPFR ->  CRoundMode -> IO CInt
@@ -569,7 +529,6 @@ foreign import ccall unsafe "mpfr_fma"
 
 foreign import ccall unsafe "mpfr_fms"
         mpfr_fms :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
-
 
 foreign import ccall unsafe "mpfr_agm"
         mpfr_agm :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt  
@@ -663,8 +622,6 @@ foreign import ccall unsafe "mpfr_min"
 foreign import ccall unsafe "mpfr_max"
         mpfr_max :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt
 
--- TODO urandomb
-
 foreign import ccall unsafe "mpfr_random2"
         mpfr_random2 :: Ptr MPFR -> MpSize -> Exp -> IO ()
 
@@ -750,7 +707,6 @@ foreign import ccall unsafe "mpfr_set_erangeflag"
 foreign import ccall unsafe "mpfr_clear_flags"
         mpfr_clear_flags :: IO ()
 
-
 foreign import ccall unsafe "mpfr_underflow_p"
         mpfr_underflow_p :: IO CInt
 
@@ -790,4 +746,3 @@ foreign import ccall unsafe "mpfr_custom_move_wrap"
         mpfr_custom_move :: Ptr MPFR -> Ptr #{type mp_limb_t} -> IO ()
 
 -------------------------------------------------
-
