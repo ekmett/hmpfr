@@ -10,7 +10,7 @@ import Data.Int
 
 import Foreign.C.String(CString)
 import Foreign.C.Types(CULong, CLong, CInt, CUInt, CDouble, CChar)
-import Foreign.Ptr(FunPtr, Ptr)
+import Foreign.Ptr(Ptr)
 import Foreign.Marshal(alloca)
 import Foreign.Storable
 import Foreign.ForeignPtr (ForeignPtr, withForeignPtr, mallocForeignPtrBytes)
@@ -108,9 +108,6 @@ type MpSize = #type mp_size_t
 -- utility functions from chsmpfr.h
 foreign import ccall unsafe "initS"
         initS :: CPrecision -> IO (Ptr MPFR)
-
-foreign import ccall unsafe "&clear"
-        clear :: FunPtr (Ptr MPFR -> IO ())
 
 --------------------
 foreign import ccall unsafe "mpfr_get_prec_wrap"
