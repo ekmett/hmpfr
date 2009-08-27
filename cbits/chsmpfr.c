@@ -22,7 +22,7 @@ int mpfr_inf_p_wrap(const mpfr_ptr p) {
   return mpfr_inf_p(p);
 }
 int mpfr_zero_p_wrap(const mpfr_ptr p) {
-  return mpfr_inf_p(p); 
+  return mpfr_zero_p(p); 
 }
 
 int mpfr_set_wrap(const mpfr_ptr p1, const mpfr_ptr p2, mp_rnd_t r) {

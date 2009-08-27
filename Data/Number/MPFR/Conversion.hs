@@ -18,6 +18,7 @@
 module Data.Number.MPFR.Conversion where
 
 import Data.Number.MPFR.Internal
+import Data.Number.MPFR.Comparison(isZero)
 import Data.Number.MPFR.Misc
 
 import Data.List (isInfixOf)
@@ -88,6 +89,7 @@ toStringExp       :: Word -- ^ number of digits
                   -> MPFR -> String
 toStringExp dec d | isInfixOf "NaN" ss = "NaN"
                   | isInfixOf "Inf" ss = s ++ "Infinity"
+                  | isZero d = "0"
                   | e > 0              = 
                       s ++ if Prelude.floor prec <= dec
                            then 
