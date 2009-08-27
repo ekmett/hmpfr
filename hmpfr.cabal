@@ -50,6 +50,7 @@ Library
   build-tools:         hsc2hs
   GHC-options:         -Wall -fno-warn-orphans -O2 -funfolding-keeness-factor=10
   GHC-prof-options:    -prof -auto
+  hs-source-dirs:      src
   include-dirs:        cbits
   includes:            chsmpfr.h mpfr.h
   install-includes:    chsmpfr.h
