@@ -30,7 +30,7 @@
 
   Eq
  
-   - NaN \/= Nan, 
+   - NaN \/= NaN,
 
    - Infinity = Infinity, 
 
@@ -99,7 +99,7 @@ instance Num MPFR where
     fromInteger (S# i) = fromInt Zero minPrec (I# i)
     fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral . abs $ I# n * bitsPerIntegerLimb) i 
 
-addPrec       :: Dyadic -> Dyadic -> Precision
+addPrec       :: MPFR -> MPFR -> Precision
 addPrec d1 d2 = fromIntegral (max (p1 + e1 - e3) (p2 + e2 - e3)) + 1
                 where e1 = if d1 == 0 then 0 else getExp d1
                       e2 = if d2 == 0 then 0 else getExp d2
