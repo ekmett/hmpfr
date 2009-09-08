@@ -10,8 +10,8 @@ module Data.Number.MPFR.Base (
          module Data.Number.MPFR.Integer,
          module Data.Number.MPFR.Misc,
          RoundMode (Near, Up, Down, Zero),
-         MPFR, Precision, Exp
-                              )
+         MPFR, Precision(), Exp
+                             )
 where
 
 import Data.Number.MPFR.Assignment

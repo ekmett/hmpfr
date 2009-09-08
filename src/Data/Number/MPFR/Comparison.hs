@@ -18,8 +18,6 @@
 
 module Data.Number.MPFR.Comparison where
 
---import Data.Number.MPFR.Misc
-
 import Data.Number.MPFR.Internal
 
 import Prelude hiding (isNaN, exponent, isInfinite)

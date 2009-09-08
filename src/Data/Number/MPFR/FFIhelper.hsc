@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable #-}
+{-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable, GeneralizedNewtypeDeriving #-}
 #include <chsmpfr.h>
 #include <mpfr.h>
 
@@ -17,6 +17,8 @@ import Foreign.ForeignPtr (ForeignPtr, withForeignPtr, mallocForeignPtrBytes)
 
 import Data.Typeable(Typeable)
 
+import Data.Function(on)
+    
 data RoundMode = Near | Zero | Up | Down | GMP_RND_MAX | GMP_RNDNA 
 
 instance Enum RoundMode where
@@ -51,6 +53,39 @@ instance Storable MPFR where
                                  #{poke __mpfr_struct, _mpfr_exp} p e
                                  withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} p p1
 
+newtype Precision = Precision { runPrec :: Word } deriving (Eq, Ord, Show, Enum)
+
+instance Num Precision where
+    (Precision w) + (Precision w') = Precision $ w + w'
+    (Precision w) * (Precision w') = Precision $ w * w'
+    (Precision a) - (Precision b) = 
+        if a >= b 
+        then Precision (a - b) 
+        else error $ "instance Precision Num (-): " ++ 
+                       "Operation would result in negative precision."
+    negate = error $ "instance Precision Num negate: " ++ 
+                       "operation would result in negative precision"
+    abs = id
+    signum (Precision x) = Precision . signum $ x
+    fromInteger i = if i >= 0 
+                    then Precision . fromInteger $ i
+                    else error $ "instance Precision Num fromInteger: " ++
+                             "operation would result  in negative precision"
+
+instance Real Precision where
+    toRational (Precision w) = toRational w
+
+instance Integral Precision where
+    quotRem (Precision w) (Precision w') = uncurry ((,) `on` Precision) $ quotRem w w'
+    toInteger (Precision w) = toInteger w
+
+{-# INLINE peekNoLimbPrec #-}
+peekNoLimbPrec      :: Ptr MPFR -> IO (Sign, Exp)
+peekNoLimbPrec p = do r21 <- #{peek __mpfr_struct, _mpfr_sign} p
+                      r22 <- #{peek __mpfr_struct, _mpfr_exp} p
+                      return (r21, r22)            
+
+
 {-# INLINE peekP #-}
 peekP      :: Ptr MPFR -> ForeignPtr Limb -> IO MPFR
 peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
@@ -58,9 +93,10 @@ peekP p fp = do r11 <- #{peek __mpfr_struct, _mpfr_prec} p
                 r22 <- #{peek __mpfr_struct, _mpfr_exp} p
                 return (MP r11 r21 r22 fp)
 {-# INLINE withDummy #-}
-withDummy     :: Word -> (Ptr MPFR -> IO CInt) -> IO (MPFR, Int)
-withDummy w f = do alloca $ \ptr -> do
-                      ls <- mpfr_custom_get_size (fromIntegral w)
+withDummy     :: Precision -> (Ptr MPFR -> IO CInt) -> IO (MPFR, Int)
+withDummy w f = 
+    do alloca $ \ptr -> do
+                      ls <- mpfr_custom_get_size (fromIntegral . runPrec $ w)
                       fp <- mallocForeignPtrBytes (fromIntegral ls)
                       #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral w :: CPrecision)
                       #{poke __mpfr_struct, _mpfr_sign} ptr (1 :: Sign) 
@@ -71,8 +107,8 @@ withDummy w f = do alloca $ \ptr -> do
                       return (r1, fromIntegral r2)
 
 {-# INLINE pokeDummy #-}
-pokeDummy          :: Ptr MPFR -> ForeignPtr Limb -> Word -> IO ()
-pokeDummy ptr fp p = do #{poke __mpfr_struct, _mpfr_prec} ptr (fromIntegral p :: CPrecision)
+pokeDummy          :: Ptr MPFR -> ForeignPtr Limb -> Precision -> IO ()
+pokeDummy ptr fp p = do #{poke __mpfr_struct, _mpfr_prec} ptr ((fromIntegral . runPrec $ p) :: CPrecision)
                         #{poke __mpfr_struct, _mpfr_sign} ptr (0 :: Sign) 
                         #{poke __mpfr_struct, _mpfr_exp} ptr (0 :: Exp)
                         withForeignPtr fp $ \p1 -> #{poke __mpfr_struct, _mpfr_d} ptr p1

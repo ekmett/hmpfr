@@ -3,20 +3,18 @@
 {-# LANGUAGE BangPatterns #-}
 
 module Data.Number.MPFR.Internal (
-       module FFIhelper, 
+       module Data.Number.MPFR.FFIhelper, 
        withMPFRsBA, withMPFRBAui, withMPFRBAiu, withMPFRBAd,
        withMPFRBAsi, withMPFRBAis,  withMPFRBAd', 
        withMPFRB, withMPFRP, withMPFR, withMPFRBB, withMPFRC, 
        withMPFRF, withMPFRUI, withMPFRR, checkPrec, getMantissa',
        unsafePerformIO, peek, Ptr, nullPtr, mallocForeignPtrBytes, with,
        withForeignPtr, CInt, CLong, CULong, withCString, peekCString, alloca,
-       peekArray, shiftL, Word, minPrec,
-       
-       Precision
+       peekArray, shiftL, Word, minPrec
 )
 where
 
-import Data.Number.MPFR.FFIhelper as FFIhelper
+import Data.Number.MPFR.FFIhelper
 
 import Foreign.C(CInt, CLong, CULong, CDouble, withCString, peekCString)
 import Foreign.Marshal(alloca, peekArray)
@@ -26,9 +24,6 @@ import Foreign.Storable(sizeOf)
 import Data.Bits(shiftL)
 
 import Data.Word(Word)
-
-type Precision = Word
-
 
 -- these are helper functions, only for internal use
 {-# INLINE withMPFRsBA #-}
