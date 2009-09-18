@@ -1,6 +1,6 @@
 {-|
     Module      :  Data.Number.MPFR.Special
-    Description :  wrappers for special functions
+    Description :  Special functions
     Copyright   :  (c) Aleš Bizjak
     License     :  BSD3
 
@@ -8,7 +8,8 @@
     Stability   :  experimental
     Portability :  non-portable
 
- Special functions. See MPFR manual for detailed documentation.
+ For documentation on particular functions see
+ <http://www.mpfr.org/mpfr-current/mpfr.html#Special-Functions>.
 -}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}

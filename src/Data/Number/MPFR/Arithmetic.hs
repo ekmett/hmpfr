@@ -1,6 +1,6 @@
 {-|
     Module      :  Data.Number.MPFR.Arithmetic
-    Description :  wrappers for basic arithmetic functions
+    Description :  Basic arithmetic functions
     Copyright   :  (c) Aleš Bizjak
     License     :  BSD3
 
@@ -8,8 +8,10 @@
     Stability   :  experimental
     Portability :  non-portable
 
- Basic arithmetic functions. See MPFR manual for detailed documentation.
+ For documentation on particular functions see
+ <http://www.mpfr.org/mpfr-current/mpfr.html#Basic-Arithmetic-Functions>.
 -}
+
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 

@@ -1,6 +1,6 @@
 {-|
     Module      :  Data.Number.MPFR.Misc
-    Description :  wrappers for miscellaneous functions
+    Description :  Miscellaneous functions
     Copyright   :  (c) Aleš Bizjak
     License     :  BSD3
 
@@ -8,7 +8,8 @@
     Stability   :  experimental
     Portability :  non-portable
 
- Functions that don't belong anywhere else. See MPFR manual for detailed documentation.
+ For documentation on particular functions see
+ <http://www.mpfr.org/mpfr-current/mpfr.html#Miscellaneous-Functions>.
 -}
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
