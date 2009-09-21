@@ -1,5 +1,5 @@
 name:                hmpfr
-version:             0.2.2
+version:             0.3
 synopsis:            Haskell binding to MPFR library
 description:         Haskell binding to MPFR library. This version is compatible
                      only with 2.4.* and will not work with previous releases
@@ -29,8 +29,14 @@ Library
 
   Other-modules:       Data.Number.MPFR.FFIhelper
                        Data.Number.MPFR.Internal
+                       Data.Number.MPFR.Mutable.Internal
 
-  Exposed-modules:     Data.Number.MPFR.Assignment
+                       Data.Number.MPFR.Mutable.Arithmetic
+                       Data.Number.MPFR.Mutable.Special
+                       Data.Number.MPFR.Mutable.Integer
+                       Data.Number.MPFR.Mutable.Misc
+                       
+                       Data.Number.MPFR.Assignment
                        Data.Number.MPFR.Conversion
                        Data.Number.MPFR.Arithmetic
                        Data.Number.MPFR.Comparison
@@ -38,15 +44,17 @@ Library
                        Data.Number.MPFR.Integer
                        Data.Number.MPFR.Misc
 
-                       Data.Number.MPFR.Near
-                       Data.Number.MPFR.Up
-                       Data.Number.MPFR.Down
-                       Data.Number.MPFR.Zero
+  Exposed-modules:     Data.Number.MPFR.Instances.Near
+                       Data.Number.MPFR.Instances.Up
+                       Data.Number.MPFR.Instances.Down
+                       Data.Number.MPFR.Instances.Zero
 
                        Data.Number.MPFR
 
+                       Data.Number.MPFR.Mutable
+                       
   build-tools:         hsc2hs
-  GHC-options:         -Wall -fno-warn-orphans -O2 -funfolding-keeness-factor=10
+  GHC-options:         -Wall -fno-warn-orphans -O2
   GHC-prof-options:    -prof -auto
   hs-source-dirs:      src
   include-dirs:        cbits
