@@ -8,7 +8,9 @@
     Stability   :  experimental
     Portability :  non-portable
 
- Conversion from MPFR to basic Haskell types. See MPFR manual for detailed documentation.
+  Conversion from basic MPFR back to basic Haskell types. 
+  See <http://www.mpfr.org/mpfr-current/mpfr.html#Conversion-Functions> for
+  documentation on particular functions.
 -}
 
 {-# INCLUDE <mpfr.h> #-}

@@ -29,8 +29,6 @@ Library
 
   Other-modules:       Data.Number.MPFR.FFIhelper
                        Data.Number.MPFR.Internal
-                       Data.Number.MPFR.Base
-                     
 
   Exposed-modules:     Data.Number.MPFR.Assignment
                        Data.Number.MPFR.Conversion

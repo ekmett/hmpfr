@@ -8,7 +8,9 @@
     Stability   :  experimental
     Portability :  non-portable
 
- Conversion from basic Haskell types to MPFR. See MPFR manual for detailed documentation.
+ Conversion from basic Haskell types to MPFR. 
+ See <http://www.mpfr.org/mpfr-current/mpfr.html#Assignment-Functions> for
+ documentation on particular functions.
 -}
 
 {-# INCLUDE <mpfr.h> #-}
@@ -54,10 +56,11 @@ fromDouble_ r p d = unsafePerformIO go
     where go = withDummy p $ \p1 ->
                    mpfr_set_d p1 (realToFrac d) ((fromIntegral . fromEnum) r)
                       
--- x * 2 ^ y
+-- | x * 2 ^ y
 int2w         :: RoundMode -> Precision -> Word -> Int -> MPFR
 int2w r p i = fst . int2w_ r p i
 
+-- | x * 2 ^ y
 int2i         :: RoundMode -> Precision -> Int -> Int -> MPFR
 int2i r p i = fst . int2i_ r p i
 
@@ -131,6 +134,6 @@ fromIntegerA r p = stringToMPFR r p 10 . show
 compose             :: RoundMode -> Precision -> (Integer, Int) -> MPFR 
 compose r p (i, ii) = div2i r p (fromIntegerA r p i) ii
 
--- | @stringToMPFR@ with default rounding to Near.
+-- | 'stringToMPFR' with default rounding to Near.
 fromString       :: String -> Precision -> Word -> MPFR
 fromString s p b = stringToMPFR Near p b s
