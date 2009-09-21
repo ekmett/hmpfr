@@ -2,7 +2,7 @@
 
 {-|
     Module      :  Data.Number.MPFR
-    Description :  top level
+    Description :  Pure interface to the MPFR library.
     Copyright   :  (c) Aleš Bizjak
     License     :  BSD3
 
@@ -10,80 +10,115 @@
     Stability   :  experimental
     Portability :  non-portable
 
- /Naming/
+This module exports a pure interface to the MPFR library functions. Functions
+return new 'MPFR' structures instead of modifying existing ones and so all
+functions which produce a new MPFR structure take one more parameter than
+their original @C@ counterparts. This parameter, 'Precision', is the precision
+of the resulting 'MPFR'.
 
-  - functions ending with _ (underscore) usually return a pair (MPFR, Int), where
- Int is a return value of a corresponding mpfr_ function. See the MPFR manual for 
- a description of return values.
+This is naturally slower than modifying in-place, especially when dealing
+with lower precisions, so a \"mutable\" interface is provided in 
+"Data.Number.MPFR.Mutable" module.
 
- - the same functions without the _ return just the MPFR. 
 
- - mpfr_ prefix in functions is removed
+/Naming conventions/
 
- - _ui and ui_ in function becomes w (stands for Word). For example mpfr_add_ui becomes addw.
+    - functions ending with _ (underscore) usually return a pair @('MPFR', 'Int')@, where
+      'Int' is a return value of a corresponding @mpfr_@ function. See the MPFR manual for 
+      a description of return values.
 
- - si_ and _si in functions becomes i (stands for Int).
+    - the same functions without the _ return just the 'MPFR'. 
 
- - comparison functions which have _p appended loose it. For example mpfr_less_p becomes less.
+    - @mpfr_@ prefix in functions is removed
 
-   /Instances/
+    - @_ui@ and @ui_@ in function becomes @w@ (stands for 'Word').
+      For example @mpfr_sub_ui@ becomes @'subw'@ and @mpfr_ui_sub@ becomes 'wsub'.
 
-  Eq
+    - @si_@ and @_si@ in functions becomes @i@ (stands for 'Int').
+      For example @mpfr_sub_si@ becomes @'subi'@ and @mpfr_si_sub@ becomes 'isub'.
+
+    - comparison functions which have @_p@ appended loose it.
+      For example @mpfr_less_p@ becomes @'less'@.
+
+/Instances/
+
+    [@'Eq'@]
+
+        - NaN \/= NaN,
+
+        - Infinity = Infinity, 
+
+        - \-Infinity = -Infinity
+
+        - otherwise normal comparison 
+
+
+    [@'Ord'@]
  
-   - NaN \/= NaN,
+        - compare NaN _ = 'GT'
 
-   - Infinity = Infinity, 
+        - compare _ NaN = 'GT'
+  
+        - infinity < _ = 'False'
 
-   - \-Infinity = -Infinity
+        - \-infinity > _ = 'False'
 
-   - otherwise normal comparison 
+        - NaN [\<,\>,\>=,<=] _ = 'False'
 
+This mimics the behaviour of built in Haskell 'Float' and 'Double'.
 
-
-  Ord      
- 
-   - compare NaN _ = GT
-
-   - compare _ NaN = GT
-
-   - infinity < _ = False
-
-   - \-infinity > _ = False
-
-   - NaN [\<,\>,\>=,<=] _ = False
-
-   This mimics the behaviour of built in Haskell Float and Double.
-
-
-
- Num
-
- Operations defined in Num class will be computed exactly (no precision is lost).
- This isn't particularly useful as precision grows fairly quickly and everything becomes
- slow so it preferably shouldn't be used.
-
-
-
-  /This module should always be imported qualified./
-
+If you need instances of numeric typeclasses import one of the 
+Data.Number.MPFR.Instances.* modules.
 -}
 
 {-# INCLUDE <mpfr.h> #-}
 {-# INCLUDE <chsmpfr.h> #-}
 
-
 module Data.Number.MPFR (
-     module Data.Number.MPFR.Base
+         RoundMode (Near, Up, Down, Zero),
+         MPFR, Precision(), Exp, MpSize,
+         -- * Assignment functions
+         -- | See <http://www.mpfr.org/mpfr-current/mpfr.html#Assignment-Functions>
+         --  documentation on particular functions.
+         module Data.Number.MPFR.Assignment,
+         -- * Conversion functions
+         -- |  See <http://www.mpfr.org/mpfr-current/mpfr.html#Conversion-Functions>
+         --  documentation on particular functions.
+         module Data.Number.MPFR.Conversion,
+         -- * Basic arithmetic functions
+         -- |  For documentation on particular functions see
+         -- <http://www.mpfr.org/mpfr-current/mpfr.html#Basic-Arithmetic-Functions>.
+         module Data.Number.MPFR.Arithmetic,
+         -- * Comparison functions
+         -- | For documentation on particular functions see
+         -- <http://www.mpfr.org/mpfr-current/mpfr.html#Comparison-Functions>
+         module Data.Number.MPFR.Comparison,
+         -- * Special functions
+         -- | For documentation on particular functions see
+         -- <http://www.mpfr.org/mpfr-current/mpfr.html#Special-Functions>.
+
+         module Data.Number.MPFR.Special,
+         -- * Integer related functions
+         -- | For documentation on particular functions see
+         -- <http://www.mpfr.org/mpfr-chttp://www.mpfr.org/mpfr-current/mpfr.html#Integer-Related-Functions>
+         module Data.Number.MPFR.Integer,
+         -- * Miscellaneous functions
+         -- |For documentation on particular functions see
+         -- <http://www.mpfr.org/mpfr-current/mpfr.html#Miscellaneous-Functions>.
+         module Data.Number.MPFR.Misc
 ) where
 
-import Data.Number.MPFR.Base
+import Data.Number.MPFR.Assignment 
+import Data.Number.MPFR.Conversion
+import Data.Number.MPFR.Arithmetic
+import Data.Number.MPFR.Comparison
+import Data.Number.MPFR.Special 
+import Data.Number.MPFR.Integer
+import Data.Number.MPFR.Misc
 
 import Data.Number.MPFR.Internal
 
-import Data.Maybe
-
-import Data.Ratio
-
+{-
 #if __GLASGOW_HASKELL__ >= 610
 import GHC.Integer.Internals
 #endif
@@ -113,3 +148,4 @@ instance Real MPFR where
               (n, e) = if e' >= 0 then ((n' * 2 ^ e'), 0)
                          else (n', - e')
 
+-}
