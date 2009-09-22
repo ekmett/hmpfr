@@ -33,22 +33,22 @@ module Data.Number.MPFR.Mutable (
 
      -- * Basic arithmetic functions
      -- | For documentation on particular functions see
-     -- <http://www.mpfr.org/mpfr-chttp://www.mpfr.org/mpfr-current/mpfr.html#Basic-Arithmetic-Functions>
+     -- <http://www.mpfr.org/mpfr-current/mpfr.html#Basic-Arithmetic-Functions>
 
      module Data.Number.MPFR.Mutable.Arithmetic,
      -- * Special functions
      -- | For documentation on particular functions see
-     -- <http://www.mpfr.org/mpfr-chttp://www.mpfr.org/mpfr-current/mpfr.html#Special-Functions>
+     -- <http://www.mpfr.org/mpfr-current/mpfr.html#Special-Functions>
 
      module Data.Number.MPFR.Mutable.Special,
      -- * Miscellaneous functions
      -- | For documentation on particular functions see
-     -- <http://www.mpfr.org/mpfr-chttp://www.mpfr.org/mpfr-current/mpfr.html#Miscellaneous functions>
+     -- <http://www.mpfr.org/mpfr-current/mpfr.html#Miscellaneous functions>
 
      module Data.Number.MPFR.Mutable.Misc,
      -- * Integer related functions
      -- | For documentation on particular functions see
-     -- <http://www.mpfr.org/mpfr-chttp://www.mpfr.org/mpfr-current/mpfr.html#Integer-Related-Functions>
+     -- <http://www.mpfr.org/mpfr-current/mpfr.html#Integer-Related-Functions>
 
      module Data.Number.MPFR.Mutable.Integer
 ) where
