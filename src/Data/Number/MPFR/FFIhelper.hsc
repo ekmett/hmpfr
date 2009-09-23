@@ -20,6 +20,7 @@ import Data.Typeable(Typeable)
 import Data.Function(on)
     
 data RoundMode = Near | Zero | Up | Down | GMP_RND_MAX | GMP_RNDNA 
+                 deriving (Show, Read)
 
 instance Enum RoundMode where
     fromEnum Near        = #{const GMP_RNDN} 
