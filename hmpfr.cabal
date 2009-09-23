@@ -21,7 +21,7 @@ Homepage:            http://code.haskell.org/hmpfr/
 
 build-type:          Simple
 cabal-version:       >= 1.2
-Extra-source-files:  test/Demo.hs
+Extra-source-files:  demo/Demo.hs
 
 Data-files:          README
                      dict.txt
