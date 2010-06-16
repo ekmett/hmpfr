@@ -71,3 +71,12 @@ void * mpfr_custom_get_mantissa_wrap (const mpfr_ptr ) ;
 mp_exp_t mpfr_custom_get_exp_wrap(const mpfr_ptr ) ;
 
 void mpfr_custom_move_wrap (const mpfr_ptr , void * ) ;
+
+int mpfr_const_pi_wrap (const mpfr_ptr , int );
+
+
+int mpfr_const_log2_wrap (const mpfr_ptr , int );
+
+int mpfr_const_euler_wrap (const mpfr_ptr , int );
+
+int mpfr_const_catalan__wrap (const mpfr_ptr , int );

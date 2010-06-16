@@ -180,13 +180,13 @@ pi   :: RoundMode -> Precision -> MPFR
 pi r = fst . pi_ r
 
 log2c   :: RoundMode -> Precision -> MPFR
-log2c r = fst . pi_ r
+log2c r = fst . log2c_ r
 
 euler   :: RoundMode -> Precision -> MPFR
-euler r = fst . pi_ r
+euler r = fst . euler_ r
 
 catalan   :: RoundMode -> Precision -> MPFR
-catalan r = fst . pi_ r
+catalan r = fst . catalan_ r
 
 
 log_       :: RoundMode -> Precision -> MPFR -> (MPFR, Int)

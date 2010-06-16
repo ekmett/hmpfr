@@ -34,13 +34,14 @@ import Data.Maybe
 
 import Data.Ratio
 
-#if __GLASGOW_HASKELL__ >= 610
+
+#if (__GLASGOW_HASKELL__ >= 610) && (__GLASGOW_HASKELL__ < 612)
 import GHC.Integer.Internals
-import GHC.Exts hiding (Down)
-#else 
-import GHC.Exts
+#elif __GLASGOW_HASKELL__ >= 612
+import GHC.Integer.GMP.Internals
 #endif
 
+import qualified GHC.Exts as E
 
 instance Num MPFR where
     d + d'        = A.add Down (maxPrec d d') d d'
@@ -49,8 +50,8 @@ instance Num MPFR where
     negate d      = A.neg Down (getPrec d) d
     abs d         = A.absD Down (getPrec d) d
     signum        = fromInt Down minPrec . fromMaybe (-1) .sgn
-    fromInteger (S# i) = fromInt Down minPrec (I# i)
-    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral . abs $ I# n * bitsPerIntegerLimb) i 
+    fromInteger (S# i) = fromInt Down minPrec (E.I# i)
+    fromInteger i@(J# n _) = fromIntegerA Zero (fromIntegral . abs $ E.I# n * bitsPerIntegerLimb) i 
 
 instance Real MPFR where
     toRational d = n % 2 ^ e

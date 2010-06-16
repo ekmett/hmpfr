@@ -102,15 +102,14 @@ toStringExp dec d | isInfixOf "NaN" ss = "NaN"
                                   else '.' : bt
                            else head ss : '.' :
                                 let bt = (backtrim . tail) ss 
-                                in if null bt 
-                                   then "0"
-                                   else bt ++ "e" ++ show (pred e)
+                                in (if null bt then "0" else bt) 
+                                   ++ "e" ++ show (pred e)
                   | otherwise = 
-                      head ss : '.' : 
+                      s ++ (head ss : '.' : 
                                (let bt = (backtrim . tail) ss in
                                 if null bt then "0" 
                                 else bt )
-                               ++ "e" ++ show (pred e)
+                               ++ "e" ++ show (pred e))
                     where (str, e') = mpfrToString Near n 10 d
                           e = fromIntegral e'
                           n        = max dec 5

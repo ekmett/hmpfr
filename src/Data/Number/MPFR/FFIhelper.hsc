@@ -571,16 +571,16 @@ foreign import ccall unsafe "mpfr_hypot"
         mpfr_hypot :: Ptr MPFR -> Ptr MPFR -> Ptr MPFR -> CRoundMode -> IO CInt  
 
 -- constants
-foreign import ccall unsafe "mpfr_const_log2"
+foreign import ccall unsafe "mpfr_const_log2_wrap"
         mpfr_const_log2 :: Ptr MPFR -> CRoundMode -> IO CInt
 
-foreign import ccall unsafe "mpfr_const_pi"
+foreign import ccall unsafe "mpfr_const_pi_wrap"
         mpfr_const_pi :: Ptr MPFR -> CRoundMode -> IO CInt
 
-foreign import ccall unsafe "mpfr_const_euler"
+foreign import ccall unsafe "mpfr_const_euler_wrap"
         mpfr_const_euler :: Ptr MPFR -> CRoundMode -> IO CInt
 
-foreign import ccall unsafe "mpfr_const_catalan"
+foreign import ccall unsafe "mpfr_const_catalan_wrap"
         mpfr_const_catalan :: Ptr MPFR -> CRoundMode -> IO CInt
 
 foreign import ccall unsafe "mpfr_free_cache"

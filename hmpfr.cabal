@@ -1,5 +1,5 @@
 name:                hmpfr
-version:             0.3
+version:             0.3.1
 synopsis:            Haskell binding to MPFR library
 description:         Haskell binding to MPFR library. This version is compatible
                      only with 2.4.* and will not work with previous releases
@@ -30,8 +30,10 @@ Data-files:          README
 
 Library
   build-Depends:       base > 3 && < 5
-  if impl(ghc >= 6.10)
+  if impl(ghc >= 6.10) && impl(ghc < 6.12)
      build-Depends:    base >= 4, integer
+  if impl(ghc >= 6.12)
+     build-Depends:    integer-gmp
 
   Other-modules:       Data.Number.MPFR.FFIhelper
                        Data.Number.MPFR.Internal

@@ -120,6 +120,22 @@ mp_exp_t mpfr_custom_get_exp_wrap(const mpfr_ptr p) {
 void mpfr_custom_move_wrap (mpfr_ptr p1, void *p2 ) {
   mpfr_custom_move(p1, p2);
 }
+
+int mpfr_const_pi_wrap (mpfr_ptr p1, int p2) {
+  return mpfr_const_pi(p1,p2);
+}
+
+int mpfr_const_log2_wrap (mpfr_ptr p1, int p2) {
+  return mpfr_const_log2(p1,p2);
+}
+
+int mpfr_const_euler_wrap (mpfr_ptr p1, int p2) {
+  return mpfr_const_euler(p1,p2);
+}
+int mpfr_const_catalan_wrap (mpfr_ptr p1, int p2) {
+  return mpfr_const_catalan(p1,p2);
+}
+
 /*
 intmax_t mpfr_get_sj_wrap (mpfr_ptr p1, mp_rnd_t p2) {
   return mpfr_get_sj(p1, p2);
